@@ -13,12 +13,17 @@ export class JwtInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const token = this.auth.getToken();
     const isApi = req.url.startsWith('http://') || req.url.startsWith('https://');
-    const authReq = token && isApi ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }) : req;
+    const isLogin = req.url.includes('/auth/ingresar');
+    const shouldAttach = token && isApi && !isLogin;
+    const authReq = shouldAttach ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }) : req;
     return next.handle(authReq).pipe(
       catchError((err: HttpErrorResponse) => {
         if (err.status === 401) {
-          this.auth.logout();
-          this.router.navigate(['/login']);
+          const onLoginPage = this.router.url.startsWith('/login');
+          if (!isLogin) {
+            this.auth.logout();
+            if (!onLoginPage) this.router.navigate(['/login']);
+          }
         }
         return throwError(() => err);
       })

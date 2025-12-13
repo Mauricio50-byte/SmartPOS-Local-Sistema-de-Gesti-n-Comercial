@@ -18,7 +18,7 @@ export class AuthService {
     if (token) {
       this.perfilSubscription = this.fetchPerfil().subscribe({
         next: (p) => this.perfil$.next(p),
-        error: () => this.logout()
+        error: (err) => { if (err?.status === 401) this.logout(); }
       });
     }
   }

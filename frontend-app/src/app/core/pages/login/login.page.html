@@ -20,13 +20,28 @@
 
       <ion-item class="input-item" lines="none">
         <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
-        <ion-input type="password" autocomplete="current-password" formControlName="password" aria-required="true" placeholder="Contraseña"></ion-input>
+        <ion-input
+          [type]="showPassword ? 'text' : 'password'"
+          autocomplete="current-password"
+          formControlName="password"
+          aria-required="true"
+          placeholder="Contraseña"
+          autocapitalize="off"
+          spellcheck="false"
+          [maxlength]="64"
+          (keydown)="onPasswordKeyEvent($event)"
+          (keyup)="onPasswordKeyEvent($event)"
+        ></ion-input>
+        <ion-button fill="clear" slot="end" (click)="togglePassword()" aria-label="Mostrar u ocultar contraseña">
+          <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+        </ion-button>
       </ion-item>
-      <div class="error" *ngIf="f['password'].touched && f['password'].invalid">
+      <div class="error" *ngIf="f['password'].touched && f['password'].invalid" aria-live="polite">
         <span *ngIf="f['password'].errors?.['required']">La contraseña es obligatoria.</span>
         <span *ngIf="f['password'].errors?.['minlength']">Mínimo 6 caracteres.</span>
         <span *ngIf="f['password'].errors?.['invalid']">Credenciales inválidas.</span>
       </div>
+      <div class="error" *ngIf="capsLockOn" aria-live="polite">Caps Lock activado.</div>
 
       <ion-item lines="none" class="remember-row">
         <ion-checkbox formControlName="remember" aria-label="Recordar credenciales"></ion-checkbox>
