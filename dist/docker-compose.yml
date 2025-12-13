@@ -1,0 +1,35 @@
+services:
+  sistema-pos:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    image: sistema-pos-backend:latest
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@sistema-pos:5432/${POSTGRES_DB}?schema=public
+      JWT_SECRETO: ${JWT_SECRETO}
+      PUERTO: ${BACKEND_PORT:-3000}
+    depends_on:
+      - sistema-pos
+    command: sh -c "npx prisma migrate deploy && node src/servidor.js"
+    ports:
+      - "${BACKEND_PORT:-3000}:3000"
+
+  frontend:
+    image: sistema-pos-frontend:latest
+    environment:
+      NG_CLI_ANALYTICS: "false"
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_PORT:-8100}:8100"
+
+volumes:
+  pgdata:

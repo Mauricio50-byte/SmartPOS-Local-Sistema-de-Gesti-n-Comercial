@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Usuario {
+  id           Int      @id @default(autoincrement())
+  nombre       String
+  correo       String   @unique
+  passwordHash String
+  activo       Boolean  @default(true)
+  creadoEn     DateTime @default(now())
+  ventas       Venta[]
+  roles        UsuarioRol[]
+}
+
+model Producto {
+  id           Int      @id @default(autoincrement())
+  nombre       String
+  precio       Float
+  stock        Int      @default(0)
+  activo       Boolean  @default(true)
+  creadoEn     DateTime @default(now())
+  actualizadoEn DateTime @updatedAt
+  detalles     DetalleVenta[]
+}
+
+model Cliente {
+  id       Int      @id @default(autoincrement())
+  nombre   String
+  correo   String?  @unique
+  telefono String?
+  ventas   Venta[]
+}
+
+model Venta {
+  id        Int           @id @default(autoincrement())
+  fecha     DateTime      @default(now())
+  total     Float
+  clienteId Int?
+  cliente   Cliente?      @relation(fields: [clienteId], references: [id])
+  usuarioId Int
+  usuario   Usuario       @relation(fields: [usuarioId], references: [id])
+  detalles  DetalleVenta[]
+}
+
+model Rol {
+  id          Int          @id @default(autoincrement())
+  nombre      String       @unique
+  descripcion String?
+  usuarios    UsuarioRol[]
+  permisos    RolPermiso[]
+}
+
+model Permiso {
+  id          Int          @id @default(autoincrement())
+  clave       String       @unique
+  descripcion String?
+  roles       RolPermiso[]
+}
+
+model UsuarioRol {
+  usuarioId Int
+  rolId     Int
+  usuario   Usuario @relation(fields: [usuarioId], references: [id])
+  rol       Rol     @relation(fields: [rolId], references: [id])
+  @@id([usuarioId, rolId])
+}
+
+model RolPermiso {
+  rolId     Int
+  permisoId Int
+  rol       Rol     @relation(fields: [rolId], references: [id])
+  permiso   Permiso @relation(fields: [permisoId], references: [id])
+  @@id([rolId, permisoId])
+}
+
+model DetalleVenta {
+  id             Int     @id @default(autoincrement())
+  ventaId        Int
+  productoId     Int
+  cantidad       Int
+  precioUnitario Float
+  subtotal       Float
+  venta          Venta   @relation(fields: [ventaId], references: [id])
+  producto       Producto @relation(fields: [productoId], references: [id])
+}

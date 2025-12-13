@@ -1,0 +1,35 @@
+version: "3.9"
+services:
+  sistema-pos:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: sistema_pos
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend-api
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@sistema-pos:5432/sistema_pos?schema=public
+      JWT_SECRETO: devsecret
+      PUERTO: 3000
+    depends_on:
+      - sistema-pos
+    ports:
+      - "3000:3000"
+
+  frontend:
+    build: ./frontend-app
+    environment:
+      NG_CLI_ANALYTICS: "false"
+    ports:
+      - "8100:8100"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

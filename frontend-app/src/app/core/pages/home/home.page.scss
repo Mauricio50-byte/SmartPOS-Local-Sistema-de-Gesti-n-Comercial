@@ -1,0 +1,457 @@
+// Variables CSS
+:root {
+  --brand-teal: #0d9488;
+  --brand-teal-contrast: #ffffff;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --radius-12: 12px;
+  --radius-24: 24px;
+  --shadow-1: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar { 
+  --background: var(--brand-teal); 
+  color: var(--brand-teal-contrast); 
+}
+
+.sidebar .brand { 
+  display: flex; 
+  flex-direction: column; 
+  align-items: flex-start; 
+  gap: var(--space-8); 
+  padding: var(--space-24); 
+}
+
+.sidebar .brand-icon { 
+  width: 48px; 
+  height: 48px; 
+  border-radius: 12px; 
+  background: #084b4b; 
+  display: grid; 
+  place-items: center; 
+}
+
+.sidebar .brand-icon ion-icon { 
+  color: var(--brand-teal-contrast); 
+  font-size: 24px; 
+}
+
+.sidebar .brand-name { 
+  font-weight: 700; 
+}
+
+.sidebar ion-item { 
+  --color: var(--brand-teal-contrast); 
+  --background: transparent; 
+  --border-radius: var(--radius-12); 
+  margin: 0 var(--space-16); 
+}
+
+.sidebar ion-item:hover { 
+  background: rgba(255,255,255,0.08); 
+}
+
+.sidebar ion-item.active { 
+  --background: rgba(255,255,255,0.18); 
+}
+
+.sidebar ion-item.store { 
+  margin: var(--space-16); 
+}
+
+.dashboard { 
+  --background: var(--ion-color-light); 
+}
+
+.topbar ion-toolbar { 
+  --background: #fff; 
+  --color: var(--ion-color-dark); 
+  box-shadow: var(--shadow-1); 
+}
+
+.topbar ion-title { 
+  font-weight: 600; 
+}
+
+.mobile-tabbar { 
+  position: fixed; 
+  left: 0; 
+  right: 0; 
+  bottom: env(safe-area-inset-bottom); 
+  background: var(--brand-teal); 
+  padding: 8px 12px; 
+  box-shadow: var(--shadow-1); 
+  display: grid; 
+  grid-template-columns: repeat(4, 1fr); 
+  gap: 8px; 
+  z-index: 10; 
+}
+
+.mobile-tabbar .item { 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  color: var(--brand-teal-contrast); 
+  background: transparent; 
+  border: none; 
+  border-radius: var(--radius-12); 
+  padding: 6px 0; 
+}
+
+.mobile-tabbar .item.active { 
+  background: rgba(255,255,255,0.18); 
+}
+
+.mobile-tabbar ion-icon { 
+  font-size: 20px; 
+}
+
+.mobile-tabbar span { 
+  font-size: 12px; 
+  font-weight: 600; 
+}
+
+.dashboard { 
+  padding-bottom: 84px; 
+}
+
+// Grid responsive con Tailwind-like classes
+.grid { 
+  display: grid; 
+  grid-template-columns: 1fr; 
+  gap: var(--space-24); 
+  padding: var(--space-24); 
+  width: 100%; 
+}
+
+.panel { 
+  background: #fff; 
+  border-radius: var(--radius-24); 
+  box-shadow: var(--shadow-1); 
+  width: 100%; 
+}
+
+// Contenedor de gráficos
+.chart-container {
+  width: 100%;
+  height: 192px; // h-48 equivalente
+  position: relative;
+}
+
+// Estilos para Chart.js
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.chart-bars { 
+  display: grid; 
+  gap: var(--space-12); 
+  width: 100%;
+}
+
+.chart-bars .bar { 
+  display: grid; 
+  align-items: center; 
+  grid-template-columns: 1fr auto; 
+  background: #f7fafb; 
+  border: 1px solid #e0e0e0; 
+  border-radius: var(--radius-12); 
+  padding: var(--space-12); 
+  position: relative; 
+  width: 100%;
+}
+
+.chart-bars .bar::before { 
+  content: ''; 
+  position: absolute; 
+  left: 0; 
+  top: 0; 
+  bottom: 0; 
+  width: var(--value); 
+  background: var(--brand-teal); 
+  opacity: .18; 
+  border-radius: var(--radius-12); 
+}
+
+.chart-bars .bar span { 
+  z-index: 1; 
+  color: var(--ion-color-dark); 
+}
+
+.chart-bars .bar-value { 
+  font-weight: 600; 
+  color: var(--brand-teal); 
+}
+
+// Media queries para responsive
+@media (min-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .metrics-panel {
+    grid-column: span 2;
+  }
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-24);
+  }
+  
+  .mobile-tabbar { 
+    display: none; 
+  }
+  
+  // Ajuste específico para el panel de métricas
+  .panel:nth-child(3) { // metrics-panel
+    grid-column: span 2;
+  }
+  
+  .panel:nth-child(4) { // ventas por categoría
+    grid-column: span 2;
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .panel:nth-child(1),
+  .panel:nth-child(2) {
+    grid-column: span 1;
+  }
+  
+  .panel:nth-child(3) { // metrics-panel
+    grid-column: span 3;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-16);
+  }
+  
+  .panel:nth-child(4) { // ventas por categoría
+    grid-column: span 3;
+  }
+  
+  .chart-container {
+    height: 160px; // Más pequeño en desktop grande
+  }
+}
+
+@media (min-width: 1280px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-24);
+  }
+  
+  .panel:nth-child(1),
+  .panel:nth-child(2),
+  .panel:nth-child(4) {
+    grid-column: span 2;
+  }
+  
+  .panel:nth-child(3) { // metrics-panel
+    grid-column: span 4;
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .chart-container {
+    height: 180px;
+  }
+}
+
+// Estilos de paneles
+.panel-header {
+  padding: var(--space-16) var(--space-24);
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.panel-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ion-color-dark);
+}
+
+.panel-subtitle {
+  font-size: 12px;
+  color: var(--ion-color-medium);
+}
+
+.panel-content {
+  padding: var(--space-16) var(--space-24);
+  width: 100%;
+}
+
+.chart-loading {
+  height: 192px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--ion-color-medium);
+  width: 100%;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f0f0f0;
+  border-top-color: var(--brand-teal);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: var(--space-12);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.metrics-panel {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-16);
+  padding: var(--space-24);
+  width: 100%;
+}
+
+.metric-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  padding: var(--space-16);
+  background: #f7fafb;
+  border-radius: var(--radius-12);
+  border: 1px solid #e0e0e0;
+  width: 100%;
+}
+
+.metric-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-12);
+  background: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666666;
+}
+
+.metric-icon ion-icon {
+  font-size: 20px;
+}
+
+.metric-content {
+  flex: 1;
+}
+
+.metric-value {
+  font-size: 20px;
+  font-weight: 600;
+  color: #666666;
+  margin-bottom: 2px;
+}
+
+.metric-label {
+  font-size: 12px;
+  color: var(--ion-color-medium);
+  margin-bottom: 4px;
+}
+
+.metric-trend {
+  font-size: 11px;
+  font-weight: 600;
+  
+  &.positive {
+    color: #10b981;
+  }
+  
+  &.neutral {
+    color: #666666;
+  }
+}
+
+// Estilos para gráficas vacías
+.chart-bars-empty {
+  display: grid;
+  gap: var(--space-12);
+  width: 100%;
+}
+
+.bar-placeholder {
+  display: grid;
+  align-items: center;
+  grid-template-columns: 1fr auto;
+  background: #f7fafb;
+  border: 1px dashed #e0e0e0;
+  border-radius: var(--radius-12);
+  padding: var(--space-12);
+  color: #999999;
+  font-style: italic;
+  width: 100%;
+}
+
+.bar-placeholder .bar-value {
+  color: #999999;
+  font-weight: normal;
+}
+
+// Ajustes responsivos específicos
+@media (max-width: 639px) {
+  .grid {
+    padding: var(--space-16);
+    gap: var(--space-16);
+  }
+  
+  .panel {
+    border-radius: var(--radius-16);
+  }
+  
+  .panel-header {
+    padding: var(--space-12) var(--space-16);
+  }
+  
+  .panel-content {
+    padding: var(--space-12) var(--space-16);
+  }
+  
+  .chart-container {
+    height: 160px; // Más pequeño en móvil
+  }
+  
+  .metric-card {
+    padding: var(--space-12);
+  }
+  
+  .metric-icon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .metric-value {
+    font-size: 18px;
+  }
+}
+
+// Asegurar que los gráficos sean responsivos
+.chart-container canvas {
+  max-width: 100% !important;
+  max-height: 100% !important;
+}
+
+// Override para mobile-tabbar en pantallas grandes
+@media (min-width: 768px) {
+  .dashboard {
+    padding-bottom: 0;
+  }
+}
