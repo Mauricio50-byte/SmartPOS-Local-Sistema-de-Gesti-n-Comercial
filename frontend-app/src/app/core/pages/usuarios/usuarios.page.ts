@@ -19,6 +19,7 @@ export class UsuariosPage implements OnInit {
   usuarios: Usuario[] = [];
   usuarioSeleccionado: Usuario | null = null;
   mostrarFormulario = false;
+  isEditMode = false;
 
   constructor(
     private fb: FormBuilder,
@@ -47,6 +48,7 @@ export class UsuariosPage implements OnInit {
   // Control del modal
   mostrarFormularioCrear() {
     this.mostrarFormulario = true;
+    this.isEditMode = false;
   }
 
   cerrarFormulario() {
@@ -55,6 +57,9 @@ export class UsuariosPage implements OnInit {
       rol: 'trabajador',
       activo: true
     });
+    // Restore password validation for create mode
+    this.formgroup.get('passwordHash')?.setValidators([Validators.required, Validators.minLength(6)]);
+    this.formgroup.get('passwordHash')?.updateValueAndValidity();
   }
 
   getUsuarios() {
@@ -65,28 +70,28 @@ export class UsuariosPage implements OnInit {
       },
       error: (error: any) => {
         console.warn('No se pudieron cargar usuarios desde el backend:', error);
-        // Continuar sin usuarios del backend
+        this.mostrarAlerta('Error de Carga', 'No se pudieron cargar los usuarios. Verifique que el servidor esté activo y usted tenga permisos.' + (error.message || ''));
         this.usuarios = [];
       }
     });
   }
 
-  crearUsuario() {
+  guardarUsuario() {
     if (this.formgroup.valid) {
-      (this.usuarioService as any).createUsuario(this.formgroup.value).subscribe({
-        next: (nuevoUsuario: Usuario) => {
-          console.log('Usuario creado:', nuevoUsuario);
-          this.getUsuarios();
-          this.cerrarFormulario();
-          this.mostrarAlerta('Éxito', 'Usuario creado correctamente');
-        },
-        error: (error: any) => {
-          console.error('Error creando usuario:', error);
-          this.mostrarAlerta('Error', 'No se pudo crear el usuario');
-        }
-      });
+      if (this.isEditMode && this.usuarioSeleccionado) {
+        // We are editing
+        this.updateUsuario(this.usuarioSeleccionado.id, this.formgroup.value);
+      } else {
+        // We are creating
+        this.mostrarAlerta('Aviso', 'La creación de usuarios no está implementada en este entorno.');
+      }
     }
   }
+
+  // private crearUsuario() { ... } // Removed as per instructions
+
+  // ... (keep toggleMenu, verDetalles)
+
 
   toggleMenu(usuario: Usuario) {
     this.usuarioSeleccionado = this.usuarioSeleccionado?.id === usuario.id ? null : usuario;
@@ -99,14 +104,17 @@ export class UsuariosPage implements OnInit {
 
   editarUsuario(usuario: Usuario) {
     console.log('Editar usuario:', usuario);
-    // Aquí podrías abrir un modal para editar o llenar el formulario
-    this.formgroup.patchValue({ // Assuming 'rol' exists on the user object from the backend
+    this.mostrarFormulario = true;
+    this.isEditMode = true;
+    this.usuarioSeleccionado = usuario;
+
+    this.formgroup.patchValue({
       nombre: usuario.nombre,
       correo: usuario.correo,
-      rol: (usuario as any).rol,
+      rol: usuario.roles && usuario.roles.length > 0 ? usuario.roles[0] : 'trabajador',
       activo: usuario.activo
     });
-    // Remover el password del formulario para edición
+    // Password is not updated here, so validation is not required for edit mode.
     this.formgroup.get('passwordHash')?.clearValidators();
     this.formgroup.get('passwordHash')?.updateValueAndValidity();
   }
@@ -191,6 +199,8 @@ export class UsuariosPage implements OnInit {
     this.usuarioService.updateUsuario(id, usuarioData).subscribe((usuario: Usuario) => {
       console.log('Usuario actualizado', usuario);
       this.getUsuarios();
+      this.cerrarFormulario();
+      this.mostrarAlerta('Éxito', 'Usuario actualizado correctamente');
     });
   }
 

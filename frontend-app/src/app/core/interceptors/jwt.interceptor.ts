@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, Injector } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -7,11 +7,12 @@ import { Router } from '@angular/router';
 
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
-  private auth = inject(AuthService);
+  private injector = inject(Injector);
   private router = inject(Router);
 
   intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    const token = this.auth.getToken();
+    const auth = this.injector.get(AuthService);
+    const token = auth.getToken();
     const isApi = req.url.startsWith('http://') || req.url.startsWith('https://');
     const isLogin = req.url.includes('/auth/ingresar');
     const shouldAttach = token && isApi && !isLogin;
@@ -21,7 +22,7 @@ export class JwtInterceptor implements HttpInterceptor {
         if (err.status === 401) {
           const onLoginPage = this.router.url.startsWith('/login');
           if (!isLogin) {
-            this.auth.logout();
+            auth.logout();
             if (!onLoginPage) this.router.navigate(['/login']);
           }
         }

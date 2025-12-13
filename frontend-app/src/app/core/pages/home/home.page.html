@@ -19,6 +19,10 @@
           <ion-icon slot="start" name="cube-outline"></ion-icon>
           <ion-label>Productos</ion-label>
         </ion-item>
+        <ion-item button routerLink="/usuarios">
+          <ion-icon slot="start" name="people-circle-outline"></ion-icon>
+          <ion-label>Usuarios</ion-label>
+        </ion-item>
         <ion-item button>
           <ion-icon slot="start" name="people-outline"></ion-icon>
           <ion-label>Clientes</ion-label>
@@ -52,15 +56,18 @@
       <div class="panel">
         <div class="panel-header">
           <h3 class="panel-title">Ventas Mensuales</h3>
-          <span class="panel-subtitle">Esperando datos...</span>
+          <span class="panel-subtitle">Sin datos disponibles</span>
         </div>
         <div class="panel-content">
-          <div class="chart-container" *ngIf="dataLoaded">
-            <div class="chart-area"></div>
-          </div>
-          <div class="chart-loading" *ngIf="!dataLoaded">
-            <div class="loading-spinner"></div>
-            <p>Cargando datos...</p>
+          <div class="chart-bars-empty">
+            <div class="bar-placeholder">
+              <span>No hay datos para mostrar</span>
+              <span class="bar-value">0</span>
+            </div>
+            <div class="bar-placeholder">
+              <span>No hay datos para mostrar</span>
+              <span class="bar-value">0</span>
+            </div>
           </div>
         </div>
       </div>
@@ -69,21 +76,22 @@
       <div class="panel">
         <div class="panel-header">
           <h3 class="panel-title">Productos Más Vendidos</h3>
-          <span class="panel-subtitle">Esperando datos...</span>
+          <span class="panel-subtitle">Sin datos disponibles</span>
         </div>
         <div class="panel-content">
-          <div class="chart-container" *ngIf="dataLoaded">
-            <div class="chart-bars">
-              <div class="bar" style="--value: 20%"><span>Producto A</span><span>20%</span></div>
-              <div class="bar" style="--value: 15%"><span>Producto B</span><span>15%</span></div>
-              <div class="bar" style="--value: 12%"><span>Producto C</span><span>12%</span></div>
-              <div class="bar" style="--value: 8%"><span>Producto D</span><span>8%</span></div>
-              <div class="bar" style="--value: 5%"><span>Producto E</span><span>5%</span></div>
+          <div class="chart-bars-empty">
+            <div class="bar-placeholder">
+              <span>No hay datos para mostrar</span>
+              <span class="bar-value">0%</span>
             </div>
-          </div>
-          <div class="chart-loading" *ngIf="!dataLoaded">
-            <div class="loading-spinner"></div>
-            <p>Cargando datos...</p>
+            <div class="bar-placeholder">
+              <span>No hay datos para mostrar</span>
+              <span class="bar-value">0%</span>
+            </div>
+            <div class="bar-placeholder">
+              <span>No hay datos para mostrar</span>
+              <span class="bar-value">0%</span>
+            </div>
           </div>
         </div>
       </div>

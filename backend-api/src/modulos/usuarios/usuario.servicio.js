@@ -2,11 +2,37 @@ const { prisma } = require('../../infraestructura/bd')
 const bcrypt = require('bcryptjs')
 
 async function listarUsuarios(filtro = {}) {
-  return prisma.usuario.findMany({ where: filtro, orderBy: { id: 'asc' }, select: { id: true, nombre: true, correo: true, rol: true, activo: true, creadoEn: true } })
+  const usuarios = await prisma.usuario.findMany({
+    where: filtro,
+    orderBy: { id: 'asc' },
+    select: {
+      id: true,
+      nombre: true,
+      correo: true,
+      activo: true,
+      creadoEn: true,
+      roles: { select: { rol: { select: { nombre: true } } } }
+    }
+  })
+  return usuarios.map(u => ({ ...u, roles: u.roles.map(r => r.rol.nombre) }))
 }
 
 async function obtenerUsuarioPorId(id) {
-  return prisma.usuario.findUnique({ where: { id }, select: { id: true, nombre: true, correo: true, rol: true, activo: true, creadoEn: true } })
+  const usuario = await prisma.usuario.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      nombre: true,
+      correo: true,
+      activo: true,
+      creadoEn: true,
+      roles: { select: { rol: { select: { nombre: true } } } }
+    }
+  })
+  if (usuario) {
+    usuario.roles = usuario.roles.map(r => r.rol.nombre)
+  }
+  return usuario
 }
 
 async function actualizarUsuario(id, datos) {
@@ -14,7 +40,19 @@ async function actualizarUsuario(id, datos) {
   if (typeof datos.nombre === 'string') campos.nombre = datos.nombre
   if (typeof datos.correo === 'string') campos.correo = datos.correo
   if (typeof datos.activo === 'boolean') campos.activo = datos.activo
-  return prisma.usuario.update({ where: { id }, data: campos, select: { id: true, nombre: true, correo: true, rol: true, activo: true } })
+  const usuario = await prisma.usuario.update({
+    where: { id },
+    data: campos,
+    select: {
+      id: true,
+      nombre: true,
+      correo: true,
+      activo: true,
+      roles: { select: { rol: { select: { nombre: true } } } }
+    }
+  })
+  usuario.roles = usuario.roles.map(r => r.rol.nombre)
+  return usuario
 }
 
 async function cambiarPassword(id, nueva) {

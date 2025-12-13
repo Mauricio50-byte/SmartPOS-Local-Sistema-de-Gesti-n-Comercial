@@ -1,5 +1,5 @@
 const PUERTO = process.env.PUERTO ? Number(process.env.PUERTO) : 3000
-const JWT_SECRETO = process.env.JWT_SECRETO || null
+const JWT_SECRETO = process.env.JWT_SECRETO || 'secreto-super-seguro'
 const DB_USER = process.env.DB_USER || 'postgres'
 const DB_PASSWORD = process.env.DB_PASSWORD || 'root'
 const DB_HOST = process.env.DB_HOST || (process.env.DOCKER === 'true' ? 'sistema-pos' : 'localhost')

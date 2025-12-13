@@ -44,44 +44,28 @@
     <div class="usuarios-container">
       <!-- Lista de usuarios -->
       <div class="usuarios-grid">
-        <!-- Usuario Administrador de ejemplo -->
-        <div class="usuario-card">
-          <div class="usuario-avatar">
-            <ion-icon name="person-circle"></ion-icon>
-          </div>
-          <div class="usuario-info">
-            <h3 class="usuario-nombre">Administrador</h3>
-          </div>
-          <div class="usuario-status">
-            <span class="badge activo">Activo</span>
-          </div>
-        </div>
-
-        <!-- Usuario Trabajador de ejemplo -->
-        <div class="usuario-card">
-          <div class="usuario-avatar trabajador">
-            <ion-icon name="person-circle"></ion-icon>
-          </div>
-          <div class="usuario-info">
-            <h3 class="usuario-nombre">Trabajador</h3>
-          </div>
-          <div class="usuario-status">
-            <span class="badge activo">Activo</span>
-          </div>
-        </div>
-
         <!-- Lista dinámica de usuarios desde la BD -->
         <div *ngFor="let usuario of usuarios" class="usuario-card">
-          <div class="usuario-avatar" [class.trabajador]="usuario.rol === 'trabajador'">
+          <div class="usuario-avatar" [class.trabajador]="usuario.roles && usuario.roles.includes('trabajador')">
             <ion-icon name="person-circle"></ion-icon>
           </div>
           <div class="usuario-info">
-            <h3 class="usuario-nombre">{{usuario.nombre || usuario.rol}}</h3>
+            <h3 class="usuario-nombre">{{usuario.nombre}}</h3>
+            <p class="usuario-rol">{{usuario.roles && usuario.roles.length > 0 ? usuario.roles[0] : 'Sin rol'}}</p>
+            <p class="usuario-correo">{{usuario.correo}}</p>
           </div>
           <div class="usuario-status">
             <span class="badge" [class.activo]="usuario.activo" [class.inactivo]="!usuario.activo">
               {{usuario.activo ? 'Activo' : 'Inactivo'}}
             </span>
+          </div>
+          <div class="usuario-actions">
+            <ion-button fill="clear" size="small" (click)="editarUsuario(usuario)">
+              <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" size="small" [color]="usuario.activo ? 'danger' : 'success'" (click)="toggleEstadoUsuario(usuario)">
+              <ion-icon slot="icon-only" [name]="usuario.activo ? 'power-outline' : 'power-outline'"></ion-icon>
+            </ion-button>
           </div>
         </div>
       </div>
@@ -111,7 +95,7 @@
     </ion-header>
     
     <ion-content class="ion-padding">
-      <form [formGroup]="formgroup" (ngSubmit)="crearUsuario()">
+      <form [formGroup]="formgroup" (ngSubmit)="guardarUsuario()">
         <ion-item class="form-item">
           <ion-label position="floating">Nombre</ion-label>
           <ion-input formControlName="nombre" type="text"></ion-input>

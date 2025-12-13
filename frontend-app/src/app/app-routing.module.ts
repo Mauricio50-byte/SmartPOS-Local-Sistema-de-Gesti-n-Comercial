@@ -10,7 +10,12 @@ const routes: Routes = [
   },
   {
     path: 'home',
-    loadChildren: () => import('./core/pages/home/home.module').then( m => m.HomePageModule),
+    loadChildren: () => import('./core/pages/home/home.module').then(m => m.HomePageModule),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'usuarios',
+    loadChildren: () => import('./core/pages/usuarios/usuarios.module').then(m => m.UsuariosPageModule),
     canActivate: [AuthGuard]
   },
   {
