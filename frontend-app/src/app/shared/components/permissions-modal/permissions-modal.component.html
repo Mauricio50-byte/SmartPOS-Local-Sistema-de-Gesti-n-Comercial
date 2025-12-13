@@ -1,0 +1,53 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Gestión de Permisos</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="user-info" *ngIf="usuario">
+    <h3>{{ usuario.nombre }}</h3>
+    <p>{{ usuario.correo }}</p>
+  </div>
+
+  <div class="roles-section">
+    <h4>Asignar Roles</h4>
+    <p class="helper-text">Seleccione los roles que desea asignar a este usuario.</p>
+    
+    <ion-list>
+      <ion-item *ngFor="let rol of roles">
+        <ion-label>
+          <h2>{{ rol.nombre | titlecase }}</h2>
+          <p>{{ rol.descripcion || 'Sin descripción' }}</p>
+        </ion-label>
+        <ion-checkbox 
+          slot="end" 
+          [checked]="isRoleSelected(rol.nombre)" 
+          (ionChange)="toggleRole(rol.nombre)">
+        </ion-checkbox>
+      </ion-item>
+    </ion-list>
+    
+    <div *ngIf="loading && roles.length === 0" class="loading-state">
+      <ion-spinner></ion-spinner>
+      <p>Cargando roles...</p>
+    </div>
+  </div>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">Cancelar</ion-button>
+      <ion-button color="primary" fill="solid" (click)="save()" [disabled]="loading">
+        <span *ngIf="!loading">Guardar Cambios</span>
+        <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

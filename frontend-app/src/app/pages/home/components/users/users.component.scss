@@ -1,9 +1,21 @@
-// Variables CSS del dashboard
+// Variables CSS
 :root {
-  --brand-teal: #0d9488;
-  --brand-teal-dark: #084b4b;
-  --brand-teal-light: #0d948810;
-  --brand-teal-contrast: #ffffff;
+  --brand-primary: #0d9488;
+  --brand-primary-rgb: 13, 148, 136;
+  --brand-secondary: #f59e0b;
+  --brand-danger: #ef4444;
+  --brand-success: #10b981;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --bg-card: #ffffff;
+  --bg-page: #f9fafb;
+}
+
+.usuarios-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: 100%;
 }
 
 // Page Header
@@ -11,206 +23,218 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 16px;
 
   h2 {
     margin: 0;
-    font-size: 24px;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .subtitle {
+    margin: 4px 0 0;
+    color: var(--text-secondary);
+    font-size: 15px;
+  }
+
+  ion-button {
+    --border-radius: 8px;
     font-weight: 600;
-    color: #333;
+    --box-shadow: 0 4px 6px -1px rgba(var(--brand-primary-rgb), 0.2);
   }
 }
 
-// Contenedor de usuarios
-.usuarios-container {
-  padding: 32px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-// Grid de usuarios
+// Grid
 .usuarios-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 24px;
   margin-bottom: 32px;
 }
 
-// Tarjeta de usuario
+// User Card
 .usuario-card {
-  background: white;
+  background: var(--bg-card);
   border-radius: 16px;
-  padding: 24px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: all 0.2s ease;
   border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 
   &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
+    border-color: #d1d5db;
   }
 }
 
-// Avatar circular
+.card-header {
+  padding: 20px 20px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
 .usuario-avatar {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #0d9488 0%, #0a7c7c 100%);
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  color: white;
+  font-weight: 700;
+  font-size: 24px;
+  box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
 
-  ion-icon {
-    font-size: 48px;
-    color: white;
+  &.admin {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2);
   }
 
   &.trabajador {
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+    box-shadow: 0 4px 6px -1px rgba(13, 148, 136, 0.2);
   }
 }
 
-// Información del usuario
-.usuario-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.usuario-nombre {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: #1f2937;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-// Estado del usuario
-.usuario-status {
-  display: flex;
-  align-items: center;
-}
-
-.badge {
-  padding: 6px 16px;
+.status-badge {
+  padding: 4px 10px;
   border-radius: 20px;
-  font-size: 14px;
-  font-weight: 500;
-  display: inline-flex;
-  align-items: center;
-  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
 
   &.activo {
-    background-color: #10b981;
-    color: white;
+    background-color: #ecfdf5;
+    color: #059669;
   }
 
   &.inactivo {
-    background-color: #ef4444;
-    color: white;
+    background-color: #fef2f2;
+    color: #dc2626;
   }
 }
 
-// Estado vacío
+.card-body {
+  padding: 16px 20px;
+  flex: 1;
+
+  .usuario-nombre {
+    margin: 0 0 4px;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .usuario-email {
+    margin: 0 0 16px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.roles-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 28px;
+}
+
+.role-badge {
+  background-color: #f3f4f6;
+  color: #4b5563;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid #e5e7eb;
+
+  &.empty {
+    font-style: italic;
+    color: #9ca3af;
+    background: transparent;
+    border: 1px dashed #d1d5db;
+  }
+}
+
+.card-actions {
+  padding: 12px 20px;
+  background-color: #f9fafb;
+  border-top: 1px solid #f3f4f6;
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+
+  ion-button {
+    margin: 0;
+    --padding-start: 8px;
+    --padding-end: 8px;
+  }
+}
+
+// Empty State
 .empty-state {
   text-align: center;
-  padding: 48px 24px;
-  color: #6b7280;
+  padding: 64px 24px;
+  background: white;
+  border-radius: 16px;
+  border: 1px dashed #e5e7eb;
 
-  ion-icon {
-    font-size: 64px;
-    color: #d1d5db;
-    margin-bottom: 16px;
+  .empty-icon {
+    width: 80px;
+    height: 80px;
+    background-color: #f3f4f6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+
+    ion-icon {
+      font-size: 40px;
+      color: #9ca3af;
+    }
   }
 
   h3 {
-    font-size: 18px;
+    margin: 0 0 8px;
+    font-size: 20px;
     font-weight: 600;
-    margin: 0 0 8px 0;
-    color: #374151;
+    color: var(--text-primary);
   }
 
   p {
-    font-size: 14px;
     margin: 0;
-  }
-}
-
-// Modal de formulario
-ion-modal {
-  --border-radius: 16px;
-  --height: auto;
-  --max-height: 90%;
-}
-
-.form-item {
-  --border-radius: 8px;
-  --border-color: #e5e7eb;
-  --background: white;
-  --padding-start: 16px;
-  --padding-end: 16px;
-  margin-bottom: 16px;
-
-  &:hover {
-    --border-color: var(--brand-teal);
-  }
-
-  &.item-has-focus {
-    --border-color: var(--brand-teal);
-    --highlight-color-focused: var(--brand-teal);
-  }
-}
-
-.form-actions {
-  margin-top: 24px;
-
-  ion-button {
-    --background: var(--brand-teal);
-    --background-hover: #0a7c7c;
-    --background-activated: var(--brand-teal-dark);
-    --border-radius: 8px;
-    font-weight: 500;
-    height: 48px;
+    color: var(--text-secondary);
   }
 }
 
 // Responsive
-@media (max-width: 768px) {
+@media (max-width: 640px) {
   .usuarios-container {
     padding: 16px;
   }
-
+  
   .usuarios-grid {
     grid-template-columns: 1fr;
-    gap: 16px;
   }
-
-  .usuario-card {
-    padding: 16px;
-  }
-
-  .usuario-avatar {
-    width: 56px;
-    height: 56px;
-
-    ion-icon {
-      font-size: 40px;
+  
+  .card-actions {
+    justify-content: space-between;
+    
+    ion-button {
+      flex: 1;
     }
-  }
-
-  .usuario-nombre {
-    font-size: 16px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .usuarios-grid {
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   }
 }

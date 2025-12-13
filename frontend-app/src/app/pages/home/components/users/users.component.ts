@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AlertController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular';
 import { Usuario } from '../../../../core/models';
 import { UsuarioService } from '../../../../core/services/usuario.service';
+import { PermissionsModalComponent } from '../../../../shared/components/permissions-modal/permissions-modal.component';
 
 @Component({
   selector: 'app-users',
@@ -20,7 +21,8 @@ export class UsersComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private usuarioService: UsuarioService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private modalController: ModalController
   ) {
     this.formgroup = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3)]],
@@ -147,6 +149,23 @@ export class UsersComponent implements OnInit {
     });
 
     await alert.present();
+  }
+
+  async gestionarPermisos(usuario: Usuario) {
+    const modal = await this.modalController.create({
+      component: PermissionsModalComponent,
+      componentProps: {
+        usuario: usuario
+      }
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss();
+    if (data && data.updated) {
+      this.mostrarAlerta('Éxito', 'Permisos actualizados correctamente');
+      this.getUsuarios(); // Reload users to show updated roles
+    }
   }
 
   toggleEstadoUsuario(usuario: Usuario) {

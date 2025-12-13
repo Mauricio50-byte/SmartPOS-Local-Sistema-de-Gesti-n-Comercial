@@ -7,6 +7,7 @@ import { HomePage } from './home.page';
 import { HomePageRoutingModule } from './home-routing.module';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { UsersComponent } from './components/users/users.component';
+import { PermissionsModalComponent } from '../../shared/components/permissions-modal/permissions-modal.component';
 
 @NgModule({
   imports: [
@@ -19,7 +20,8 @@ import { UsersComponent } from './components/users/users.component';
   declarations: [
     HomePage,
     DashboardComponent,
-    UsersComponent
+    UsersComponent,
+    PermissionsModalComponent
   ]
 })
 export class HomePageModule { }
