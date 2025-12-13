@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../../core/services/auth.service';
 import { Router } from '@angular/router';
 import { fromEvent, merge, of } from 'rxjs';
 import { mapTo, startWith } from 'rxjs/operators';

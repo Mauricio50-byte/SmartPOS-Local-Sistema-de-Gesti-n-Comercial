@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Usuario } from '../../models';
-import { UsuarioService } from '../../services/usuario.service';
+import { Usuario } from '../../core/models';
+import { UsuarioService } from '../../core/services/usuario.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AlertController } from '@ionic/angular';
 

@@ -14,20 +14,31 @@
 .sidebar { 
   --background: var(--brand-teal); 
   color: var(--brand-teal-contrast); 
+  background: var(--brand-teal);
+}
+
+ion-menu {
+  --width: 64px;
+  --min-width: 64px;
+}
+
+ion-split-pane {
+  --side-width: 64px;
+  --side-max-width: 64px;
 }
 
 .sidebar .brand { 
   display: flex; 
   flex-direction: column; 
-  align-items: flex-start; 
-  gap: var(--space-8); 
-  padding: var(--space-24); 
+  align-items: center; 
+  gap: 4px; 
+  padding: 8px 0; 
 }
 
 .sidebar .brand-icon { 
-  width: 48px; 
-  height: 48px; 
-  border-radius: 12px; 
+  width: 36px; 
+  height: 36px; 
+  border-radius: 10px; 
   background: #084b4b; 
   display: grid; 
   place-items: center; 
@@ -40,17 +51,54 @@
 
 .sidebar .brand-name { 
   font-weight: 700; 
+  display: none; 
+}
+
+.sidebar .brand-sub {
+  display: none;
+}
+
+.sidebar ion-list {
+  display: grid;
+  gap: 6px;
+  padding: 0 6px;
+  background: transparent;
 }
 
 .sidebar ion-item { 
   --color: var(--brand-teal-contrast); 
   --background: transparent; 
   --border-radius: var(--radius-12); 
-  margin: 0 var(--space-16); 
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  --min-height: 38px;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.sidebar ion-item ion-icon {
+  font-size: 18px;
+  color: var(--brand-teal-contrast);
+  background: rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 6px;
+}
+
+.sidebar ion-item:hover ion-icon {
+  background: rgba(255,255,255,0.22);
+}
+
+.sidebar ion-item.active ion-icon {
+  background: rgba(255,255,255,0.28);
+}
+
+.sidebar ion-item ion-label {
+  display: none;
 }
 
 .sidebar ion-item:hover { 
-  background: rgba(255,255,255,0.08); 
+  background: rgba(255,255,255,0.12); 
 }
 
 .sidebar ion-item.active { 
@@ -58,7 +106,7 @@
 }
 
 .sidebar ion-item.store { 
-  margin: var(--space-16); 
+  margin: 0; 
 }
 
 .dashboard { 
@@ -215,6 +263,42 @@ canvas {
   
   .panel:nth-child(4) { // ventas por categoría
     grid-column: span 2;
+  }
+
+  ion-menu {
+    --width: 220px;
+    --min-width: 220px;
+  }
+  ion-split-pane {
+    --side-width: 220px;
+    --side-max-width: 220px;
+  }
+  .sidebar .brand {
+    align-items: flex-start;
+    padding: var(--space-24);
+    gap: var(--space-8);
+  }
+  .sidebar .brand-name,
+  .sidebar .brand-sub {
+    display: block;
+  }
+  .sidebar ion-item {
+    justify-content: flex-start;
+    --padding-start: var(--space-12);
+    --inner-padding-end: var(--space-12);
+    --min-height: 44px;
+  }
+  .sidebar ion-item ion-icon {
+    margin-right: var(--space-12);
+  }
+  .sidebar ion-item ion-label {
+    display: block;
+    color: var(--brand-teal-contrast);
+    font-weight: 600;
+  }
+  .sidebar ion-item.active {
+    --background: rgba(255,255,255,0.18);
+    border-radius: var(--radius-12);
   }
 }
 

@@ -1,8 +1,8 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { forkJoin } from 'rxjs';
-import { Venta, Producto } from '../../models';
-import { VentaServices } from '../../services/venta.service';
-import { ProductosServices } from '../../services/producto.service';
+import { Venta, Producto } from '../../core/models';
+import { VentaServices } from '../../core/services/venta.service';
+import { ProductosServices } from '../../core/services/producto.service';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 
