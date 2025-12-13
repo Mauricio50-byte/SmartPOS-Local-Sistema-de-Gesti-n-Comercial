@@ -12,7 +12,15 @@ async function registrarRutasUsuario(app) {
     const rol = req.query?.rol
     const activo = req.query?.activo
     const filtro = {}
-    if (rol) filtro.rol = rol
+    if (rol) {
+      filtro.roles = {
+        some: {
+          rol: {
+            nombre: rol
+          }
+        }
+      }
+    }
     if (typeof activo !== 'undefined') filtro.activo = activo === 'true'
     const datos = await listarUsuarios(filtro)
     return res.send(datos)

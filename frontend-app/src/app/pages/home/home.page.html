@@ -7,7 +7,7 @@
         <div class="brand-sub">Negocio Inteligente</div>
       </div>
       <ion-list lines="none">
-        <ion-item button class="active store" title="Inicio" aria-label="Inicio">
+        <ion-item button [class.active]="currentView === 'dashboard'" (click)="setView('dashboard')" title="Inicio" aria-label="Inicio">
           <ion-icon slot="start" name="home-outline"></ion-icon>
           <ion-label>Easthotto</ion-label>
         </ion-item>
@@ -19,7 +19,7 @@
           <ion-icon slot="start" name="cube-outline"></ion-icon>
           <ion-label>Productos</ion-label>
         </ion-item>
-        <ion-item button routerLink="/usuarios" title="Usuarios" aria-label="Usuarios">
+        <ion-item button [class.active]="currentView === 'users'" (click)="setView('users')" title="Usuarios" aria-label="Usuarios">
           <ion-icon slot="start" name="people-circle-outline"></ion-icon>
           <ion-label>Usuarios</ion-label>
         </ion-item>
@@ -41,7 +41,7 @@
         <ion-buttons slot="start">
           <ion-menu-button></ion-menu-button>
         </ion-buttons>
-        <ion-title>Dashboard</ion-title>
+        <ion-title>{{ pageTitle }}</ion-title>
         <ion-buttons slot="end">
           <ion-button aria-label="Notificaciones"><ion-icon name="notifications-outline"></ion-icon></ion-button>
           <ion-button aria-label="Activar push" (click)="enablePush()"><ion-icon name="radio-outline"></ion-icon></ion-button>
@@ -49,119 +49,17 @@
       </ion-toolbar>
     </ion-header>
 
-    <!-- Contenido del Dashboard -->
-    <div class="grid">
-      
-      <!-- Panel de Ventas Mensuales -->
-      <div class="panel">
-        <div class="panel-header">
-          <h3 class="panel-title">Ventas Mensuales</h3>
-          <span class="panel-subtitle">Sin datos disponibles</span>
-        </div>
-        <div class="panel-content">
-          <div class="chart-bars-empty">
-            <div class="bar-placeholder">
-              <span>No hay datos para mostrar</span>
-              <span class="bar-value">0</span>
-            </div>
-            <div class="bar-placeholder">
-              <span>No hay datos para mostrar</span>
-              <span class="bar-value">0</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Panel de Productos Más Vendidos -->
-      <div class="panel">
-        <div class="panel-header">
-          <h3 class="panel-title">Productos Más Vendidos</h3>
-          <span class="panel-subtitle">Sin datos disponibles</span>
-        </div>
-        <div class="panel-content">
-          <div class="chart-bars-empty">
-            <div class="bar-placeholder">
-              <span>No hay datos para mostrar</span>
-              <span class="bar-value">0%</span>
-            </div>
-            <div class="bar-placeholder">
-              <span>No hay datos para mostrar</span>
-              <span class="bar-value">0%</span>
-            </div>
-            <div class="bar-placeholder">
-              <span>No hay datos para mostrar</span>
-              <span class="bar-value">0%</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Panel de Métricas Rápidas -->
-      <div class="panel metrics-panel">
-        <div class="metric-card">
-          <div class="metric-icon">
-            <ion-icon name="cash-outline"></ion-icon>
-          </div>
-          <div class="metric-content">
-            <div class="metric-value">$0</div>
-            <div class="metric-label">Ingresos Totales</div>
-            <div class="metric-trend neutral">Sin datos</div>
-          </div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-icon">
-            <ion-icon name="cart-outline"></ion-icon>
-          </div>
-          <div class="metric-content">
-            <div class="metric-value">0</div>
-            <div class="metric-label">Ventas Totales</div>
-            <div class="metric-trend neutral">Sin datos</div>
-          </div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-icon">
-            <ion-icon name="people-outline"></ion-icon>
-          </div>
-          <div class="metric-content">
-            <div class="metric-value">0</div>
-            <div class="metric-label">Clientes Nuevos</div>
-            <div class="metric-trend neutral">Sin datos</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Panel de Ventas por Categoría -->
-      <div class="panel">
-        <div class="panel-header">
-          <h3 class="panel-title">Ventas por Categoría</h3>
-          <span class="panel-subtitle">Sin datos disponibles</span>
-        </div>
-        <div class="panel-content">
-          <div class="chart-bars-empty">
-            <div class="bar-placeholder">
-              <span>No hay datos para mostrar</span>
-              <span class="bar-value">0%</span>
-            </div>
-            <div class="bar-placeholder">
-              <span>No hay datos para mostrar</span>
-              <span class="bar-value">0%</span>
-            </div>
-            <div class="bar-placeholder">
-              <span>No hay datos para mostrar</span>
-              <span class="bar-value">0%</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <div class="content-container">
+      <app-dashboard *ngIf="currentView === 'dashboard'"></app-dashboard>
+      <app-users *ngIf="currentView === 'users'"></app-users>
     </div>
 
     <div class="mobile-tabbar" role="tablist" aria-label="Navegación inferior">
-      <button class="item" role="tab" aria-selected="false">
+      <button class="item" [class.active]="currentView === 'dashboard'" (click)="setView('dashboard')" role="tab" [attr.aria-selected]="currentView === 'dashboard'">
         <ion-icon name="home-outline"></ion-icon>
         <span>Inicio</span>
       </button>
-      <button class="item active" role="tab" aria-selected="true">
+      <button class="item" [class.active]="currentView === 'dashboard'" (click)="setView('dashboard')" role="tab" [attr.aria-selected]="currentView === 'dashboard'">
         <ion-icon name="bar-chart-outline"></ion-icon>
         <span>Dashboard</span>
       </button>

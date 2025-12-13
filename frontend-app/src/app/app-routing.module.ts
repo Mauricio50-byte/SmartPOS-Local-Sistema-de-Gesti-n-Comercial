@@ -14,11 +14,6 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: 'usuarios',
-    loadChildren: () => import('./pages/usuarios/usuarios.module').then(m => m.UsuariosPageModule),
-    canActivate: [AuthGuard]
-  },
-  {
     path: '',
     redirectTo: 'home',
     pathMatch: 'full'

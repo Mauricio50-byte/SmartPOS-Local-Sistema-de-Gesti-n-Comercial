@@ -1,20 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { Usuario } from '../../core/models';
-import { UsuarioService } from '../../core/services/usuario.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AlertController } from '@ionic/angular';
+import { Usuario } from '../../../../core/models';
+import { UsuarioService } from '../../../../core/services/usuario.service';
 
 @Component({
-  standalone: false,
-  selector: 'app-usuarios',
-  templateUrl: './usuarios.page.html',
-  styleUrls: ['./usuarios.page.scss'],
-
+  selector: 'app-users',
+  templateUrl: './users.component.html',
+  styleUrls: ['./users.component.scss'],
+  standalone: false
 })
-
-
-export class UsuariosPage implements OnInit {
+export class UsersComponent implements OnInit {
   formgroup: FormGroup;
   usuarios: Usuario[] = [];
   usuarioSeleccionado: Usuario | null = null;
@@ -24,8 +20,7 @@ export class UsuariosPage implements OnInit {
   constructor(
     private fb: FormBuilder,
     private usuarioService: UsuarioService,
-    private alertController: AlertController,
-    private router: Router
+    private alertController: AlertController
   ) {
     this.formgroup = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3)]],
@@ -38,11 +33,6 @@ export class UsuariosPage implements OnInit {
 
   ngOnInit() {
     this.getUsuarios();
-  }
-
-  // Navegación
-  goTo(url: string) {
-    this.router.navigateByUrl(url);
   }
 
   // Control del modal
@@ -87,11 +77,6 @@ export class UsuariosPage implements OnInit {
       }
     }
   }
-
-  // private crearUsuario() { ... } // Removed as per instructions
-
-  // ... (keep toggleMenu, verDetalles)
-
 
   toggleMenu(usuario: Usuario) {
     this.usuarioSeleccionado = this.usuarioSeleccionado?.id === usuario.id ? null : usuario;
