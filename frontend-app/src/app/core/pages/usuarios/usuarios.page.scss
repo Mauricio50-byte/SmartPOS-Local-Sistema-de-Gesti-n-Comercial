@@ -1,0 +1,277 @@
+// Variables CSS del dashboard
+:root {
+  --brand-teal: #0d9488;
+  --brand-teal-dark: #084b4b;
+  --brand-teal-light: #0d948810;
+  --brand-teal-contrast: #ffffff;
+}
+
+// Sidebar
+.sidebar {
+  --background: var(--brand-teal);
+  color: var(--brand-teal-contrast);
+}
+
+.sidebar .brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 24px;
+}
+
+.sidebar .brand-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--brand-teal-dark);
+  display: grid;
+  place-items: center;
+}
+
+.sidebar .brand-icon ion-icon {
+  color: var(--brand-teal-contrast);
+  font-size: 24px;
+}
+
+.sidebar .brand-name {
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.sidebar ion-item {
+  --color: var(--brand-teal-contrast);
+  --background: transparent;
+  --border-radius: 12px;
+  margin: 0 16px;
+}
+
+.sidebar ion-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.sidebar ion-item.active {
+  --background: rgba(255, 255, 255, 0.18);
+}
+
+// Contenido principal
+.main-content {
+  --background: #f7fafb;
+}
+
+.topbar ion-toolbar {
+  --background: #fff;
+  --color: #333;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.topbar ion-title {
+  font-weight: 600;
+  font-size: 24px;
+}
+
+.topbar ion-button {
+  --background: #1976d2;
+  --background-hover: #1565c0;
+  --border-radius: 8px;
+  font-weight: 500;
+  text-transform: none;
+}
+
+// Contenedor de usuarios
+.usuarios-container {
+  padding: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+// Grid de usuarios
+.usuarios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+// Tarjeta de usuario
+.usuario-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+  border: 1px solid #e5e7eb;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+  }
+}
+
+// Avatar circular
+.usuario-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0d9488 0%, #0a7c7c 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  ion-icon {
+    font-size: 48px;
+    color: white;
+  }
+
+  &.trabajador {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  }
+}
+
+// Información del usuario
+.usuario-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.usuario-nombre {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Estado del usuario
+.usuario-status {
+  display: flex;
+  align-items: center;
+}
+
+.badge {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+
+  &.activo {
+    background-color: #10b981;
+    color: white;
+  }
+
+  &.inactivo {
+    background-color: #ef4444;
+    color: white;
+  }
+}
+
+// Estado vacío
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: #6b7280;
+
+  ion-icon {
+    font-size: 64px;
+    color: #d1d5db;
+    margin-bottom: 16px;
+  }
+
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    color: #374151;
+  }
+
+  p {
+    font-size: 14px;
+    margin: 0;
+  }
+}
+
+// Modal de formulario
+ion-modal {
+  --border-radius: 16px;
+  --height: auto;
+  --max-height: 90%;
+}
+
+.form-item {
+  --border-radius: 8px;
+  --border-color: #e5e7eb;
+  --background: white;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  margin-bottom: 16px;
+
+  &:hover {
+    --border-color: var(--brand-teal);
+  }
+
+  &.item-has-focus {
+    --border-color: var(--brand-teal);
+    --highlight-color-focused: var(--brand-teal);
+  }
+}
+
+.form-actions {
+  margin-top: 24px;
+
+  ion-button {
+    --background: var(--brand-teal);
+    --background-hover: #0a7c7c;
+    --background-activated: var(--brand-teal-dark);
+    --border-radius: 8px;
+    font-weight: 500;
+    height: 48px;
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .usuarios-container {
+    padding: 16px;
+  }
+
+  .usuarios-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .usuario-card {
+    padding: 16px;
+  }
+
+  .usuario-avatar {
+    width: 56px;
+    height: 56px;
+
+    ion-icon {
+      font-size: 40px;
+    }
+  }
+
+  .usuario-nombre {
+    font-size: 16px;
+  }
+
+  .topbar ion-title {
+    font-size: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .usuarios-grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  }
+}

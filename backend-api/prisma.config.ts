@@ -1,8 +1,8 @@
-import 'dotenv/config'
-import { defineConfig } from '@prisma/config'
+import 'dotenv/config';
+import { defineConfig } from '@prisma/config';
 
 const user = process.env.DB_USER || 'postgres'
-const password = encodeURIComponent(process.env.DB_PASSWORD || 'root')
+const password = encodeURIComponent(process.env.DB_PASSWORD || 'postgres')
 const host = process.env.DB_HOST || (process.env.DOCKER === 'true' ? 'sistema-pos' : 'localhost')
 const port = process.env.DB_PORT || '5432'
 const db = process.env.DB_NAME || 'sistema_pos'
