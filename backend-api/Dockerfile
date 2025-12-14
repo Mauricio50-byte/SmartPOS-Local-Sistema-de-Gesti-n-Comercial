@@ -8,4 +8,4 @@ COPY src ./src
 RUN npm run prisma:generate
 ENV NODE_ENV=production
 EXPOSE 3000
-CMD ["sh","-c","npx prisma migrate deploy && node src/servidor.js"]
+CMD ["sh","-c","node src/infraestructura/wait-for-db.js && npx prisma migrate deploy && node src/servidor.js"]
