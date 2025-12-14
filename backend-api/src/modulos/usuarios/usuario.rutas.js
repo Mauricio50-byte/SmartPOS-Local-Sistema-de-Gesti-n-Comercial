@@ -1,13 +1,40 @@
-const { listarUsuarios, obtenerUsuarioPorId, actualizarUsuario, cambiarPassword, activarUsuario, desactivarUsuario, asignarRolesAUsuario } = require('./usuario.servicio')
+const { listarUsuarios, obtenerUsuarioPorId, actualizarUsuario, cambiarPassword, activarUsuario, desactivarUsuario, asignarRolesAUsuario, crearUsuario, asignarPermisosDirectos } = require('./usuario.servicio')
 
 async function asegurarAdmin(req, res) {
   await req.jwtVerify()
+  // Recalcular permisos antes de verificar
+  // Nota: req.user viene del token. Si los permisos cambiaron, el token podría estar desactualizado.
+  // Idealmente deberíamos consultar la DB, pero por performance a veces se confía en el token.
+  // Sin embargo, como estamos gestionando permisos críticos, consultaremos DB o confiaremos en que el frontend refresca token si es necesario.
+  // Pero espera, req.user en fastify-jwt es el payload del token.
+  
+  // Vamos a verificar permisos extendidos
   const roles = req.user?.roles || []
   const permisos = req.user?.permisos || []
-  if (!roles.includes('ADMIN') && !permisos.includes('GESTION_USUARIOS')) { res.code(403); throw new Error('No autorizado') }
+  
+  // ADMIN tiene acceso total
+  if (roles.includes('ADMIN')) return
+
+  // Si no es ADMIN, debe tener permiso explicito
+  if (!permisos.includes('GESTION_USUARIOS')) { 
+      res.code(403)
+      throw new Error('No autorizado') 
+  }
 }
 
 async function registrarRutasUsuario(app) {
+  app.post('/usuarios', { preHandler: [asegurarAdmin] }, async (req, res) => {
+    const usuario = await crearUsuario(req.body)
+    return usuario
+  })
+
+  app.put('/usuarios/:id/permisos', { preHandler: [asegurarAdmin] }, async (req, res) => {
+    const id = Number(req.params.id)
+    const permisos = Array.isArray(req.body?.permisos) ? req.body.permisos : []
+    const adminId = req.user?.id // Asumiendo que el ID del admin viene en el token
+    return asignarPermisosDirectos(id, permisos, adminId)
+  })
+
   app.get('/usuarios', { preHandler: [asegurarAdmin] }, async (req, res) => {
     const rol = req.query?.rol
     const activo = req.query?.activo

@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController, AlertController } from '@ionic/angular';
 import { RolService } from '../../../core/services/rol.service';
 import { UsuarioService } from '../../../core/services/usuario.service';
 import { Rol, Usuario } from '../../../core/models';
@@ -15,18 +15,32 @@ export class PermissionsModalComponent implements OnInit {
 
   roles: Rol[] = [];
   selectedRoles: string[] = [];
+  
+  // Lista maestra de permisos disponibles en el sistema (idealmente vendría de un servicio)
+  // Por simplicidad, los extraemos de los roles cargados o los hardcodeamos
+  availablePermissions: string[] = [
+    'GESTION_USUARIOS', 'CREAR_ROL', 'EDITAR_ROL', 'ASIGNAR_PERMISOS', 
+    'VENDER', 'GESTION_INVENTARIO', 'GESTION_CLIENTES', 'VER_REPORTES'
+  ];
+  
+  // Permisos asignados directamente (no por rol)
+  directPermissions: string[] = [];
+  
   loading = false;
+  activeTab: 'roles' | 'permisos' = 'roles';
 
   constructor(
     private modalController: ModalController,
+    private alertController: AlertController,
     private rolService: RolService,
     private usuarioService: UsuarioService
   ) {}
 
   ngOnInit() {
     this.loadRoles();
-    if (this.usuario && this.usuario.roles) {
-      this.selectedRoles = [...this.usuario.roles];
+    if (this.usuario) {
+      this.selectedRoles = this.usuario.roles ? [...this.usuario.roles] : [];
+      this.directPermissions = this.usuario.permisosDirectos ? [...this.usuario.permisosDirectos] : [];
     }
   }
 
@@ -57,26 +71,85 @@ export class PermissionsModalComponent implements OnInit {
     return this.selectedRoles.includes(roleName);
   }
 
+  toggleDirectPermission(permiso: string) {
+    const index = this.directPermissions.indexOf(permiso);
+    if (index > -1) {
+      this.directPermissions.splice(index, 1);
+    } else {
+      this.directPermissions.push(permiso);
+    }
+  }
+
+  isPermissionDirect(permiso: string): boolean {
+    return this.directPermissions.includes(permiso);
+  }
+
+  isPermissionInherited(permiso: string): boolean {
+    // Check if permission is granted by any selected role
+    for (const roleName of this.selectedRoles) {
+      const role = this.roles.find(r => r.nombre === roleName);
+      if (role && role.permisos) {
+        if (role.permisos.some((p: any) => p.permiso.clave === permiso)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   dismiss() {
     this.modalController.dismiss();
   }
 
-  save() {
+  async save() {
     if (!this.usuario) return;
 
+    // Confirm critical changes if permissions are being removed or admin role removed
+    const isRemovingAdmin = this.usuario.roles?.includes('ADMIN') && !this.selectedRoles.includes('ADMIN');
+    
+    if (isRemovingAdmin) {
+      const alert = await this.alertController.create({
+        header: 'Confirmación Crítica',
+        message: 'Estás a punto de quitar el rol de ADMINISTRADOR a este usuario. ¿Estás seguro? Esta acción restringirá severamente su acceso.',
+        buttons: [
+          { text: 'Cancelar', role: 'cancel' },
+          { 
+            text: 'Sí, quitar rol', 
+            handler: () => this.executeSave() 
+          }
+        ]
+      });
+      await alert.present();
+    } else {
+      this.executeSave();
+    }
+  }
+
+  executeSave() {
     this.loading = true;
+    
+    // Save roles
     this.usuarioService.asignarRoles(this.usuario.id, this.selectedRoles).subscribe({
       next: () => {
-        this.loading = false;
-        this.modalController.dismiss({
-          updated: true,
-          roles: this.selectedRoles
+        // Save direct permissions
+        this.usuarioService.asignarPermisosDirectos(this.usuario.id, this.directPermissions).subscribe({
+          next: () => {
+            this.loading = false;
+            this.modalController.dismiss({
+              updated: true,
+              roles: this.selectedRoles,
+              permisos: this.directPermissions
+            });
+          },
+          error: (err) => {
+             console.error('Error saving permissions', err);
+             this.loading = false;
+          }
         });
       },
       error: (error) => {
         console.error('Error assigning roles', error);
         this.loading = false;
-        // Handle error (show toast/alert)
       }
     });
   }

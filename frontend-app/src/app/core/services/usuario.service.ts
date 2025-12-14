@@ -40,6 +40,15 @@ export class UsuarioService {
   }
 
   /**
+   * Crea un nuevo usuario.
+   * @param usuario El objeto de usuario a crear.
+   * @returns Un Observable con el usuario creado.
+   */
+  createUsuario(usuario: Partial<Usuario> & { password?: string }): Observable<Usuario> {
+    return this.http.post<Usuario>(this.apiUrl, usuario);
+  }
+
+  /**
    * Actualizar un usuario existente.
    * @param id El ID del usuario a actualizar.
    * @param usuario El objeto de usuario con los datos actualizados.
@@ -81,5 +90,14 @@ export class UsuarioService {
    */
   asignarRoles(id: number, roles: string[]): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}/roles`, { roles });
+  }
+
+  /**
+   * Asigna permisos directos a un usuario.
+   * @param id El ID del usuario.
+   * @param permisos Un arreglo con las claves de los permisos a asignar.
+   */
+  asignarPermisosDirectos(id: number, permisos: string[]): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}/permisos`, { permisos });
   }
 }

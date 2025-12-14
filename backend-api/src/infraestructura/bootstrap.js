@@ -28,7 +28,13 @@ async function asegurarPermisosYAdmin() {
     create: { nombre: 'ADMIN' }
   })
 
-  const permisos = await prisma.permiso.findMany({ where: { clave: { in: claves } } })
+  await prisma.rol.upsert({
+    where: { nombre: 'TRABAJADOR' },
+    update: {},
+    create: { nombre: 'TRABAJADOR' }
+  })
+
+  const permisos = await prisma.permiso.findMany({})
   const existentes = await prisma.rolPermiso.findMany({ where: { rolId: adminRol.id } })
   const ya = new Set(existentes.map(rp => `${rp.rolId}-${rp.permisoId}`))
   for (const p of permisos) {

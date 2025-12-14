@@ -27,7 +27,7 @@ export class UsersComponent implements OnInit {
     this.formgroup = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3)]],
       correo: ['', [Validators.required, Validators.email]],
-      rol: ['trabajador', Validators.required],
+      rol: ['TRABAJADOR', Validators.required],
       passwordHash: ['', [Validators.required, Validators.minLength(6)]],
       activo: [true, Validators.required]
     });
@@ -46,7 +46,7 @@ export class UsersComponent implements OnInit {
   cerrarFormulario() {
     this.mostrarFormulario = false;
     this.formgroup.reset({
-      rol: 'trabajador',
+      rol: 'TRABAJADOR',
       activo: true
     });
     // Restore password validation for create mode
@@ -75,7 +75,25 @@ export class UsersComponent implements OnInit {
         this.updateUsuario(this.usuarioSeleccionado.id, this.formgroup.value);
       } else {
         // We are creating
-        this.mostrarAlerta('Aviso', 'La creación de usuarios no está implementada en este entorno.');
+        const formData = this.formgroup.value;
+        const nuevoUsuario = {
+          ...formData,
+          password: formData.passwordHash // Send raw password as 'password'
+        };
+        delete nuevoUsuario.passwordHash; // Remove the field name used in form
+
+        this.usuarioService.createUsuario(nuevoUsuario).subscribe({
+          next: (usuario: Usuario) => {
+            console.log('Usuario creado', usuario);
+            this.getUsuarios();
+            this.cerrarFormulario();
+            this.mostrarAlerta('Éxito', 'Usuario creado correctamente');
+          },
+          error: (error: any) => {
+            console.error('Error creando usuario', error);
+            this.mostrarAlerta('Error', 'No se pudo crear el usuario. ' + (error.error?.message || error.message || ''));
+          }
+        });
       }
     }
   }
@@ -98,7 +116,7 @@ export class UsersComponent implements OnInit {
     this.formgroup.patchValue({
       nombre: usuario.nombre,
       correo: usuario.correo,
-      rol: usuario.roles && usuario.roles.length > 0 ? usuario.roles[0] : 'trabajador',
+      rol: usuario.roles && usuario.roles.length > 0 ? usuario.roles[0] : 'TRABAJADOR',
       activo: usuario.activo
     });
     // Password is not updated here, so validation is not required for edit mode.

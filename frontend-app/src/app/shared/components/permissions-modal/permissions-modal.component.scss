@@ -17,7 +17,7 @@
   }
 }
 
-.roles-section {
+.roles-section, .permisos-section {
   h4 {
     margin: 0 0 8px;
     font-size: 16px;
@@ -28,6 +28,18 @@
   .helper-text {
     margin: 0 0 16px;
     color: #6b7280;
+    font-size: 14px;
+  }
+}
+
+.inherited-text {
+  color: #059669; /* Green to indicate it's active via inheritance */
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+  
+  ion-icon {
     font-size: 14px;
   }
 }
@@ -44,6 +56,23 @@ ion-item {
   
   p {
     font-size: 13px;
+  }
+
+  .permisos-list {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+
+    .permiso-chip {
+      margin: 0;
+      height: 20px;
+      font-size: 10px;
+      
+      ion-label {
+        font-weight: 500;
+      }
+    }
   }
 }
 

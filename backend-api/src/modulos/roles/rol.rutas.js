@@ -1,7 +1,22 @@
 const { listarRoles, crearRol, actualizarRol } = require('./rol.servicio')
 
 async function registrarRutasRol(app) {
-  app.get('/roles', { preHandler: [app.requierePermiso('CREAR_ROL')] }, async () => {
+  // Permitir listar roles si se tiene permiso de crear roles, editar roles O gestionar usuarios
+  app.get('/roles', { 
+    preHandler: [async (req, res) => {
+      await req.jwtVerify()
+      const permisos = req.user?.permisos || []
+      const roles = req.user?.roles || []
+      const tienePermiso = permisos.includes('CREAR_ROL') || 
+                           permisos.includes('EDITAR_ROL') || 
+                           permisos.includes('GESTION_USUARIOS') ||
+                           roles.includes('ADMIN')
+      if (!tienePermiso) {
+        res.code(403)
+        throw new Error('No autorizado')
+      }
+    }] 
+  }, async () => {
     return listarRoles()
   })
 

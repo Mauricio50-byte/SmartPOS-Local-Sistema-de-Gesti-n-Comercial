@@ -14,7 +14,7 @@
   <div class="usuarios-grid">
     <div *ngFor="let usuario of usuarios" class="usuario-card">
       <div class="card-header">
-        <div class="usuario-avatar" [class.admin]="usuario.roles && usuario.roles.includes('administrador')" [class.trabajador]="usuario.roles && usuario.roles.includes('trabajador')">
+        <div class="usuario-avatar" [class.admin]="usuario.roles && usuario.roles.includes('ADMIN')" [class.trabajador]="usuario.roles && usuario.roles.includes('TRABAJADOR')">
           <span class="avatar-initial">{{ (usuario.nombre || 'U') | slice:0:1 | uppercase }}</span>
         </div>
         <div class="status-badge" [class.activo]="usuario.activo" [class.inactivo]="!usuario.activo">
@@ -111,8 +111,8 @@
           <ion-item class="form-item">
             <ion-label position="stacked">Rol Principal</ion-label>
             <ion-select formControlName="rol" placeholder="Seleccionar rol">
-              <ion-select-option value="administrador">Administrador</ion-select-option>
-              <ion-select-option value="trabajador">Trabajador</ion-select-option>
+              <ion-select-option value="ADMIN">Administrador</ion-select-option>
+              <ion-select-option value="TRABAJADOR">Trabajador</ion-select-option>
             </ion-select>
             <ion-note slot="helper">Este rol define el acceso base del usuario.</ion-note>
           </ion-item>

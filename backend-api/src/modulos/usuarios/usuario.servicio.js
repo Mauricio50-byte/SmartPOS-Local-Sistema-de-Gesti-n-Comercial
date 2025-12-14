@@ -26,11 +26,20 @@ async function obtenerUsuarioPorId(id) {
       correo: true,
       activo: true,
       creadoEn: true,
-      roles: { select: { rol: { select: { nombre: true } } } }
+      roles: { select: { rol: { select: { nombre: true, permisos: { select: { permiso: { select: { clave: true } } } } } } } },
+      permisos: { select: { permiso: { select: { clave: true } } } }
     }
   })
   if (usuario) {
-    usuario.roles = usuario.roles.map(r => r.rol.nombre)
+    const rolesNombres = usuario.roles.map(r => r.rol.nombre)
+    // Flatten permissions from roles
+    const permisosRoles = usuario.roles.flatMap(r => r.rol.permisos.map(p => p.permiso.clave))
+    // Flatten direct permissions
+    const permisosDirectos = usuario.permisos.map(p => p.permiso.clave)
+    
+    usuario.roles = rolesNombres
+    usuario.permisos = [...new Set([...permisosRoles, ...permisosDirectos])]
+    usuario.permisosDirectos = permisosDirectos // To distinguish in frontend if needed
   }
   return usuario
 }
@@ -78,4 +87,66 @@ async function asignarRolesAUsuario(id, roles = []) {
   return { id }
 }
 
-module.exports = { listarUsuarios, obtenerUsuarioPorId, actualizarUsuario, cambiarPassword, activarUsuario, desactivarUsuario, asignarRolesAUsuario }
+async function crearUsuario(datos) {
+  const passwordHash = await bcrypt.hash(datos.password, 10)
+  
+  // Create user
+  const usuario = await prisma.usuario.create({
+    data: {
+      nombre: datos.nombre,
+      correo: datos.correo,
+      passwordHash,
+      activo: datos.activo !== undefined ? datos.activo : true
+    }
+  })
+
+  // Assign role if provided
+  if (datos.rol) {
+    const rol = await prisma.rol.findUnique({ where: { nombre: datos.rol } })
+    if (rol) {
+      await prisma.usuarioRol.create({
+        data: {
+          usuarioId: usuario.id,
+          rolId: rol.id
+        }
+      })
+    } else if (datos.rol === 'trabajador') {
+        // Create 'trabajador' role if it doesn't exist? 
+        // Better to assume roles should exist. 
+        // But for safety let's try to find 'TRABAJADOR' (uppercase usually) or whatever the convention is.
+        // bootstrap.js created 'ADMIN'. Let's see if there are other roles.
+        // For now, let's just try to find by name.
+    }
+  }
+
+  return obtenerUsuarioPorId(usuario.id)
+}
+
+async function asignarPermisosDirectos(id, permisos = [], adminId = null) {
+  // Clear existing direct permissions
+  await prisma.usuarioPermiso.deleteMany({ where: { usuarioId: id } })
+  
+  if (Array.isArray(permisos) && permisos.length > 0) {
+    const permsDb = await prisma.permiso.findMany({ where: { clave: { in: permisos } } })
+    for (const p of permsDb) {
+      await prisma.usuarioPermiso.create({
+        data: { usuarioId: id, permisoId: p.id }
+      })
+    }
+  }
+
+  // Log audit
+  if (adminId) {
+    await prisma.auditLog.create({
+      data: {
+        usuarioId: adminId,
+        accion: 'ASIGNAR_PERMISOS_USUARIO',
+        detalle: `Usuario ID: ${id}, Permisos: ${permisos.join(', ')}`
+      }
+    })
+  }
+
+  return obtenerUsuarioPorId(id)
+}
+
+module.exports = { listarUsuarios, obtenerUsuarioPorId, actualizarUsuario, cambiarPassword, activarUsuario, desactivarUsuario, asignarRolesAUsuario, crearUsuario, asignarPermisosDirectos }

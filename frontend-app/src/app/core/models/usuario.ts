@@ -13,5 +13,7 @@ export interface Usuario {
   activo: boolean;
   creadoEn?: string;
   roles?: string[];
+  permisos?: string[]; // Permisos efectivos (Rol + Directos)
+  permisosDirectos?: string[]; // Solo permisos asignados directamente
 }
 
