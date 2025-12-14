@@ -39,9 +39,26 @@ export class PermissionsModalComponent implements OnInit {
   ngOnInit() {
     this.loadRoles();
     if (this.usuario) {
-      this.selectedRoles = this.usuario.roles ? [...this.usuario.roles] : [];
-      this.directPermissions = this.usuario.permisosDirectos ? [...this.usuario.permisosDirectos] : [];
+      this.loadUserPermissions();
     }
+  }
+
+  loadUserPermissions() {
+    this.loading = true;
+    this.usuarioService.getUsuario(this.usuario.id).subscribe({
+      next: (fullUsuario) => {
+        this.selectedRoles = fullUsuario.roles ? [...fullUsuario.roles] : [];
+        this.directPermissions = fullUsuario.permisosDirectos ? [...fullUsuario.permisosDirectos] : [];
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading user details', error);
+        // Fallback to input data if fetch fails, though likely incomplete
+        this.selectedRoles = this.usuario.roles ? [...this.usuario.roles] : [];
+        this.directPermissions = this.usuario.permisosDirectos ? [...this.usuario.permisosDirectos] : [];
+        this.loading = false;
+      }
+    });
   }
 
   loadRoles() {

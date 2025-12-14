@@ -29,33 +29,69 @@ ion-split-pane {
 
 .sidebar .brand { 
   display: flex; 
-  flex-direction: column; 
   align-items: center; 
-  gap: 4px; 
-  padding: 8px 0; 
+  gap: 12px; 
+  padding: 24px 16px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
 .sidebar .brand-icon { 
-  width: 36px; 
-  height: 36px; 
-  border-radius: 10px; 
-  background: #084b4b; 
+  min-width: 40px; 
+  width: 40px; 
+  height: 40px; 
+  border-radius: 12px; 
+  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 100%);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   display: grid; 
   place-items: center; 
+  transition: transform 0.3s ease;
+}
+
+.sidebar .brand:hover .brand-icon {
+  transform: scale(1.05) rotate(-5deg);
+  background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%);
 }
 
 .sidebar .brand-icon ion-icon { 
   color: var(--brand-teal-contrast); 
-  font-size: 24px; 
+  font-size: 22px; 
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.sidebar .brand-info {
+  display: none; /* Hidden by default on small screens/collapsed */
+  flex-direction: column;
+  opacity: 0;
+  animation: fadeIn 0.3s forwards;
 }
 
 .sidebar .brand-name { 
-  font-weight: 700; 
-  display: none; 
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 800; 
+  font-size: 1.1rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  background: linear-gradient(to right, #ffffff, #e0f2fe);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 .sidebar .brand-sub {
-  display: none;
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: rgba(255,255,255,0.7);
+  margin-top: 2px;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
 }
 
 .sidebar ion-list {
@@ -182,13 +218,11 @@ ion-split-pane {
     --side-max-width: 220px;
   }
   .sidebar .brand {
-    align-items: flex-start;
     padding: var(--space-24);
-    gap: var(--space-8);
+    gap: 12px;
   }
-  .sidebar .brand-name,
-  .sidebar .brand-sub {
-    display: block;
+  .sidebar .brand-info {
+    display: flex;
   }
   .sidebar ion-item {
     justify-content: flex-start;

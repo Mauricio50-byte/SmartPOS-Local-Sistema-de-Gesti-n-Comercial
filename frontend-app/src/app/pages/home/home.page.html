@@ -2,9 +2,13 @@
   <ion-menu contentId="home-content" type="overlay">
     <ion-content class="sidebar">
       <div class="brand">
-        <div class="brand-icon"><ion-icon name="bag-handle-outline"></ion-icon></div>
-        <div class="brand-name">SMARTPOS</div>
-        <div class="brand-sub">Negocio Inteligente</div>
+        <div class="brand-icon">
+          <ion-icon name="storefront"></ion-icon>
+        </div>
+        <div class="brand-info">
+          <div class="brand-name">SMARTPOS</div>
+          <div class="brand-sub">PRO</div>
+        </div>
       </div>
       <ion-list lines="none">
         <ion-item button [class.active]="currentView === 'dashboard'" (click)="setView('dashboard')" title="Inicio" aria-label="Inicio">
