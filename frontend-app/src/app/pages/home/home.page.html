@@ -15,13 +15,13 @@
           <ion-icon slot="start" name="home-outline"></ion-icon>
           <ion-label>Easthotto</ion-label>
         </ion-item>
-        <ion-item button title="Ventas" aria-label="Ventas">
-          <ion-icon slot="start" name="cart-outline"></ion-icon>
-          <ion-label>Ventas</ion-label>
-        </ion-item>
-        <ion-item button title="Productos" aria-label="Productos">
+        <ion-item button [class.active]="currentView === 'productos'" (click)="setView('productos')" title="Productos" aria-label="Productos">
           <ion-icon slot="start" name="cube-outline"></ion-icon>
           <ion-label>Productos</ion-label>
+        </ion-item>
+        <ion-item button [class.active]="currentView === 'ventas'" (click)="setView('ventas')" title="Ventas" aria-label="Ventas">
+          <ion-icon slot="start" name="cart-outline"></ion-icon>
+          <ion-label>Ventas</ion-label>
         </ion-item>
         <ion-item button [class.active]="currentView === 'users'" (click)="setView('users')" title="Usuarios" aria-label="Usuarios">
           <ion-icon slot="start" name="people-circle-outline"></ion-icon>
@@ -41,7 +41,7 @@
 
   <ion-content id="home-content" [fullscreen]="true" class="dashboard">
     <ion-header class="topbar" collapse="fade">
-      <ion-toolbar>
+      <ion-toolbar style="--background: #134e4a; --color: white;"> <!-- Dark teal/green hardcoded for safety against 'dark' attribute -->
         <ion-buttons slot="start">
           <ion-menu-button></ion-menu-button>
         </ion-buttons>
@@ -56,6 +56,8 @@
     <div class="content-container">
       <app-dashboard *ngIf="currentView === 'dashboard'"></app-dashboard>
       <app-users *ngIf="currentView === 'users'"></app-users>
+      <app-ventas *ngIf="currentView === 'ventas'"></app-ventas>
+      <app-productos *ngIf="currentView === 'productos'"></app-productos>
     </div>
 
     <div class="mobile-tabbar" role="tablist" aria-label="Navegación inferior">

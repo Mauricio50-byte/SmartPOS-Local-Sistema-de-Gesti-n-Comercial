@@ -31,12 +31,14 @@
     margin: 0;
     font-size: 28px;
     font-weight: 700;
-    color: var(--text-primary);
+    color: #111827 !important;
+    /* Force black */
   }
 
   .subtitle {
     margin: 4px 0 0;
-    color: var(--text-secondary);
+    color: #4b5563 !important;
+    /* Force dark grey */
     font-size: 15px;
   }
 
@@ -131,13 +133,15 @@
     margin: 0 0 4px;
     font-size: 18px;
     font-weight: 600;
-    color: var(--text-primary);
+    color: #111827 !important;
+    /* Force dark text */
   }
 
   .usuario-email {
     margin: 0 0 16px;
     font-size: 14px;
-    color: var(--text-secondary);
+    color: #6b7280 !important;
+    /* Force grey text */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -225,14 +229,14 @@
   .usuarios-container {
     padding: 16px;
   }
-  
+
   .usuarios-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .card-actions {
     justify-content: space-between;
-    
+
     ion-button {
       flex: 1;
     }

@@ -1,0 +1,61 @@
+<div class="sales-wrapper">
+  <div class="sales-container">
+    <!-- Left Panel: Product Catalog -->
+    <div class="catalog-panel">
+        <div class="search-bar">
+            <ion-searchbar placeholder="Buscar productos" [(ngModel)]="searchTerm" (ionInput)="onSearch($event)"></ion-searchbar>
+        </div>
+        
+        <div class="product-grid" *ngIf="filteredProductos.length > 0; else noProducts">
+            <app-product-card 
+                *ngFor="let product of filteredProductos" 
+                [product]="product" 
+                (add)="addToCart($event)">
+            </app-product-card>
+        </div>
+        
+        <ng-template #noProducts>
+            <div class="empty-state">
+                <p>No se encontraron productos.</p>
+            </div>
+        </ng-template>
+    </div>
+
+    <!-- Right Panel: Cart / Ticket -->
+    <div class="ticket-panel">
+        <div class="ticket-header">
+            <span>Producto</span>
+            <span>Total</span>
+        </div>
+        
+        <div class="cart-list">
+            <app-cart-item 
+                *ngFor="let control of detalles.controls; let i = index" 
+                [item]="control.value" 
+                (remove)="removeFromCart(i)" 
+                (updateQuantity)="updateQuantity($event, i)">
+            </app-cart-item>
+            
+            <div class="empty-cart" *ngIf="detalles.length === 0">
+                <p>No hay productos</p>
+            </div>
+        </div>
+        
+        <div class="ticket-footer">
+            <div class="subtotal">
+                <span>Subtotal</span>
+                <span class="amount">{{ totalControl.value | currency:'USD':'symbol':'1.2-2' }}</span>
+            </div>
+            
+            <app-payment-selector 
+                [selectedMethod]="paymentMethodControl.value" 
+                (selectedMethodChange)="setPaymentMethod($event)">
+            </app-payment-selector>
+            
+            <ion-button expand="block" color="success" class="pay-button" (click)="pagar()" [disabled]="detalles.length === 0">
+                Pagar
+            </ion-button>
+        </div>
+    </div>
+  </div>
+</div>

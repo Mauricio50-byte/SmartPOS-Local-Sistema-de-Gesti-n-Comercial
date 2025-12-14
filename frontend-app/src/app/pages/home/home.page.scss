@@ -11,9 +11,9 @@
   --shadow-1: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.sidebar { 
-  --background: var(--brand-teal); 
-  color: var(--brand-teal-contrast); 
+.sidebar {
+  --background: var(--brand-teal);
+  color: var(--brand-teal-contrast);
   background: var(--brand-teal);
 }
 
@@ -27,58 +27,60 @@ ion-split-pane {
   --side-max-width: 64px;
 }
 
-.sidebar .brand { 
-  display: flex; 
-  align-items: center; 
-  gap: 12px; 
+.sidebar .brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   padding: 24px 16px;
   margin-bottom: 8px;
   overflow: hidden;
   transition: all 0.3s ease;
 }
 
-.sidebar .brand-icon { 
-  min-width: 40px; 
-  width: 40px; 
-  height: 40px; 
-  border-radius: 12px; 
-  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 100%);
+.sidebar .brand-icon {
+  min-width: 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.05) 100%);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.1);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  display: grid; 
-  place-items: center; 
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: grid;
+  place-items: center;
   transition: transform 0.3s ease;
 }
 
 .sidebar .brand:hover .brand-icon {
   transform: scale(1.05) rotate(-5deg);
-  background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.1) 100%);
 }
 
-.sidebar .brand-icon ion-icon { 
-  color: var(--brand-teal-contrast); 
-  font-size: 22px; 
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+.sidebar .brand-icon ion-icon {
+  color: var(--brand-teal-contrast);
+  font-size: 22px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .sidebar .brand-info {
-  display: none; /* Hidden by default on small screens/collapsed */
+  display: none;
+  /* Hidden by default on small screens/collapsed */
   flex-direction: column;
   opacity: 0;
   animation: fadeIn 0.3s forwards;
 }
 
-.sidebar .brand-name { 
+.sidebar .brand-name {
   font-family: 'Inter', system-ui, sans-serif;
-  font-weight: 800; 
+  font-weight: 800;
   font-size: 1.1rem;
   line-height: 1.1;
   letter-spacing: -0.02em;
   background: linear-gradient(to right, #ffffff, #e0f2fe);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar .brand-sub {
@@ -86,12 +88,14 @@ ion-split-pane {
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.15em;
-  color: rgba(255,255,255,0.7);
+  color: rgba(255, 255, 255, 0.7);
   margin-top: 2px;
 }
 
 @keyframes fadeIn {
-  to { opacity: 1; }
+  to {
+    opacity: 1;
+  }
 }
 
 .sidebar ion-list {
@@ -101,10 +105,10 @@ ion-split-pane {
   background: transparent;
 }
 
-.sidebar ion-item { 
-  --color: var(--brand-teal-contrast); 
-  --background: transparent; 
-  --border-radius: var(--radius-12); 
+.sidebar ion-item {
+  --color: var(--brand-teal-contrast);
+  --background: transparent;
+  --border-radius: var(--radius-12);
   --padding-start: 0;
   --inner-padding-end: 0;
   --min-height: 38px;
@@ -116,95 +120,98 @@ ion-split-pane {
 .sidebar ion-item ion-icon {
   font-size: 18px;
   color: var(--brand-teal-contrast);
-  background: rgba(255,255,255,0.12);
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 10px;
   padding: 6px;
 }
 
 .sidebar ion-item:hover ion-icon {
-  background: rgba(255,255,255,0.22);
+  background: rgba(255, 255, 255, 0.22);
 }
 
 .sidebar ion-item.active ion-icon {
-  background: rgba(255,255,255,0.28);
+  background: rgba(13, 148, 136, 0.1);
+  color: var(--brand-teal);
 }
 
 .sidebar ion-item ion-label {
   display: none;
 }
 
-.sidebar ion-item:hover { 
-  background: rgba(255,255,255,0.12); 
+.sidebar ion-item:hover {
+  background: rgba(255, 255, 255, 0.12);
 }
 
-.sidebar ion-item.active { 
-  --background: rgba(255,255,255,0.18); 
+.sidebar ion-item.active {
+  --background: #ffffff;
+  --color: var(--brand-teal);
 }
 
-.sidebar ion-item.store { 
-  margin: 0; 
+.sidebar ion-item.store {
+  margin: 0;
 }
 
-.dashboard { 
-  --background: var(--ion-color-light); 
-  padding-bottom: 84px; 
+.dashboard {
+  --background: var(--ion-color-light);
+  padding-bottom: 84px;
 }
 
-.topbar ion-toolbar { 
-  --background: #fff; 
-  --color: var(--ion-color-dark); 
-  box-shadow: var(--shadow-1); 
+.topbar ion-toolbar {
+  --background: #fff;
+  --color: var(--ion-color-dark);
+  box-shadow: var(--shadow-1);
 }
 
-.topbar ion-title { 
-  font-weight: 600; 
+.topbar ion-title {
+  font-weight: 600;
 }
 
-.mobile-tabbar { 
-  position: fixed; 
-  left: 0; 
-  right: 0; 
-  bottom: env(safe-area-inset-bottom); 
-  background: var(--brand-teal); 
-  padding: 8px 12px; 
-  box-shadow: var(--shadow-1); 
-  display: grid; 
-  grid-template-columns: repeat(4, 1fr); 
-  gap: 8px; 
-  z-index: 10; 
+.mobile-tabbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: env(safe-area-inset-bottom);
+  background: var(--brand-teal);
+  padding: 8px 12px;
+  box-shadow: var(--shadow-1);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  z-index: 10;
 }
 
-.mobile-tabbar .item { 
-  display: flex; 
-  flex-direction: column; 
-  align-items: center; 
-  justify-content: center; 
-  color: var(--brand-teal-contrast); 
-  background: transparent; 
-  border: none; 
-  border-radius: var(--radius-12); 
-  padding: 6px 0; 
+.mobile-tabbar .item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--brand-teal-contrast);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-12);
+  padding: 6px 0;
 }
 
-.mobile-tabbar .item.active { 
-  background: rgba(255,255,255,0.18); 
+.mobile-tabbar .item.active {
+  background: #ffffff;
+  color: var(--brand-teal);
 }
 
-.mobile-tabbar ion-icon { 
-  font-size: 20px; 
+.mobile-tabbar ion-icon {
+  font-size: 20px;
 }
 
-.mobile-tabbar span { 
-  font-size: 12px; 
-  font-weight: 600; 
+.mobile-tabbar span {
+  font-size: 12px;
+  font-weight: 600;
 }
 
 // Media queries para responsive shell elements
 @media (min-width: 768px) {
-  .mobile-tabbar { 
-    display: none; 
+  .mobile-tabbar {
+    display: none;
   }
-  
+
   .dashboard {
     padding-bottom: 0;
   }
@@ -213,33 +220,52 @@ ion-split-pane {
     --width: 220px;
     --min-width: 220px;
   }
+
   ion-split-pane {
     --side-width: 220px;
     --side-max-width: 220px;
   }
+
   .sidebar .brand {
     padding: var(--space-24);
     gap: 12px;
   }
+
   .sidebar .brand-info {
     display: flex;
   }
+
   .sidebar ion-item {
     justify-content: flex-start;
     --padding-start: var(--space-12);
     --inner-padding-end: var(--space-12);
     --min-height: 44px;
   }
+
   .sidebar ion-item ion-icon {
     margin-right: var(--space-12);
   }
+
   .sidebar ion-item ion-label {
     display: block;
     color: var(--brand-teal-contrast);
     font-weight: 600;
   }
+
   .sidebar ion-item.active {
-    --background: rgba(255,255,255,0.18);
+    --background: #ffffff;
+    --color: var(--brand-teal);
     border-radius: var(--radius-12);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .sidebar ion-item.active ion-icon {
+    background: rgba(13, 148, 136, 0.1);
+    color: var(--brand-teal);
+  }
+
+  .sidebar ion-item.active ion-label {
+    color: var(--brand-teal);
+    font-weight: 700;
   }
 }

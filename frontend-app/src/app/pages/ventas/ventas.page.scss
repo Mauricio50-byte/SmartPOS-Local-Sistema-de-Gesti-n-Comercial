@@ -1,0 +1,117 @@
+.sales-wrapper {
+    height: 100%;
+    width: 100%;
+    background: #f4f5f8;
+    position: relative;
+    overflow: hidden;
+}
+
+.sales-container {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+
+    @media (min-width: 768px) {
+        flex-direction: row;
+    }
+}
+
+.catalog-panel {
+    flex: 1;
+    /* Take remaining space */
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    background: #f4f5f8; // Light gray background
+
+    .search-bar {
+        margin-bottom: 16px;
+
+        ion-searchbar {
+            --background: white;
+            --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            padding: 0;
+            border-radius: 8px;
+        }
+    }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 12px;
+
+        @media (min-width: 768px) {
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 16px;
+        }
+    }
+
+    .empty-state {
+        text-align: center;
+        margin-top: 40px;
+        color: var(--ion-color-medium);
+    }
+}
+
+.ticket-panel {
+    background: white;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid #e0e0e0;
+
+    @media (min-width: 768px) {
+        width: 380px;
+        /* Fixed width sidebar for ticket */
+        height: 100%;
+    }
+
+    .ticket-header {
+        padding: 16px;
+        display: flex;
+        justify-content: space-between;
+        font-weight: 600;
+        border-bottom: 2px solid #f0f0f0;
+        color: var(--ion-color-dark);
+    }
+
+    .cart-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0 16px;
+        min-height: 200px;
+
+        .empty-cart {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #ccc;
+            font-size: 18px;
+        }
+    }
+
+    .ticket-footer {
+        padding: 16px;
+        border-top: 1px solid #f0f0f0;
+        background: white;
+
+        .subtotal {
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--ion-color-dark);
+            margin-bottom: 8px;
+        }
+
+        .pay-button {
+            margin-top: 24px;
+            font-weight: 600;
+            font-size: 18px;
+            height: 50px;
+            --border-radius: 8px;
+        }
+    }
+}

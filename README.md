@@ -141,8 +141,13 @@ Licencia
 
 Software propietario del autor. No se permite copia, redistribución ni modificación sin autorización expresa.
 
-Autor
+Autores
 
 Mauricio Andrés Vergara Fonseca
 Ingeniero de Sistemas — Desarrollador Full Stack / Mobile
 Barranquilla, Colombia
+
+
+Jesus David Vega Pernettj
+Ingeniero De sistemas Full stack Developer, especialista en seguridad informatica
+Barranquilla-Atlantico, colombia

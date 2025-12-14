@@ -20,7 +20,12 @@ export class VentaServices {
     return this.http.get<Venta>(`${this.apiUrl}/${id}`);
   }
 
+
+  
   crearVenta(data: any): Observable<Venta> {
     return this.http.post<Venta>(this.apiUrl, data);
   }
+
+
+
 }

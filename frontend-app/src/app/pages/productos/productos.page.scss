@@ -1,0 +1,164 @@
+.products-wrapper {
+    height: 100%;
+    width: 100%;
+    background: #f4f5f8;
+    display: flex;
+    flex-direction: column;
+}
+
+.products-header {
+    background: white;
+    padding: 10px 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    z-index: 10;
+}
+
+.products-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* TABLE STYLES */
+.search-container {
+    margin-bottom: 16px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+    ion-searchbar {
+        --background: transparent;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+}
+
+.table-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    overflow-x: auto;
+}
+
+.products-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+        padding: 12px 16px;
+        text-align: left;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    th {
+        font-weight: 600;
+        color: var(--ion-color-medium);
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        background: #fafafa;
+    }
+
+    td {
+        color: #000000;
+        /* Force black for all table data */
+        vertical-align: middle;
+    }
+
+    .low-stock {
+        color: var(--ion-color-danger);
+        font-weight: bold;
+    }
+
+    .empty-cell {
+        text-align: center;
+        padding: 30px;
+        color: var(--ion-color-medium);
+    }
+
+    .actions {
+        white-space: nowrap;
+    }
+}
+
+/* FORM STYLES */
+.gestion-view {
+    display: flex;
+    justify-content: center;
+}
+
+.form-card {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 600px;
+
+    h2 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        font-size: 1.5rem;
+        color: var(--ion-color-dark);
+        text-align: center;
+    }
+}
+
+.input-item {
+    --background: #f9fafb;
+    --color: #1f2937;
+    --padding-start: 12px;
+    --inner-padding-end: 12px;
+    margin-bottom: 16px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    --highlight-color-focused: var(--ion-color-tertiary);
+
+    ion-label {
+        color: #4b5563 !important;
+        font-weight: 500;
+        margin-bottom: 4px;
+    }
+
+    ion-input {
+        --color: #111827;
+        --placeholder-color: #9ca3af;
+    }
+}
+
+.toggle-item {
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    margin-top: 8px;
+    margin-bottom: 24px;
+}
+
+.error-msg {
+    color: var(--ion-color-danger);
+    font-size: 0.8rem;
+    margin-top: -8px;
+    margin-bottom: 12px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 16px;
+}

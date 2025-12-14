@@ -7,19 +7,23 @@ import { Component, OnInit } from '@angular/core';
   standalone: false,
 })
 export class HomePage implements OnInit {
-  currentView: 'dashboard' | 'users' = 'dashboard';
+  currentView: 'dashboard' | 'users' | 'ventas' | 'productos' = 'dashboard';
   pageTitle: string = 'Dashboard';
 
-  constructor() {}
+  constructor() { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
-  setView(view: 'dashboard' | 'users') {
+  setView(view: 'dashboard' | 'users' | 'ventas' | 'productos') {
     this.currentView = view;
     if (view === 'dashboard') {
       this.pageTitle = 'Dashboard';
     } else if (view === 'users') {
       this.pageTitle = 'Gestión de Usuarios';
+    } else if (view === 'ventas') {
+      this.pageTitle = 'Ventas';
+    } else if (view === 'productos') {
+      this.pageTitle = 'Productos';
     }
   }
 

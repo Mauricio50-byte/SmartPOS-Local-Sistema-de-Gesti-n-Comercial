@@ -1,0 +1,117 @@
+<div class="products-wrapper">
+  
+  <div class="products-header">
+      <ion-segment [value]="segment" (ionChange)="segmentChanged($event)" color="tertiary">
+          <ion-segment-button value="info">
+              <ion-label>Información de Inventario</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="gestion">
+              <ion-label>Gestión de Productos</ion-label>
+          </ion-segment-button>
+      </ion-segment>
+  </div>
+
+  <div class="products-content">
+      
+      <!-- VIEW: INFORMACION (LIST) -->
+      <div *ngIf="segment === 'info'" class="info-view fade-in">
+          
+          <div class="search-container">
+              <ion-searchbar 
+                  placeholder="Buscar por nombre..." 
+                  animated="true"
+                  debounce="500"
+                  (ionInput)="onSearch($event)">
+              </ion-searchbar>
+          </div>
+
+          <div class="table-container">
+              <table class="products-table">
+                  <thead>
+                      <tr>
+                          <th>Nombre</th>
+                          <th>Precio</th>
+                          <th>Stock</th>
+                          <th>Estado</th>
+                          <th>Acciones</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr *ngFor="let product of filteredProducts">
+                          <td>{{ product.nombre }}</td>
+                          <td>{{ product.precio | currency:'USD' }}</td>
+                          <td>
+                              <span [class.low-stock]="product.stock < 5">{{ product.stock }}</span>
+                          </td>
+                          <td>
+                              <ion-badge [color]="product.activo ? 'success' : 'medium'">
+                                  {{ product.activo ? 'Activo' : 'Inactivo' }}
+                              </ion-badge>
+                          </td>
+                          <td class="actions">
+                              <ion-button fill="clear" size="small" (click)="editProduct(product)">
+                                  <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+                              </ion-button>
+                              <ion-button fill="clear" size="small" color="danger" (click)="deleteConfirm(product)">
+                                  <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                              </ion-button>
+                          </td>
+                      </tr>
+                      <tr *ngIf="filteredProducts.length === 0">
+                          <td colspan="5" class="empty-cell">No se encontraron productos.</td>
+                      </tr>
+                  </tbody>
+              </table>
+          </div>
+      </div>
+
+      <!-- VIEW: GESTION (FORM) -->
+      <div *ngIf="segment === 'gestion'" class="gestion-view fade-in">
+          <div class="form-card">
+              <h2>{{ isEditing ? 'Editar Producto' : 'Nuevo Producto' }}</h2>
+              
+              <form [formGroup]="productForm" (ngSubmit)="saveProduct()">
+                  
+                  <ion-item class="input-item">
+                      <ion-label position="stacked">Nombre del Producto</ion-label>
+                      <ion-input formControlName="nombre" placeholder="Ej. Coca Cola"></ion-input>
+                  </ion-item>
+                  <div class="error-msg" *ngIf="productForm.get('nombre')?.touched && productForm.get('nombre')?.invalid">
+                      El nombre es requerido (min 3 caracteres).
+                  </div>
+
+                  <ion-item class="input-item">
+                      <ion-label position="stacked">Precio</ion-label>
+                      <ion-input type="number" formControlName="precio" placeholder="0.00"></ion-input>
+                  </ion-item>
+                   <div class="error-msg" *ngIf="productForm.get('precio')?.touched && productForm.get('precio')?.invalid">
+                      El precio debe ser mayor o igual a 0.
+                  </div>
+
+                  <ion-item class="input-item">
+                      <ion-label position="stacked">Stock Inicial</ion-label>
+                      <ion-input type="number" formControlName="stock" placeholder="0"></ion-input>
+                  </ion-item>
+                  <div class="error-msg" *ngIf="productForm.get('stock')?.touched && productForm.get('stock')?.invalid">
+                      El stock debe ser mayor o igual a 0.
+                  </div>
+
+                  <ion-item lines="none" class="toggle-item">
+                      <ion-label>Activo</ion-label>
+                      <ion-toggle slot="end" formControlName="activo"></ion-toggle>
+                  </ion-item>
+
+                  <div class="form-actions">
+                      <ion-button type="button" fill="outline" color="medium" (click)="resetForm()">
+                          Cancelar
+                      </ion-button>
+                      <ion-button type="submit" [disabled]="productForm.invalid">
+                          {{ isEditing ? 'Actualizar' : 'Guardar' }}
+                      </ion-button>
+                  </div>
+              </form>
+          </div>
+      </div>
+
+  </div>
+</div>
