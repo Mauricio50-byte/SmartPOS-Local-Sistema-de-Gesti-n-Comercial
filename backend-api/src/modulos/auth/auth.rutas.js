@@ -39,8 +39,43 @@ async function registrarRutasAuth(app) {
     return { id: creado.id }
   })
 
-  app.get('/auth/perfil', { preHandler: [app.autenticar] }, async (req) => {
-    return { usuario: req.user }
+  app.get('/auth/perfil', { preHandler: [app.autenticar] }, async (req, res) => {
+    // Consultar la base de datos para obtener los permisos actualizados
+    const usuario = await prisma.usuario.findUnique({
+      where: { id: req.user.id },
+      include: {
+        roles: {
+          include: {
+            rol: {
+              include: {
+                permisos: { include: { permiso: true } }
+              }
+            }
+          }
+        },
+        permisos: { include: { permiso: true } }
+      }
+    })
+
+    if (!usuario || !usuario.activo) {
+      res.code(401)
+      return { mensaje: 'Usuario no autorizado' }
+    }
+
+    const roles = usuario.roles.map(ur => ur.rol.nombre)
+    const permisosRoles = usuario.roles.flatMap(ur => ur.rol.permisos.map(rp => rp.permiso.clave))
+    const permisosDirectos = usuario.permisos.map(up => up.permiso.clave)
+    const permisos = Array.from(new Set([...permisosRoles, ...permisosDirectos]))
+
+    return {
+      usuario: {
+        id: usuario.id,
+        nombre: usuario.nombre,
+        correo: usuario.correo,
+        roles,
+        permisos
+      }
+    }
   })
 }
 

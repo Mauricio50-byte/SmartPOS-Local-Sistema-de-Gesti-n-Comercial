@@ -29,12 +29,30 @@ async function crearUsuarioConRoles({ nombre, correo, password, roles = [] }) {
 
 async function ingresar({ correo, password }) {
   const c = (correo || '').trim().toLowerCase()
-  const usuario = await prisma.usuario.findUnique({ where: { correo: c }, include: { roles: { include: { rol: { include: { permisos: { include: { permiso: true } } } } } } } })
+  // Incluir tanto los permisos del rol como los permisos directos del usuario
+  const usuario = await prisma.usuario.findUnique({ 
+    where: { correo: c }, 
+    include: { 
+      roles: { 
+        include: { 
+          rol: { 
+            include: { 
+              permisos: { include: { permiso: true } } 
+            } 
+          } 
+        } 
+      },
+      permisos: { include: { permiso: true } } // Permisos directos del usuario
+    } 
+  })
   if (!usuario || !usuario.activo) throw new Error('Credenciales inválidas')
   const ok = await bcrypt.compare(password, usuario.passwordHash)
   if (!ok) throw new Error('Credenciales inválidas')
   const roles = usuario.roles.map(ur => ur.rol.nombre)
-  const permisos = Array.from(new Set(usuario.roles.flatMap(ur => ur.rol.permisos.map(rp => rp.permiso.clave))))
+  // Combinar permisos del rol con permisos directos del usuario
+  const permisosRoles = usuario.roles.flatMap(ur => ur.rol.permisos.map(rp => rp.permiso.clave))
+  const permisosDirectos = usuario.permisos.map(up => up.permiso.clave)
+  const permisos = Array.from(new Set([...permisosRoles, ...permisosDirectos]))
   return { usuario, roles, permisos }
 }
 
