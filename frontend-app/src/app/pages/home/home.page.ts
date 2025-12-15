@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from '../../core/services/auth.service';
+import { Router } from '@angular/router';
+import { UsuarioPerfil } from '../../core/models';
 
 @Component({
   selector: 'app-home',
@@ -9,10 +12,46 @@ import { Component, OnInit } from '@angular/core';
 export class HomePage implements OnInit {
   currentView: 'dashboard' | 'users' | 'ventas' | 'productos' = 'dashboard';
   pageTitle: string = 'Dashboard';
+  currentUser: UsuarioPerfil | null = null;
 
-  constructor() { }
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.authService.getPerfil$().subscribe(user => {
+      this.currentUser = user;
+      this.checkCurrentViewAccess();
+    });
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
+
+  hasPermission(permiso: string): boolean {
+    if (!this.currentUser) return false;
+    // Admin has access to everything by default (optional, but good practice)
+    if (this.currentUser.roles && this.currentUser.roles.includes('ADMIN')) return true;
+    return this.currentUser.permisos ? this.currentUser.permisos.includes(permiso) : false;
+  }
+
+  checkCurrentViewAccess() {
+    // If user loses access to current view, switch to a safe one or dashboard
+    if (this.currentView === 'users' && !this.hasPermission('GESTION_USUARIOS')) {
+      this.currentView = 'dashboard'; // Fallback
+    }
+    if (this.currentView === 'ventas' && !this.hasPermission('VENDER')) {
+      this.currentView = 'dashboard';
+    }
+    if (this.currentView === 'productos' && !this.hasPermission('GESTION_INVENTARIO')) {
+      this.currentView = 'dashboard';
+    }
+    // Update title
+    this.setView(this.currentView);
+  }
 
   setView(view: 'dashboard' | 'users' | 'ventas' | 'productos') {
     this.currentView = view;

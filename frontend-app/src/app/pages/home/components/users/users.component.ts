@@ -4,6 +4,8 @@ import { AlertController, ModalController } from '@ionic/angular';
 import { Usuario } from '../../../../core/models';
 import { UsuarioService } from '../../../../core/services/usuario.service';
 import { PermissionsModalComponent } from '../../../../shared/components/permissions-modal/permissions-modal.component';
+import { switchMap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-users',
@@ -217,12 +219,28 @@ export class UsersComponent implements OnInit {
     });
   }
 
-  updateUsuario(id: number, usuarioData: Partial<Usuario>) {
-    this.usuarioService.updateUsuario(id, usuarioData).subscribe((usuario: Usuario) => {
-      console.log('Usuario actualizado', usuario);
-      this.getUsuarios();
-      this.cerrarFormulario();
-      this.mostrarAlerta('Éxito', 'Usuario actualizado correctamente');
+  updateUsuario(id: number, usuarioData: any) {
+    // 1. Update basic info
+    this.usuarioService.updateUsuario(id, usuarioData).pipe(
+      // 2. If role is present in form, update roles separately
+      switchMap((usuarioActualizado) => {
+        if (usuarioData.rol) {
+          // Backend expects an array of roles
+          return this.usuarioService.asignarRoles(id, [usuarioData.rol]);
+        }
+        return of(usuarioActualizado);
+      })
+    ).subscribe({
+      next: () => {
+        console.log('Usuario actualizado correctamente (info y rol)');
+        this.getUsuarios();
+        this.cerrarFormulario();
+        this.mostrarAlerta('Éxito', 'Usuario actualizado correctamente');
+      },
+      error: (err) => {
+        console.error('Error actualizando usuario', err);
+        this.mostrarAlerta('Error', 'No se pudo actualizar el usuario completamente.');
+      }
     });
   }
 
