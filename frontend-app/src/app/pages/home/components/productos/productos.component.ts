@@ -1,17 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductosServices } from 'src/app/core/services/producto.service';
-import { Producto } from '../../core/models/producto';
+import { Producto } from 'src/app/core/models/producto';
 import { AlertController, ToastController, LoadingController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   standalone: false,
   selector: 'app-productos',
-  templateUrl: './productos.page.html',
-  styleUrls: ['./productos.page.scss'],
+  templateUrl: './productos.component.html',
+  styleUrls: ['./productos.component.scss'],
 })
-export class ProductosPage implements OnInit {
-
+export class ProductosComponent implements OnInit {
   segment: 'info' | 'gestion' = 'info';
   products: Producto[] = [];
   filteredProducts: Producto[] = [];
@@ -43,7 +42,7 @@ export class ProductosPage implements OnInit {
   segmentChanged(event: any) {
     this.segment = event.detail.value;
     if (this.segment === 'info') {
-      this.loadProducts(); // Reload to get latest data
+      this.loadProducts();
       this.resetForm();
     }
   }
@@ -92,7 +91,7 @@ export class ProductosPage implements OnInit {
           this.mostrarToast('Producto actualizado correctamente');
           this.resetForm();
           this.segment = 'info';
-          this.loadProducts(); // Switch back to list and reload
+          this.loadProducts();
         },
         error: async (err) => {
           await loading.dismiss();
@@ -184,3 +183,4 @@ export class ProductosPage implements OnInit {
     toast.present();
   }
 }
+

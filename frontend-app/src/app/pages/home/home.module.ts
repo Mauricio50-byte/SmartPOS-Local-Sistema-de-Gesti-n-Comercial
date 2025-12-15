@@ -3,8 +3,9 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HomePage } from './home.page';
-import { VentasPageModule } from '../ventas/ventas.module';
-import { ProductosPageModule } from '../productos/productos.module';
+import { SharedModule } from '../../shared/shared.module';
+import { VentasComponent } from './components/ventas/ventas.component';
+import { ProductosComponent } from './components/productos/productos.component';
 
 import { HomePageRoutingModule } from './home-routing.module';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
@@ -17,14 +18,15 @@ import { PermissionsModalComponent } from '../../shared/components/permissions-m
     FormsModule,
     IonicModule,
     HomePageRoutingModule,
-    VentasPageModule, // Added as per instruction
-    ProductosPageModule,
+    SharedModule,
     ReactiveFormsModule
   ],
   declarations: [
     HomePage,
     DashboardComponent,
     UsersComponent,
+    VentasComponent,
+    ProductosComponent,
     PermissionsModalComponent
   ]
 })

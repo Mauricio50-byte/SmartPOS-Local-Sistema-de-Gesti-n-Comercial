@@ -1,25 +1,24 @@
 import { Component, OnInit } from '@angular/core';
 import { VentaServices } from 'src/app/core/services/venta.service';
 import { ProductosServices } from 'src/app/core/services/producto.service';
-import { Venta } from '../../core/models/venta';
-import { Producto } from '../../core/models/producto';
+import { Venta } from 'src/app/core/models/venta';
+import { Producto } from 'src/app/core/models/producto';
 import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { FormBuilder, FormGroup, FormArray, Validators, AbstractControl } from '@angular/forms';
 
 @Component({
   standalone: false,
   selector: 'app-ventas',
-  templateUrl: './ventas.page.html',
-  styleUrls: ['./ventas.page.scss'],
+  templateUrl: './ventas.component.html',
+  styleUrls: ['./ventas.component.scss'],
 })
-export class VentasPage implements OnInit {
-
+export class VentasComponent implements OnInit {
   ventaForm: FormGroup;
   productos: Producto[] = [];
   filteredProductos: Producto[] = [];
   searchTerm: string = '';
 
-  currentUserId: number = 1; // TODO: Get from AuthService
+  currentUserId: number = 1;
 
   constructor(
     private ventaService: VentaServices,
@@ -112,7 +111,6 @@ export class VentasPage implements OnInit {
   }
 
   updateQuantity(event: { item: any, quantity: number }, index: number) {
-    // Nota: 'item' aqui es el value del formGroup
     const control = this.detalles.at(index);
     if (control) {
       const product = control.value.product;
@@ -146,14 +144,9 @@ export class VentasPage implements OnInit {
     });
     await loading.present();
 
-    // Preparar payload. Asegurar que 'fecha' se actualice al momento de pagar
     this.ventaForm.patchValue({ fecha: new Date().toISOString() });
 
     const ventaData = this.ventaForm.value;
-    // Mapear detalles si es necesario para ajustar al DTO del backend, 
-    // pero el formGroup ya tiene productoId, cantidad, subtotal (total aqui), precioUnitario
-
-    // Ajuste final de estructura si el backend espera 'subtotal' en lugar de 'total' en detalles
     const payload = {
       ...ventaData,
       items: ventaData.detalles.map((d: any) => ({
@@ -165,7 +158,7 @@ export class VentasPage implements OnInit {
     };
 
     this.ventaService.crearVenta(payload).subscribe({
-      next: async (res) => {
+      next: async () => {
         await loading.dismiss();
         this.detalles.clear();
         this.calculateTotal();
@@ -173,7 +166,7 @@ export class VentasPage implements OnInit {
       },
       error: async (err) => {
         await loading.dismiss();
-        console.error('Error creating sale:', err); // Enhanced logging
+        console.error('Error creating sale:', err);
         if (err.error && err.error.message) {
           this.mostrarAlerta('Error', `No se pudo procesar la venta: ${err.error.message}`);
         } else {
@@ -202,3 +195,4 @@ export class VentasPage implements OnInit {
     await toast.present();
   }
 }
+

@@ -17,13 +17,6 @@ const routes: Routes = [
     path: '',
     redirectTo: 'home',
     pathMatch: 'full'
-  },  {
-    path: 'ventas',
-    loadChildren: () => import('./pages/ventas/ventas.module').then( m => m.VentasPageModule)
-  },
-  {
-    path: 'productos',
-    loadChildren: () => import('./pages/productos/productos.module').then( m => m.ProductosPageModule)
   },
 
 ];

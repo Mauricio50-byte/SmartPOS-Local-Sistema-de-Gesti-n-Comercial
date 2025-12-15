@@ -18,12 +18,11 @@
 
 .catalog-panel {
     flex: 1;
-    /* Take remaining space */
     padding: 16px;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    background: #f4f5f8; // Light gray background
+    background: #f4f5f8;
 
     .search-bar {
         margin-bottom: 16px;
@@ -63,7 +62,6 @@
 
     @media (min-width: 768px) {
         width: 380px;
-        /* Fixed width sidebar for ticket */
         height: 100%;
     }
 
@@ -115,3 +113,4 @@
         }
     }
 }
+

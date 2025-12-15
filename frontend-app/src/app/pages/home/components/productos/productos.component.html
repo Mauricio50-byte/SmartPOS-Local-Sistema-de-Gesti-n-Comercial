@@ -1,5 +1,4 @@
 <div class="products-wrapper">
-  
   <div class="products-header">
       <ion-segment [value]="segment" (ionChange)="segmentChanged($event)" color="tertiary">
           <ion-segment-button value="info">
@@ -12,10 +11,7 @@
   </div>
 
   <div class="products-content">
-      
-      <!-- VIEW: INFORMACION (LIST) -->
       <div *ngIf="segment === 'info'" class="info-view fade-in">
-          
           <div class="search-container">
               <ion-searchbar 
                   placeholder="Buscar por nombre..." 
@@ -65,13 +61,11 @@
           </div>
       </div>
 
-      <!-- VIEW: GESTION (FORM) -->
       <div *ngIf="segment === 'gestion'" class="gestion-view fade-in">
           <div class="form-card">
               <h2>{{ isEditing ? 'Editar Producto' : 'Nuevo Producto' }}</h2>
               
               <form [formGroup]="productForm" (ngSubmit)="saveProduct()">
-                  
                   <ion-item class="input-item">
                       <ion-label position="stacked">Nombre del Producto</ion-label>
                       <ion-input formControlName="nombre" placeholder="Ej. Coca Cola"></ion-input>
@@ -112,6 +106,6 @@
               </form>
           </div>
       </div>
-
   </div>
 </div>
+
