@@ -13,6 +13,7 @@ import { UsersComponent } from './components/users/users.component';
 import { PermissionsModalComponent } from '../../shared/components/permissions-modal/permissions-modal.component';
 import { ClientSelectorComponent } from './components/ventas/components/client-selector/client-selector.component';
 import { ClientRegistrationFormComponent } from './components/ventas/components/client-registration-form/client-registration-form.component';
+import { ModulosComponent } from './components/modulos/modulos.component';
 
 @NgModule({
   imports: [
@@ -32,7 +33,8 @@ import { ClientRegistrationFormComponent } from './components/ventas/components/
     PermissionsModalComponent,
     ClientSelectorComponent,
     ClientSelectorComponent,
-    ClientRegistrationFormComponent
+    ClientRegistrationFormComponent,
+    ModulosComponent
   ]
 })
 export class HomePageModule { }

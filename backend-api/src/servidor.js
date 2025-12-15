@@ -11,6 +11,7 @@ const { registrarRutasAuth } = require('./modulos/auth/auth.rutas')
 const { registrarRutasUsuario } = require('./modulos/usuarios/usuario.rutas')
 const { registrarRutasDeuda } = require('./modulos/deudas/deuda.rutas')
 const { registrarRutasSistema } = require('./modulos/sistema/sistema.rutas')
+const { registrarRutasModulos } = require('./modulos/sistema/modulo.rutas')
 const { asegurarPermisosYAdmin } = require('./infraestructura/bootstrap')
 const { prisma } = require('./infraestructura/bd')
 
@@ -34,6 +35,7 @@ async function iniciar() {
         !req.raw.url.startsWith('/productos') &&
         !req.raw.url.startsWith('/ventas') &&
         !req.raw.url.startsWith('/usuarios') &&
+        !req.raw.url.startsWith('/modulos') &&
         !req.raw.url.startsWith('/sistema')) {
         return res.sendFile('index.html')
     }
@@ -70,6 +72,7 @@ async function iniciar() {
   await registrarRutasVenta(app)
   await registrarRutasDeuda(app)
   await registrarRutasSistema(app)
+  await registrarRutasModulos(app)
 
   try {
     await app.listen({ port: PUERTO, host: '0.0.0.0' })

@@ -84,6 +84,14 @@
         font-weight: bold;
     }
 
+    .out-of-stock {
+        color: #c0392b;
+        font-weight: bold;
+        background: #fadbd8;
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+
     .empty-cell {
         text-align: center;
         padding: 30px;
@@ -106,7 +114,7 @@
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     width: 100%;
-    max-width: 600px;
+    max-width: 800px; // Aumentado para acomodar más campos
 
     h2 {
         margin-top: 0;
@@ -115,10 +123,38 @@
         color: var(--ion-color-dark);
         text-align: center;
     }
+
+    h3 {
+        margin-top: 0;
+        margin-bottom: 12px;
+        font-size: 1.1rem;
+        color: var(--ion-color-tertiary);
+        font-weight: 600;
+        border-bottom: 2px solid var(--ion-color-tertiary-tint);
+        padding-bottom: 6px;
+    }
+}
+
+.form-section {
+    margin-bottom: 24px;
+    padding: 16px;
+    background: #fafbfc;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.two-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
 }
 
 .input-item {
-    --background: #f9fafb;
+    --background: #ffffff;
     --color: #1f2937;
     --padding-start: 12px;
     --inner-padding-end: 12px;
@@ -133,7 +169,9 @@
         margin-bottom: 4px;
     }
 
-    ion-input {
+    ion-input,
+    ion-textarea,
+    ion-select {
         --color: #111827;
         --placeholder-color: #9ca3af;
     }
@@ -158,5 +196,39 @@
     justify-content: flex-end;
     gap: 12px;
     margin-top: 16px;
+}.hint-text {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin: 8px 0;
+    line-height: 1.5;
+    padding: 8px;
+    background: #f9fafb;
+    border-radius: 6px;
 }
 
+.hint-text-small {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    margin: 4px 0 12px 0;
+    font-style: italic;
+}
+
+.tipo-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: 2px solid #5a67d8;
+
+    h3 {
+        color: white !important;
+        border-bottom-color: rgba(255, 255, 255, 0.3) !important;
+    }
+
+    .hint-text {
+        background: rgba(255, 255, 255, 0.9);
+        color: #374151;
+    }
+
+    .input-item {
+        --background: rgba(255, 255, 255, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+}

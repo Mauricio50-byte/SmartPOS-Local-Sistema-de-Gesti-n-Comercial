@@ -40,6 +40,12 @@
           <ion-label>Clientes</ion-label>
         </ion-item>
 
+        <ion-item *ngIf="hasPermission('ADMIN')" button [class.active]="currentView === 'modulos'"
+          (click)="setView('modulos')" title="Módulos" aria-label="Módulos">
+          <ion-icon slot="start" name="grid-outline"></ion-icon>
+          <ion-label>Módulos</ion-label>
+        </ion-item>
+
         <ion-item *ngIf="hasPermission('ADMIN')" button title="Configuración" aria-label="Configuración">
           <ion-icon slot="start" name="settings-outline"></ion-icon>
           <ion-label>Configuración</ion-label>
@@ -104,6 +110,7 @@
       <app-users *ngIf="currentView === 'users'"></app-users>
       <app-ventas *ngIf="currentView === 'ventas'"></app-ventas>
       <app-productos *ngIf="currentView === 'productos'"></app-productos>
+      <app-modulos *ngIf="currentView === 'modulos'"></app-modulos>
     </div>
 
     <div class="mobile-tabbar" role="tablist" aria-label="Navegación inferior">

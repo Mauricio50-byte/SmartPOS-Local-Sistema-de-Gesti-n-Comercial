@@ -139,18 +139,21 @@ export class VentasComponent implements OnInit {
       const newQuantity = control.value.quantity + 1;
       control.patchValue({
         quantity: newQuantity,
-        total: newQuantity * product.precio
+        total: newQuantity * product.precioVenta
       });
     } else {
       const detalleGroup = this.fb.group({
         product: [product],
         productoId: [product.id, Validators.required],
         quantity: [1, [Validators.required, Validators.min(1)]],
-        precioUnitario: [product.precio, Validators.required],
-        total: [product.precio, Validators.required]
+        precioUnitario: [product.precioVenta, Validators.required],
+        total: [product.precioVenta, Validators.required]
       });
       this.detalles.push(detalleGroup);
     }
+
+    this.searchTerm = '';
+    this.filteredProductos = this.productos;
     this.calculateTotal();
   }
 
@@ -165,7 +168,7 @@ export class VentasComponent implements OnInit {
       const product = control.value.product;
       control.patchValue({
         quantity: event.quantity,
-        total: event.quantity * product.precio
+        total: event.quantity * product.precioVenta
       });
       this.calculateTotal();
     }

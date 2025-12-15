@@ -13,7 +13,7 @@ import { ConexionQrComponent } from '../../shared/components/conexion-qr/conexio
   standalone: false,
 })
 export class HomePage implements OnInit {
-  currentView: 'dashboard' | 'users' | 'ventas' | 'productos' = 'dashboard';
+  currentView: 'dashboard' | 'users' | 'ventas' | 'productos' | 'modulos' = 'dashboard';
   pageTitle: string = 'Dashboard';
   currentUser: UsuarioPerfil | null = null;
 
@@ -61,11 +61,14 @@ export class HomePage implements OnInit {
     if (this.currentView === 'productos' && !this.hasPermission('GESTION_INVENTARIO')) {
       this.currentView = 'dashboard';
     }
+    if (this.currentView === 'modulos' && !this.hasPermission('ADMIN')) {
+      this.currentView = 'dashboard';
+    }
     // Update title
     this.setView(this.currentView);
   }
 
-  setView(view: 'dashboard' | 'users' | 'ventas' | 'productos') {
+  setView(view: 'dashboard' | 'users' | 'ventas' | 'productos' | 'modulos') {
     this.currentView = view;
     if (view === 'dashboard') {
       this.pageTitle = 'Dashboard';
@@ -75,6 +78,8 @@ export class HomePage implements OnInit {
       this.pageTitle = 'Ventas';
     } else if (view === 'productos') {
       this.pageTitle = 'Productos';
+    } else if (view === 'modulos') {
+      this.pageTitle = 'Gestión de Módulos';
     }
   }
 

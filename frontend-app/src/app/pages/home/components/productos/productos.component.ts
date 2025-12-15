@@ -3,6 +3,7 @@ import { ProductosServices } from 'src/app/core/services/producto.service';
 import { Producto } from 'src/app/core/models/producto';
 import { AlertController, ToastController, LoadingController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ModuloService, Modulo } from 'src/app/core/services/modulo.service';
 
 @Component({
   standalone: false,
@@ -19,24 +20,112 @@ export class ProductosComponent implements OnInit {
   productForm: FormGroup;
   isEditing: boolean = false;
   selectedProduct: Producto | null = null;
+  
+  modulosActivos: Set<string> = new Set();
 
   constructor(
     private productoService: ProductosServices,
+    private moduloService: ModuloService,
     private alertController: AlertController,
     private toastController: ToastController,
     private loadingController: LoadingController,
     private fb: FormBuilder
   ) {
     this.productForm = this.fb.group({
+      // Tipo de Item
+      tipo: ['GENERAL', Validators.required],
+
+      // Identificación
       nombre: ['', [Validators.required, Validators.minLength(3)]],
-      precio: [0, [Validators.required, Validators.min(0)]],
+      sku: [''],
+
+      // Descripción
+      descripcion: [''],
+      imagen: [''],
+
+      // Categorización
+      categoria: [''],
+      subcategoria: [''],
+      marca: [''],
+
+      // Precios y Costos
+      precioCosto: [0, [Validators.min(0)]],
+      precioVenta: [0, [Validators.required, Validators.min(0)]],
+      descuento: [0, [Validators.min(0), Validators.max(100)]],
+
+      // Inventario
       stock: [0, [Validators.required, Validators.min(0)]],
+      stockMinimo: [0, [Validators.min(0)]],
+      unidadMedida: [''],
+
+      // Campos específicos para alimentos
+      fechaVencimiento: [''],
+      lote: [''],
+      registroSanitario: [''],
+      ingredientes: [''],
+      esPerecedero: [true],
+      temperaturaConservacion: [''],
+
+      // Campos para ropa
+      talla: [''],
+      color: [''],
+      material: [''],
+      genero: [''],
+      temporada: [''],
+
+      // Campos específicos para servicios
+      duracion: [null, [Validators.min(1)]],
+      responsable: [''],
+      requiereCita: [false],
+      garantiaDias: [0],
+      disponible: [true],
+
+      // Campos específicos para farmacia
+      componenteActivo: [''],
+      presentacion: [''],
+      dosis: [''],
+      laboratorio: [''],
+      requiereReceta: [false],
+      registroInvima: [''], // Reutilizado o nuevo campo
+
+      // Campos específicos para papelería
+      tipoPapel: [''],
+      gramaje: [''],
+      dimensiones: [''],
+      esKit: [false],
+
+      // Campos específicos para restaurante
+      tiempoPreparacion: [null],
+      esVegano: [false],
+      esVegetariano: [false],
+      tieneAlcohol: [false],
+      calorias: [null],
+
+      // Impuestos
+      iva: [0, [Validators.min(0), Validators.max(100)]],
+
+      // Proveedor
+      proveedor: [''],
+
+      // Notas adicionales
+      notas: [''],
+
+      // Estado
       activo: [true]
     });
   }
 
   ngOnInit() {
     this.loadProducts();
+    this.loadModulos();
+  }
+
+  loadModulos() {
+    this.moduloService.listarModulos().subscribe(modulos => {
+      modulos.forEach(m => {
+        if (m.activo) this.modulosActivos.add(m.id);
+      });
+    });
   }
 
   segmentChanged(event: any) {
@@ -120,12 +209,37 @@ export class ProductosComponent implements OnInit {
   editProduct(product: Producto) {
     this.isEditing = true;
     this.selectedProduct = product;
-    this.productForm.patchValue({
+    
+    // Flatten nested objects for form
+    const formValue: any = {
+      tipo: product.tipo || 'GENERAL',
       nombre: product.nombre,
-      precio: product.precio,
+      sku: product.sku || '',
+      descripcion: product.descripcion || '',
+      imagen: product.imagen || '',
+      categoria: product.categoria || '',
+      subcategoria: product.subcategoria || '',
+      marca: product.marca || '',
+      precioCosto: product.precioCosto || 0,
+      precioVenta: product.precioVenta,
+      descuento: product.descuento || 0,
       stock: product.stock,
+      stockMinimo: product.stockMinimo || 0,
+      unidadMedida: product.unidadMedida || '',
+      iva: product.iva || 0,
+      proveedor: product.proveedor || '',
       activo: product.activo
-    });
+    };
+
+    // Merge extension fields
+    if (product.detalleRopa) Object.assign(formValue, product.detalleRopa);
+    if (product.detalleAlimento) Object.assign(formValue, product.detalleAlimento);
+    if (product.detalleServicio) Object.assign(formValue, product.detalleServicio);
+    if (product.detalleFarmacia) Object.assign(formValue, product.detalleFarmacia);
+    if (product.detallePapeleria) Object.assign(formValue, product.detallePapeleria);
+    if (product.detalleRestaurante) Object.assign(formValue, product.detalleRestaurante);
+
+    this.productForm.patchValue(formValue);
     this.segment = 'gestion';
   }
 
@@ -167,9 +281,54 @@ export class ProductosComponent implements OnInit {
     this.isEditing = false;
     this.selectedProduct = null;
     this.productForm.reset({
+      tipo: 'GENERAL',
       nombre: '',
-      precio: 0,
+      sku: '',
+      descripcion: '',
+      imagen: '',
+      categoria: '',
+      subcategoria: '',
+      marca: '',
+      precioCosto: 0,
+      precioVenta: 0,
+      descuento: 0,
       stock: 0,
+      stockMinimo: 0,
+      unidadMedida: '',
+      fechaVencimiento: '',
+      lote: '',
+      registroSanitario: '',
+      ingredientes: '',
+      esPerecedero: true,
+      temperaturaConservacion: '',
+      talla: '',
+      color: '',
+      material: '',
+      genero: '',
+      temporada: '',
+      duracion: null,
+      responsable: '',
+      requiereCita: false,
+      garantiaDias: 0,
+      disponible: true,
+      componenteActivo: '',
+      presentacion: '',
+      dosis: '',
+      laboratorio: '',
+      requiereReceta: false,
+      registroInvima: '',
+      tipoPapel: '',
+      gramaje: '',
+      dimensiones: '',
+      esKit: false,
+      tiempoPreparacion: null,
+      esVegano: false,
+      esVegetariano: false,
+      tieneAlcohol: false,
+      calorias: null,
+      iva: 0,
+      proveedor: '',
+      notas: '',
       activo: true
     });
   }
@@ -182,5 +341,8 @@ export class ProductosComponent implements OnInit {
     });
     toast.present();
   }
+  
+  isModuleActive(moduleId: string): boolean {
+    return this.modulosActivos.has(moduleId);
+  }
 }
-

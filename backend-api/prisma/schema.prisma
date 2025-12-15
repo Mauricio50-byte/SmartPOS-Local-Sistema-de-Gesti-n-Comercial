@@ -20,15 +20,152 @@ model Usuario {
   logs         AuditLog[]
 }
 
+// Modelo para gestión de Módulos del Sistema
+model Modulo {
+  id          String   @id // e.g., "ropa", "alimentos", "servicios"
+  nombre      String
+  descripcion String?
+  activo      Boolean  @default(false)
+  version     String   @default("1.0.0")
+  config      Json?    // Configuración específica del módulo
+  creadoEn    DateTime @default(now())
+  actualizadoEn DateTime @updatedAt
+}
+
 model Producto {
   id           Int      @id @default(autoincrement())
+  
+  // Tipo de Producto (vinculado al módulo)
+  tipo         String   @default("GENERAL") // GENERAL, ROPA, ALIMENTO, SERVICIO
+  
+  // Identificación
   nombre       String
-  precio       Float
+  sku          String?  @unique
+  
+  // Descripción
+  descripcion  String?
+  imagen       String?
+  
+  // Categorización Global
+  categoria    String?
+  subcategoria String?
+  marca        String?
+  
+  // Precios y Costos
+  precioCosto  Float?   @default(0)
+  precioVenta  Float
+  descuento    Float?   @default(0)
+  
+  // Inventario Global
   stock        Int      @default(0)
+  stockMinimo  Int?     @default(0)
+  unidadMedida String?  @default("UNIDAD")
+  
+  // Impuestos
+  iva          Float?   @default(0)
+  
+  // Proveedor
+  proveedor    String?
+  
+  // Estado
   activo       Boolean  @default(true)
+  
+  // Timestamps
   creadoEn     DateTime @default(now())
   actualizadoEn DateTime @updatedAt
+  
+  // Relaciones con Detalles Específicos (Polimorfismo vía Tablas Opcionales)
+  detalleRopa     ProductoRopa?
+  detalleAlimento ProductoAlimento?
+  detalleServicio ProductoServicio?
+  detalleFarmacia ProductoFarmacia?
+  detallePapeleria ProductoPapeleria?
+  detalleRestaurante ProductoRestaurante?
+  
+  // Relaciones Generales
   detalles     DetalleVenta[]
+}
+
+// Extensión para Ropa y Accesorios
+model ProductoRopa {
+  id         Int      @id @default(autoincrement())
+  productoId Int      @unique
+  producto   Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  
+  talla      String?  // XS, S, M, L, XL, etc.
+  color      String?
+  material   String?
+  genero     String?  // Hombre, Mujer, Unisex, Niño, Niña
+  temporada  String?
+}
+
+// Extensión para Alimentos y Perecederos
+model ProductoAlimento {
+  id               Int      @id @default(autoincrement())
+  productoId       Int      @unique
+  producto         Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  
+  fechaVencimiento DateTime?
+  lote             String?
+  registroSanitario String?
+  ingredientes     String? // Podría ser JSON o Texto
+  esPerecedero     Boolean @default(true)
+  temperaturaConservacion String?
+}
+
+// Extensión para Servicios
+model ProductoServicio {
+  id           Int      @id @default(autoincrement())
+  productoId   Int      @unique
+  producto     Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  
+  duracion     Int?     // Duración en minutos
+  responsable  String?  // Nombre del encargado o rol requerido
+  requiereCita Boolean  @default(false)
+  garantiaDias Int?     // Días de garantía del servicio
+}
+
+// Extensión para Farmacia
+model ProductoFarmacia {
+  id               Int      @id @default(autoincrement())
+  productoId       Int      @unique
+  producto         Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  
+  componenteActivo String?  // Principio activo
+  presentacion     String?  // Tableta, Jarabe, Inyección, etc.
+  dosis            String?  // 500mg, 10ml, etc.
+  laboratorio      String?  // Fabricante
+  requiereReceta   Boolean  @default(false)
+  fechaVencimiento DateTime?
+  lote             String?
+  registroInvima   String?
+}
+
+// Extensión para Papelería
+model ProductoPapeleria {
+  id          Int      @id @default(autoincrement())
+  productoId  Int      @unique
+  producto    Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  
+  tipoPapel   String?  // Bond, Periodico, Cartulina, etc.
+  gramaje     String?  // 75g, 90g, etc.
+  dimensiones String?  // Carta, Oficio, A4, etc.
+  material    String?  // Plástico, Metal, Madera (para útiles)
+  esKit       Boolean  @default(false) // Si es un kit escolar, etc.
+}
+
+// Extensión para Restaurante
+model ProductoRestaurante {
+  id                Int      @id @default(autoincrement())
+  productoId        Int      @unique
+  producto          Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  
+  ingredientes      String?  // Lista de ingredientes principales
+  tiempoPreparacion Int?     // Minutos estimados
+  esVegano          Boolean  @default(false)
+  esVegetariano     Boolean  @default(false)
+  tieneAlcohol      Boolean  @default(false)
+  calorias          Int?     // Kcal estimadas
 }
 
 model Cliente {
@@ -36,16 +173,15 @@ model Cliente {
   nombre        String
   correo        String?  @unique
   telefono      String?
-  cedula        String?  @unique  // Documento de identidad
+  cedula        String?  @unique
   direccion     String?
   activo        Boolean  @default(true)
-  creditoMaximo Float    @default(0)  // Límite de crédito permitido
-  saldoDeuda    Float    @default(0)  // Deuda actual total
-  puntos        Int      @default(0)  // Puntos de fidelidad acumulados
+  creditoMaximo Float    @default(0)
+  saldoDeuda    Float    @default(0)
+  puntos        Int      @default(0)
   creadoEn      DateTime @default(now())
   actualizadoEn DateTime @updatedAt
   
-  // Relaciones
   ventas        Venta[]
   deudas        Deuda[]
   abonos        Abono[]
@@ -60,14 +196,13 @@ model Venta {
   usuarioId     Int
   usuario       Usuario       @relation(fields: [usuarioId], references: [id])
   
-  // Información de pago
-  metodoPago    String        @default("EFECTIVO")  // EFECTIVO, TRANSFERENCIA, TARJETA, NEQUI, etc.
-  estadoPago    String        @default("PAGADO")    // PAGADO, FIADO, PARCIAL
-  montoPagado   Float         @default(0)           // Monto pagado en el momento
-  saldoPendiente Float        @default(0)           // Saldo que queda por pagar
+  metodoPago    String        @default("EFECTIVO")
+  estadoPago    String        @default("PAGADO")
+  montoPagado   Float         @default(0)
+  saldoPendiente Float        @default(0)
   
   detalles      DetalleVenta[]
-  deuda         Deuda?        // Si es venta fiada, se crea una deuda
+  deuda         Deuda?
 }
 
 model Rol {
@@ -130,23 +265,21 @@ model AuditLog {
   fecha     DateTime @default(now())
 }
 
-// Modelo para control de deudas (ventas fiadas)
 model Deuda {
   id             Int      @id @default(autoincrement())
   clienteId      Int
   cliente        Cliente  @relation(fields: [clienteId], references: [id])
   ventaId        Int      @unique
   venta          Venta    @relation(fields: [ventaId], references: [id])
-  montoTotal     Float    // Monto total de la deuda
-  saldoPendiente Float    // Saldo que falta por pagar
-  estado         String   @default("PENDIENTE")  // PENDIENTE, PAGADO, VENCIDO
+  montoTotal     Float
+  saldoPendiente Float
+  estado         String   @default("PENDIENTE")
   fechaCreacion  DateTime @default(now())
-  fechaVencimiento DateTime?  // Opcional: fecha límite de pago
+  fechaVencimiento DateTime?
   
-  abonos         Abono[]  // Historial de pagos/abonos
+  abonos         Abono[]
 }
 
-// Modelo para registro de abonos/pagos a deudas
 model Abono {
   id        Int      @id @default(autoincrement())
   deudaId   Int
@@ -154,9 +287,8 @@ model Abono {
   clienteId Int
   cliente   Cliente  @relation(fields: [clienteId], references: [id])
   monto     Float
-  metodoPago String  @default("EFECTIVO")  // EFECTIVO, TRANSFERENCIA, TARJETA, etc.
+  metodoPago String  @default("EFECTIVO")
   fecha     DateTime @default(now())
-  usuarioId Int?     // Usuario que registró el abono
-  nota      String?  // Nota opcional sobre el abono
+  usuarioId Int?
+  nota      String?
 }
-
