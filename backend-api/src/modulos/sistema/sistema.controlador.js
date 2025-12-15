@@ -2,15 +2,24 @@ const os = require('os')
 
 function obtenerIpLocal() {
     const interfaces = os.networkInterfaces()
+    let ipCandidata = '127.0.0.1';
+
     for (const name of Object.keys(interfaces)) {
         for (const iface of interfaces[name]) {
             // Skip over non-IPv4 and internal (i.e. 127.0.0.1) addresses
             if (iface.family === 'IPv4' && !iface.internal) {
-                return iface.address
+                // Si encontramos una 192.168.x.x, es casi seguro la buena (WiFi/LAN Hogar)
+                if (iface.address.startsWith('192.168.')) {
+                    return iface.address;
+                }
+                // Si no, guardamos la primera que encontremos como backup (podría ser 172.x o 10.x)
+                if (ipCandidata === '127.0.0.1') {
+                    ipCandidata = iface.address;
+                }
             }
         }
     }
-    return '127.0.0.1'
+    return ipCandidata;
 }
 
 async function obtenerDatosConexion(req, reply) {
@@ -35,8 +44,8 @@ async function obtenerDatosConexion(req, reply) {
 
     return {
         ip,
-        puerto: 8100,
-        url: `http://${ip}:8100?token=${token}`,
+        puerto: 3000,
+        url: `http://${ip}:3000?token=${token}`,
         token
     }
 }

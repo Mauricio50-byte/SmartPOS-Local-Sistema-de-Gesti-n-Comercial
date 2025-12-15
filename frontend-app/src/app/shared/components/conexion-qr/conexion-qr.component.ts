@@ -53,7 +53,8 @@ export class ConexionQrComponent implements OnInit {
                 // y desactivamos la petición manual de IP
                 if (resp.ip && resp.ip !== '127.0.0.1') {
                     this.ipManual = resp.ip;
-                    this.mostrarInputIp = false; // Ya no necesitamos pedirla manualmente
+                    // Mantenemos el input visible por si la detección falló (ej. tomó una IP de Docker)
+                    this.mostrarInputIp = true; 
                 } else if (this.mostrarInputIp && resp.ip) {
                      // Si el backend devuelve algo pero seguimos en modo manual (ej. no pudo detectar bien)
                      this.ipManual = resp.ip;

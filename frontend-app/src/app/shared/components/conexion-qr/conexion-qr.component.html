@@ -17,12 +17,12 @@
 
     <div *ngIf="!cargando && token" class="qr-container">
 
-        <!-- Input de IP si estamos en localhost -->
-        <div class="ip-config" *ngIf="mostrarInputIp">
+        <!-- Input de IP siempre visible para corrección manual -->
+        <div class="ip-config">
             <ion-item lines="full">
-                <ion-label position="stacked">Ingresa la IP de este PC</ion-label>
+                <ion-label position="stacked">IP del Servidor (Verifica que sea correcta)</ion-label>
                 <ion-input [(ngModel)]="ipManual" placeholder="Ej: 192.168.1.5" (ionChange)="generarQr()"></ion-input>
-                <ion-note slot="helper">Mira en tu configuración de WiFi</ion-note>
+                <ion-note slot="helper">Debe ser la IP de tu WiFi (ej. 192.168.x.x)</ion-note>
             </ion-item>
         </div>
 

@@ -1,6 +1,8 @@
 const fastify = require('fastify')
 const cors = require('@fastify/cors')
 const jwtPlugin = require('@fastify/jwt')
+const fastifyStatic = require('@fastify/static')
+const path = require('path')
 const { PUERTO, JWT_SECRETO } = require('./configuracion/entorno')
 const { registrarRutasProducto } = require('./modulos/productos/producto.rutas')
 const { registrarRutasCliente } = require('./modulos/clientes/cliente.rutas')
@@ -16,6 +18,29 @@ async function iniciar() {
   const app = fastify({ logger: true })
   await app.register(cors, { origin: true })
   if (JWT_SECRETO) await app.register(jwtPlugin, { secret: JWT_SECRETO })
+  
+  // Servir frontend estático
+  const frontendPath = path.join(__dirname, '../../frontend-app/www');
+  await app.register(fastifyStatic, {
+    root: frontendPath,
+    prefix: '/' // servir en la raíz
+  })
+
+  app.setNotFoundHandler((req, res) => {
+    // Si la ruta no es de API (no empieza por /auth, /clientes, etc), devolvemos index.html
+    // Esto es necesario para el enrutado de Angular (SPA)
+    if (!req.raw.url.startsWith('/auth') && 
+        !req.raw.url.startsWith('/clientes') &&
+        !req.raw.url.startsWith('/productos') &&
+        !req.raw.url.startsWith('/ventas') &&
+        !req.raw.url.startsWith('/usuarios') &&
+        !req.raw.url.startsWith('/sistema')) {
+        return res.sendFile('index.html')
+    }
+    // Si es una ruta de API desconocida, devolvemos 404 normal
+    res.code(404).send({ mensaje: 'Ruta no encontrada' })
+  })
+
   app.decorate('requierePermiso', (clave) => async (req, res) => { 
     await req.jwtVerify(); 
     const permisos = req.user?.permisos || []; 

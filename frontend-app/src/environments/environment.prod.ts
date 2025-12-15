@@ -1,5 +1,9 @@
+const hostname = window.location.hostname;
+const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+const apiUrl = isLocalhost ? 'http://localhost:3000' : `http://${hostname}:3000`;
+
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost:3000',
+  apiUrl: apiUrl,
   VAPID_PUBLIC_KEY: ''
 };
