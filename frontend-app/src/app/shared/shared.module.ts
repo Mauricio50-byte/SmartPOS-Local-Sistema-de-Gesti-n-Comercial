@@ -6,12 +6,14 @@ import { FormsModule } from '@angular/forms';
 import { ProductCardComponent } from './components/product-card/product-card.component';
 import { CartItemComponent } from './components/cart-item/cart-item.component';
 import { PaymentSelectorComponent } from './components/payment-selector/payment-selector.component';
+import { ConexionQrComponent } from './components/conexion-qr/conexion-qr.component';
 
 @NgModule({
     declarations: [
         ProductCardComponent,
         CartItemComponent,
-        PaymentSelectorComponent
+        PaymentSelectorComponent,
+        ConexionQrComponent
     ],
     imports: [
         CommonModule,
@@ -22,6 +24,7 @@ import { PaymentSelectorComponent } from './components/payment-selector/payment-
         ProductCardComponent,
         CartItemComponent,
         PaymentSelectorComponent,
+        ConexionQrComponent,
         CommonModule,
         IonicModule,
         FormsModule

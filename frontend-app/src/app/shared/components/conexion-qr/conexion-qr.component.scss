@@ -1,0 +1,35 @@
+.loading-container,
+.qr-container,
+.error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+canvas {
+    margin: 20px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.instruccion {
+    font-size: 1.1rem;
+    color: #555;
+    max-width: 300px;
+}
+
+.info-adicional {
+    margin-top: 20px;
+    background: #f0f0f0;
+    padding: 10px 20px;
+    border-radius: 8px;
+
+    p {
+        margin: 5px 0;
+        font-size: 0.9rem;
+        color: #666;
+    }
+}

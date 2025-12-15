@@ -3,6 +3,9 @@ import { AuthService } from '../../core/services/auth.service';
 import { Router } from '@angular/router';
 import { UsuarioPerfil } from '../../core/models';
 
+import { ModalController } from '@ionic/angular';
+import { ConexionQrComponent } from '../../shared/components/conexion-qr/conexion-qr.component';
+
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -16,8 +19,17 @@ export class HomePage implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private modalCtrl: ModalController
   ) { }
+
+  async conectarDispositivo() {
+    const modal = await this.modalCtrl.create({
+      component: ConexionQrComponent,
+      cssClass: 'qr-modal' // You might want to define this class in global CSS or component styles
+    });
+    return await modal.present();
+  }
 
   ngOnInit() {
     this.authService.getPerfil$().subscribe(user => {

@@ -31,6 +31,7 @@ import { ClientRegistrationFormComponent } from './components/ventas/components/
     ProductosComponent,
     PermissionsModalComponent,
     ClientSelectorComponent,
+    ClientSelectorComponent,
     ClientRegistrationFormComponent
   ]
 })

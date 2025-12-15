@@ -8,6 +8,7 @@ const { registrarRutasVenta } = require('./modulos/ventas/venta.rutas')
 const { registrarRutasAuth } = require('./modulos/auth/auth.rutas')
 const { registrarRutasUsuario } = require('./modulos/usuarios/usuario.rutas')
 const { registrarRutasDeuda } = require('./modulos/deudas/deuda.rutas')
+const { registrarRutasSistema } = require('./modulos/sistema/sistema.rutas')
 const { asegurarPermisosYAdmin } = require('./infraestructura/bootstrap')
 const { prisma } = require('./infraestructura/bd')
 
@@ -15,7 +16,22 @@ async function iniciar() {
   const app = fastify({ logger: true })
   await app.register(cors, { origin: true })
   if (JWT_SECRETO) await app.register(jwtPlugin, { secret: JWT_SECRETO })
-  app.decorate('requierePermiso', (clave) => async (req, res) => { await req.jwtVerify(); const permisos = req.user?.permisos || []; if (!permisos.includes(clave)) { res.code(403); throw new Error('No autorizado') } })
+  app.decorate('requierePermiso', (clave) => async (req, res) => { 
+    await req.jwtVerify(); 
+    const permisos = req.user?.permisos || []; 
+    const roles = req.user?.roles || [];
+    // Si el usuario tiene el rol de ADMIN, le damos paso libre (o verificamos si la clave es 'ADMIN' específicamente)
+    if (roles.includes('ADMIN') || permisos.includes(clave)) {
+        return;
+    }
+    // Caso especial: si se pide permiso 'ADMIN', verificamos si tiene el ROL 'ADMIN'
+    if (clave === 'ADMIN' && roles.includes('ADMIN')) {
+        return;
+    }
+    
+    res.code(403); 
+    throw new Error('No autorizado') 
+  })
   app.decorate('prisma', prisma)
 
   app.get('/salud', async () => ({ ok: true }))
@@ -28,6 +44,7 @@ async function iniciar() {
   await registrarRutasCliente(app)
   await registrarRutasVenta(app)
   await registrarRutasDeuda(app)
+  await registrarRutasSistema(app)
 
   try {
     await app.listen({ port: PUERTO, host: '0.0.0.0' })

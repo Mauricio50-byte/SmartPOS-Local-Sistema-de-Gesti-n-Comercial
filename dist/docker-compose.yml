@@ -18,7 +18,7 @@ services:
       PUERTO: ${BACKEND_PORT:-3000}
     depends_on:
       - sistema-pos
-    command: sh -c "npx prisma migrate deploy && node src/servidor.js"
+    command: sh -c "node src/infraestructura/wait-for-db.js && npx prisma migrate deploy && node src/servidor.js"
     ports:
       - "${BACKEND_PORT:-3000}:3000"
 

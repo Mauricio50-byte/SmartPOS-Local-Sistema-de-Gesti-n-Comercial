@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject, Subscription } from 'rxjs';
-import { tap, map } from 'rxjs/operators';
+import { Observable, BehaviorSubject, Subscription, of } from 'rxjs';
+import { tap, map, catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { UsuarioPerfil, AuthResponse } from '../models';
 
@@ -14,13 +14,20 @@ export class AuthService {
   private perfilSubscription: Subscription | undefined;
 
   constructor() {
+    // Si hay token guardado, intentamos cargar el perfil
+    // NOTA: Si acabamos de guardar el token en AppComponent, esto se ejecutará después o concurrentemente.
     const token = this.getToken();
     if (token) {
-      this.perfilSubscription = this.fetchPerfil().subscribe({
-        next: (p) => this.perfil$.next(p),
-        error: (err) => { if (err?.status === 401) this.logout(); }
-      });
+      this.validarYRefrescarPerfil();
     }
+  }
+
+  validarYRefrescarPerfil() {
+    if (this.perfilSubscription) this.perfilSubscription.unsubscribe();
+    this.perfilSubscription = this.fetchPerfil().subscribe({
+      next: (p) => this.perfil$.next(p),
+      error: (err) => { if (err?.status === 401) this.logout(); }
+    });
   }
 
   ngOnDestroy(): void {
@@ -36,6 +43,17 @@ export class AuthService {
         this.perfil$.next(resp.usuario);
         if (remember) localStorage.setItem(this.rememberKey, correo);
         else localStorage.removeItem(this.rememberKey);
+      })
+    );
+  }
+
+  // Nuevo método para login con token directo (QR)
+  loginWithToken(token: string): Observable<UsuarioPerfil> {
+    this.setToken(token);
+    // Verificar que el token sea válido y obtener datos del usuario
+    return this.fetchPerfil().pipe(
+      tap((usuario) => {
+        this.perfil$.next(usuario);
       })
     );
   }

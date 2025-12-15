@@ -1,0 +1,52 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-title>Conectar Dispositivo</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="cerrar()">
+                <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding ion-text-center">
+    <div *ngIf="cargando" class="loading-container">
+        <ion-spinner></ion-spinner>
+        <p>Generando código de conexión...</p>
+    </div>
+
+    <div *ngIf="!cargando && token" class="qr-container">
+
+        <!-- Input de IP si estamos en localhost -->
+        <div class="ip-config" *ngIf="mostrarInputIp">
+            <ion-item lines="full">
+                <ion-label position="stacked">Ingresa la IP de este PC</ion-label>
+                <ion-input [(ngModel)]="ipManual" placeholder="Ej: 192.168.1.5" (ionChange)="generarQr()"></ion-input>
+                <ion-note slot="helper">Mira en tu configuración de WiFi</ion-note>
+            </ion-item>
+        </div>
+
+        <div [style.display]="urlQr ? 'block' : 'none'" class="qr-wrapper">
+            <p class="instruccion">
+                Escanea con la cámara de tu celular:
+            </p>
+            <canvas #qrCanvas></canvas>
+        </div>
+
+        <div class="info-adicional">
+            <p><strong>URL:</strong> {{ urlQr }}</p>
+            <p>Token válido por 24 horas</p>
+            <p *ngIf="mostrarInputIp" class="warning">
+                <ion-icon name="warning-outline"></ion-icon>
+                Estás en localhost. Debes poner la IP real para que el celular se conecte.
+            </p>
+        </div>
+    </div>
+
+    <div *ngIf="error" class="error-container">
+        <ion-text color="danger">
+            <p>{{ error }}</p>
+        </ion-text>
+        <ion-button (click)="cargarDatos()">Reintentar</ion-button>
+    </div>
+</ion-content>

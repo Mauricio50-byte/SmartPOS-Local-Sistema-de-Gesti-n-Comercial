@@ -42,7 +42,7 @@ async function ingresar({ correo, password }) {
           } 
         } 
       },
-      permisos: { include: { permiso: true } } // Permisos directos del usuario
+      permisos: { include: { permiso: true } }
     } 
   })
   if (!usuario || !usuario.activo) throw new Error('Credenciales inválidas')

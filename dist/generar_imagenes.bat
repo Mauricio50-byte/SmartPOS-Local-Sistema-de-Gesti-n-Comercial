@@ -36,13 +36,13 @@ if %ERRORLEVEL% NEQ 0 (
 docker tag sistema-pos-frontend:%TAG% sistema-pos-frontend:latest
 
 echo Exportando imagenes a archivos .tar...
-docker save -o "%OUTDIR%\sistema-pos-backend-%TAG%.tar" sistema-pos-backend:%TAG%
+docker save -o "%OUTDIR%\backend.tar" sistema-pos-backend:latest
 if %ERRORLEVEL% NEQ 0 (
   echo Error exportando backend.
   pause
   exit /b 1
 )
-docker save -o "%OUTDIR%\sistema-pos-frontend-%TAG%.tar" sistema-pos-frontend:%TAG%
+docker save -o "%OUTDIR%\frontend.tar" sistema-pos-frontend:latest
 if %ERRORLEVEL% NEQ 0 (
   echo Error exportando frontend.
   pause
@@ -58,7 +58,7 @@ if %ERRORLEVEL% NEQ 0 (
 )
 
 echo Exportando imagen de PostgreSQL a .tar...
-docker save -o "%OUTDIR%\postgres-16-alpine.tar" postgres:16-alpine
+docker save -o "%OUTDIR%\postgres.tar" postgres:16-alpine
 if %ERRORLEVEL% NEQ 0 (
   echo Error exportando postgres.
   pause
@@ -67,16 +67,12 @@ if %ERRORLEVEL% NEQ 0 (
 
 echo.
 echo Listo. Archivos generados:
-echo  - %CD%\%OUTDIR%\sistema-pos-backend-%TAG%.tar
-echo  - %CD%\%OUTDIR%\sistema-pos-frontend-%TAG%.tar
-echo  - %CD%\%OUTDIR%\postgres-16-alpine.tar
+echo  - %CD%\%OUTDIR%\backend.tar
+echo  - %CD%\%OUTDIR%\frontend.tar
+echo  - %CD%\%OUTDIR%\postgres.tar
 echo.
 echo Para cargar en el equipo del cliente:
-echo  docker load -i sistema-pos-backend-%TAG%.tar
-echo  docker load -i sistema-pos-frontend-%TAG%.tar
-echo  docker load -i postgres-16-alpine.tar
-echo  docker tag sistema-pos-backend:%TAG% sistema-pos-backend:latest
-echo  docker tag sistema-pos-frontend:%TAG% sistema-pos-frontend:latest
+echo  Simplemente ejecute levantar.bat
 echo.
 pause
 endlocal
