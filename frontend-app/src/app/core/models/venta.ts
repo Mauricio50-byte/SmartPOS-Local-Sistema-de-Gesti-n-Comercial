@@ -8,6 +8,10 @@ export interface Venta {
   total: number;
   clienteId?: number | null;
   usuarioId: number;
+  metodoPago?: string;
+  estadoPago?: string;
+  montoPagado?: number;
+  saldoPendiente?: number;
   detalles: DetalleVenta[];
   cliente?: Cliente | null;
   usuario?: Usuario;

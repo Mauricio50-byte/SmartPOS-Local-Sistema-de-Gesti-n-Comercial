@@ -29,6 +29,14 @@ CREATE TABLE "Cliente" (
     "nombre" TEXT NOT NULL,
     "correo" TEXT,
     "telefono" TEXT,
+    "cedula" TEXT,
+    "direccion" TEXT,
+    "activo" BOOLEAN NOT NULL DEFAULT true,
+    "creditoMaximo" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "saldoDeuda" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "puntos" INTEGER NOT NULL DEFAULT 0,
+    "creadoEn" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "actualizadoEn" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Cliente_pkey" PRIMARY KEY ("id")
 );
@@ -40,6 +48,10 @@ CREATE TABLE "Venta" (
     "total" DOUBLE PRECISION NOT NULL,
     "clienteId" INTEGER,
     "usuarioId" INTEGER NOT NULL,
+    "metodoPago" TEXT NOT NULL DEFAULT 'EFECTIVO',
+    "estadoPago" TEXT NOT NULL DEFAULT 'PAGADO',
+    "montoPagado" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "saldoPendiente" DOUBLE PRECISION NOT NULL DEFAULT 0,
 
     CONSTRAINT "Venta_pkey" PRIMARY KEY ("id")
 );
@@ -109,6 +121,34 @@ CREATE TABLE "AuditLog" (
     CONSTRAINT "AuditLog_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Deuda" (
+    "id" SERIAL NOT NULL,
+    "clienteId" INTEGER NOT NULL,
+    "ventaId" INTEGER NOT NULL,
+    "montoTotal" DOUBLE PRECISION NOT NULL,
+    "saldoPendiente" DOUBLE PRECISION NOT NULL,
+    "estado" TEXT NOT NULL DEFAULT 'PENDIENTE',
+    "fechaCreacion" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "fechaVencimiento" TIMESTAMP(3),
+
+    CONSTRAINT "Deuda_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Abono" (
+    "id" SERIAL NOT NULL,
+    "deudaId" INTEGER NOT NULL,
+    "clienteId" INTEGER NOT NULL,
+    "monto" DOUBLE PRECISION NOT NULL,
+    "metodoPago" TEXT NOT NULL DEFAULT 'EFECTIVO',
+    "fecha" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "usuarioId" INTEGER,
+    "nota" TEXT,
+
+    CONSTRAINT "Abono_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Usuario_correo_key" ON "Usuario"("correo");
 
@@ -116,10 +156,16 @@ CREATE UNIQUE INDEX "Usuario_correo_key" ON "Usuario"("correo");
 CREATE UNIQUE INDEX "Cliente_correo_key" ON "Cliente"("correo");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Cliente_cedula_key" ON "Cliente"("cedula");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Rol_nombre_key" ON "Rol"("nombre");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Permiso_clave_key" ON "Permiso"("clave");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Deuda_ventaId_key" ON "Deuda"("ventaId");
 
 -- AddForeignKey
 ALTER TABLE "Venta" ADD CONSTRAINT "Venta_clienteId_fkey" FOREIGN KEY ("clienteId") REFERENCES "Cliente"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -153,3 +199,15 @@ ALTER TABLE "DetalleVenta" ADD CONSTRAINT "DetalleVenta_productoId_fkey" FOREIGN
 
 -- AddForeignKey
 ALTER TABLE "AuditLog" ADD CONSTRAINT "AuditLog_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Deuda" ADD CONSTRAINT "Deuda_clienteId_fkey" FOREIGN KEY ("clienteId") REFERENCES "Cliente"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Deuda" ADD CONSTRAINT "Deuda_ventaId_fkey" FOREIGN KEY ("ventaId") REFERENCES "Venta"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Abono" ADD CONSTRAINT "Abono_deudaId_fkey" FOREIGN KEY ("deudaId") REFERENCES "Deuda"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Abono" ADD CONSTRAINT "Abono_clienteId_fkey" FOREIGN KEY ("clienteId") REFERENCES "Cliente"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

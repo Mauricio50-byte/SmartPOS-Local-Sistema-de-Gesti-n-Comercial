@@ -1,0 +1,27 @@
+<div class="quick-register" [formGroup]="datosClienteGroup">
+    <h4>Registrar Nuevo Cliente</h4>
+
+    <ion-item>
+        <ion-label position="floating">Nombre *</ion-label>
+        <ion-input formControlName="nombre" type="text" placeholder="Nombre completo"></ion-input>
+    </ion-item>
+
+    <ion-item>
+        <ion-label position="floating">Teléfono *</ion-label>
+        <ion-input formControlName="telefono" type="tel" placeholder="3001234567"></ion-input>
+    </ion-item>
+
+    <ion-item>
+        <ion-label position="floating">Cédula</ion-label>
+        <ion-input formControlName="cedula" type="text" placeholder="Documento de identidad"></ion-input>
+    </ion-item>
+
+    <ion-item>
+        <ion-label position="floating">Crédito Máximo</ion-label>
+        <ion-input formControlName="creditoMaximo" type="number" placeholder="0"></ion-input>
+    </ion-item>
+
+    <ion-button size="small" fill="clear" color="danger" (click)="onCancelar()">
+        Cancelar
+    </ion-button>
+</div>

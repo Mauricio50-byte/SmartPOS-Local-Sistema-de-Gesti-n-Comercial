@@ -1,60 +1,87 @@
 <div class="sales-wrapper">
   <div class="sales-container">
+    <!-- Panel de Catálogo -->
     <div class="catalog-panel">
-        <div class="search-bar">
-            <ion-searchbar placeholder="Buscar productos" [(ngModel)]="searchTerm" (ionInput)="onSearch($event)"></ion-searchbar>
+      <div class="search-bar">
+        <ion-searchbar placeholder="Buscar productos" [(ngModel)]="searchTerm"
+          (ionInput)="onSearch($event)"></ion-searchbar>
+      </div>
+
+      <div class="product-grid" *ngIf="filteredProductos.length > 0; else noProducts">
+        <app-product-card *ngFor="let product of filteredProductos" [product]="product" (add)="addToCart($event)">
+        </app-product-card>
+      </div>
+
+      <ng-template #noProducts>
+        <div class="empty-state">
+          <p>No se encontraron productos.</p>
         </div>
-        
-        <div class="product-grid" *ngIf="filteredProductos.length > 0; else noProducts">
-            <app-product-card 
-                *ngFor="let product of filteredProductos" 
-                [product]="product" 
-                (add)="addToCart($event)">
-            </app-product-card>
-        </div>
-        
-        <ng-template #noProducts>
-            <div class="empty-state">
-                <p>No se encontraron productos.</p>
-            </div>
-        </ng-template>
+      </ng-template>
     </div>
 
+    <!-- Panel de Ticket/Carrito -->
     <div class="ticket-panel">
-        <div class="ticket-header">
-            <span>Producto</span>
-            <span>Total</span>
+      <!-- Selector de Tipo de Venta -->
+      <div class="sale-type-selector">
+        <ion-segment [(ngModel)]="tipoVenta" (ionChange)="setTipoVenta($event.detail.value)">
+          <ion-segment-button value="CONTADO">
+            <ion-label>Contado</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="FIADO">
+            <ion-label>Fiado</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </div>
+
+      <!-- Selector de Cliente (solo para ventas fiadas) -->
+      <!-- Selector de Cliente (opcional para contado, obligatorio para fiado) -->
+      <div class="client-section">
+        <app-client-selector [clientes]="clientes" [clienteSeleccionado]="clienteSeleccionado"
+          [mostrarRegistroCliente]="mostrarRegistroCliente" (clienteSeleccionadoChange)="onClienteSeleccionado($event)"
+          (nuevoClienteClick)="mostrarModalRegistroCliente()">
+        </app-client-selector>
+
+        <app-client-registration-form *ngIf="mostrarRegistroCliente" [datosClienteGroup]="datosClienteGroup"
+          (cancelar)="cancelarRegistroCliente()">
+        </app-client-registration-form>
+      </div>
+
+      <!-- Lista de productos en el carrito -->
+      <div class="ticket-header">
+        <span>Producto</span>
+        <span>Total</span>
+      </div>
+
+      <div class="cart-list">
+        <app-cart-item *ngFor="let control of detalles.controls; let i = index" [item]="control.value"
+          (remove)="removeFromCart(i)" (updateQuantity)="updateQuantity($event, i)">
+        </app-cart-item>
+
+        <div class="empty-cart" *ngIf="detalles.length === 0">
+          <p>No hay productos</p>
         </div>
-        
-        <div class="cart-list">
-            <app-cart-item 
-                *ngFor="let control of detalles.controls; let i = index" 
-                [item]="control.value" 
-                (remove)="removeFromCart(i)" 
-                (updateQuantity)="updateQuantity($event, i)">
-            </app-cart-item>
-            
-            <div class="empty-cart" *ngIf="detalles.length === 0">
-                <p>No hay productos</p>
-            </div>
+      </div>
+
+      <!-- Footer con total y pago -->
+      <div class="ticket-footer">
+        <div class="subtotal">
+          <span>Total</span>
+          <span class="amount">{{ totalControl.value | currency:'USD':'symbol':'1.2-2' }}</span>
         </div>
-        
-        <div class="ticket-footer">
-            <div class="subtotal">
-                <span>Subtotal</span>
-                <span class="amount">{{ totalControl.value | currency:'USD':'symbol':'1.2-2' }}</span>
-            </div>
-            
-            <app-payment-selector 
-                [selectedMethod]="paymentMethodControl.value" 
-                (selectedMethodChange)="setPaymentMethod($event)">
-            </app-payment-selector>
-            
-            <ion-button expand="block" color="success" class="pay-button" (click)="pagar()" [disabled]="detalles.length === 0">
-                Pagar
-            </ion-button>
-        </div>
+
+        <!-- Selector de método de pago -->
+        <app-payment-selector [selectedMethod]="paymentMethodControl.value"
+          (selectedMethodChange)="setPaymentMethod($event)">
+        </app-payment-selector>
+
+        <!-- Botón de pagar -->
+        <ion-button expand="block" [color]="tipoVenta === 'FIADO' ? 'warning' : 'success'" class="pay-button"
+          (click)="pagar()" [disabled]="detalles.length === 0">
+          <ion-icon slot="start"
+            [name]="tipoVenta === 'FIADO' ? 'time-outline' : 'checkmark-circle-outline'"></ion-icon>
+          {{ tipoVenta === 'FIADO' ? 'Registrar Fiado' : 'Pagar' }}
+        </ion-button>
+      </div>
     </div>
   </div>
 </div>
-

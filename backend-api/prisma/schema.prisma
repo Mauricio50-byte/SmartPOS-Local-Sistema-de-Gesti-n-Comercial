@@ -32,22 +32,42 @@ model Producto {
 }
 
 model Cliente {
-  id       Int      @id @default(autoincrement())
-  nombre   String
-  correo   String?  @unique
-  telefono String?
-  ventas   Venta[]
+  id            Int      @id @default(autoincrement())
+  nombre        String
+  correo        String?  @unique
+  telefono      String?
+  cedula        String?  @unique  // Documento de identidad
+  direccion     String?
+  activo        Boolean  @default(true)
+  creditoMaximo Float    @default(0)  // Límite de crédito permitido
+  saldoDeuda    Float    @default(0)  // Deuda actual total
+  puntos        Int      @default(0)  // Puntos de fidelidad acumulados
+  creadoEn      DateTime @default(now())
+  actualizadoEn DateTime @updatedAt
+  
+  // Relaciones
+  ventas        Venta[]
+  deudas        Deuda[]
+  abonos        Abono[]
 }
 
 model Venta {
-  id        Int           @id @default(autoincrement())
-  fecha     DateTime      @default(now())
-  total     Float
-  clienteId Int?
-  cliente   Cliente?      @relation(fields: [clienteId], references: [id])
-  usuarioId Int
-  usuario   Usuario       @relation(fields: [usuarioId], references: [id])
-  detalles  DetalleVenta[]
+  id            Int           @id @default(autoincrement())
+  fecha         DateTime      @default(now())
+  total         Float
+  clienteId     Int?
+  cliente       Cliente?      @relation(fields: [clienteId], references: [id])
+  usuarioId     Int
+  usuario       Usuario       @relation(fields: [usuarioId], references: [id])
+  
+  // Información de pago
+  metodoPago    String        @default("EFECTIVO")  // EFECTIVO, TRANSFERENCIA, TARJETA, NEQUI, etc.
+  estadoPago    String        @default("PAGADO")    // PAGADO, FIADO, PARCIAL
+  montoPagado   Float         @default(0)           // Monto pagado en el momento
+  saldoPendiente Float        @default(0)           // Saldo que queda por pagar
+  
+  detalles      DetalleVenta[]
+  deuda         Deuda?        // Si es venta fiada, se crea una deuda
 }
 
 model Rol {
@@ -109,3 +129,34 @@ model AuditLog {
   detalle   String?
   fecha     DateTime @default(now())
 }
+
+// Modelo para control de deudas (ventas fiadas)
+model Deuda {
+  id             Int      @id @default(autoincrement())
+  clienteId      Int
+  cliente        Cliente  @relation(fields: [clienteId], references: [id])
+  ventaId        Int      @unique
+  venta          Venta    @relation(fields: [ventaId], references: [id])
+  montoTotal     Float    // Monto total de la deuda
+  saldoPendiente Float    // Saldo que falta por pagar
+  estado         String   @default("PENDIENTE")  // PENDIENTE, PAGADO, VENCIDO
+  fechaCreacion  DateTime @default(now())
+  fechaVencimiento DateTime?  // Opcional: fecha límite de pago
+  
+  abonos         Abono[]  // Historial de pagos/abonos
+}
+
+// Modelo para registro de abonos/pagos a deudas
+model Abono {
+  id        Int      @id @default(autoincrement())
+  deudaId   Int
+  deuda     Deuda    @relation(fields: [deudaId], references: [id])
+  clienteId Int
+  cliente   Cliente  @relation(fields: [clienteId], references: [id])
+  monto     Float
+  metodoPago String  @default("EFECTIVO")  // EFECTIVO, TRANSFERENCIA, TARJETA, etc.
+  fecha     DateTime @default(now())
+  usuarioId Int?     // Usuario que registró el abono
+  nota      String?  // Nota opcional sobre el abono
+}
+

@@ -1,11 +1,10 @@
 const { Client } = require('pg');
 const { DATABASE_URL } = require('../configuracion/entorno');
 
-const client = new Client({ connectionString: DATABASE_URL });
-
 async function waitForDb() {
   let retries = 30;
   while (retries > 0) {
+    const client = new Client({ connectionString: DATABASE_URL });
     try {
       await client.connect();
       console.log('Database connected successfully!');
@@ -14,6 +13,7 @@ async function waitForDb() {
     } catch (err) {
       console.log(`Waiting for database to be ready... (${retries} retries left). Error: ${err.message}`);
       retries--;
+      try { await client.end(); } catch (e) {} // Asegurar cierre si quedó abierto
       await new Promise(res => setTimeout(res, 2000));
     }
   }

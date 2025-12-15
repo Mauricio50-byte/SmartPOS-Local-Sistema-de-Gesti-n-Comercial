@@ -7,6 +7,7 @@ const { registrarRutasCliente } = require('./modulos/clientes/cliente.rutas')
 const { registrarRutasVenta } = require('./modulos/ventas/venta.rutas')
 const { registrarRutasAuth } = require('./modulos/auth/auth.rutas')
 const { registrarRutasUsuario } = require('./modulos/usuarios/usuario.rutas')
+const { registrarRutasDeuda } = require('./modulos/deudas/deuda.rutas')
 const { asegurarPermisosYAdmin } = require('./infraestructura/bootstrap')
 const { prisma } = require('./infraestructura/bd')
 
@@ -26,6 +27,7 @@ async function iniciar() {
   await registrarRutasProducto(app)
   await registrarRutasCliente(app)
   await registrarRutasVenta(app)
+  await registrarRutasDeuda(app)
 
   try {
     await app.listen({ port: PUERTO, host: '0.0.0.0' })
