@@ -13,7 +13,7 @@ import { ConexionQrComponent } from '../../shared/components/conexion-qr/conexio
   standalone: false,
 })
 export class HomePage implements OnInit {
-  currentView: 'dashboard' | 'users' | 'ventas' | 'productos' | 'modulos' = 'dashboard';
+  currentView: 'dashboard' | 'users' | 'ventas' | 'productos' | 'modulos' | 'finanzas' = 'dashboard';
   pageTitle: string = 'Dashboard';
   currentUser: UsuarioPerfil | null = null;
 
@@ -68,7 +68,7 @@ export class HomePage implements OnInit {
     this.setView(this.currentView);
   }
 
-  setView(view: 'dashboard' | 'users' | 'ventas' | 'productos' | 'modulos') {
+  setView(view: 'dashboard' | 'users' | 'ventas' | 'productos' | 'modulos' | 'finanzas') {
     this.currentView = view;
     if (view === 'dashboard') {
       this.pageTitle = 'Dashboard';
@@ -80,6 +80,8 @@ export class HomePage implements OnInit {
       this.pageTitle = 'Productos';
     } else if (view === 'modulos') {
       this.pageTitle = 'Gestión de Módulos';
+    } else if (view === 'finanzas') {
+      this.pageTitle = 'Gestión Financiera';
     }
   }
 

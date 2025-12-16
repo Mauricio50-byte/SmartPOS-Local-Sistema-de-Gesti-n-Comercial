@@ -10,6 +10,7 @@ const { registrarRutasVenta } = require('./modulos/ventas/venta.rutas')
 const { registrarRutasAuth } = require('./modulos/auth/auth.rutas')
 const { registrarRutasUsuario } = require('./modulos/usuarios/usuario.rutas')
 const { registrarRutasDeuda } = require('./modulos/deudas/deuda.rutas')
+const { registrarRutasGasto } = require('./modulos/gastos/gasto.rutas')
 const { registrarRutasSistema } = require('./modulos/sistema/sistema.rutas')
 const { registrarRutasModulos } = require('./modulos/sistema/modulo.rutas')
 const { asegurarPermisosYAdmin } = require('./infraestructura/bootstrap')
@@ -39,7 +40,8 @@ async function iniciar() {
         !req.raw.url.startsWith('/ventas') &&
         !req.raw.url.startsWith('/usuarios') &&
         !req.raw.url.startsWith('/modulos') &&
-        !req.raw.url.startsWith('/sistema')) {
+        !req.raw.url.startsWith('/sistema') &&
+        !req.raw.url.startsWith('/gastos')) {
         return res.sendFile('index.html')
     }
     // Si es una ruta de API desconocida, devolvemos 404 normal
@@ -74,12 +76,14 @@ async function iniciar() {
   await registrarRutasCliente(app)
   await registrarRutasVenta(app)
   await registrarRutasDeuda(app)
+  await registrarRutasGasto(app)
   await registrarRutasSistema(app)
   await registrarRutasModulos(app)
 
   try {
     await app.listen({ port: PUERTO, host: '0.0.0.0' })
   } catch (e) {
+    console.error(e)
     process.exit(1)
   }
 }

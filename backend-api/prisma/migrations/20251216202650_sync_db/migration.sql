@@ -258,6 +258,34 @@ CREATE TABLE "Abono" (
     CONSTRAINT "Abono_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Gasto" (
+    "id" SERIAL NOT NULL,
+    "proveedor" TEXT NOT NULL,
+    "concepto" TEXT NOT NULL,
+    "montoTotal" DOUBLE PRECISION NOT NULL,
+    "saldoPendiente" DOUBLE PRECISION NOT NULL,
+    "fechaVencimiento" TIMESTAMP(3),
+    "estado" TEXT NOT NULL DEFAULT 'PENDIENTE',
+    "fechaRegistro" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "categoria" TEXT,
+
+    CONSTRAINT "Gasto_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "PagoGasto" (
+    "id" SERIAL NOT NULL,
+    "gastoId" INTEGER NOT NULL,
+    "monto" DOUBLE PRECISION NOT NULL,
+    "fecha" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "metodoPago" TEXT NOT NULL DEFAULT 'EFECTIVO',
+    "usuarioId" INTEGER,
+    "nota" TEXT,
+
+    CONSTRAINT "PagoGasto_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Usuario_correo_key" ON "Usuario"("correo");
 
@@ -359,3 +387,9 @@ ALTER TABLE "Abono" ADD CONSTRAINT "Abono_deudaId_fkey" FOREIGN KEY ("deudaId") 
 
 -- AddForeignKey
 ALTER TABLE "Abono" ADD CONSTRAINT "Abono_clienteId_fkey" FOREIGN KEY ("clienteId") REFERENCES "Cliente"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "PagoGasto" ADD CONSTRAINT "PagoGasto_gastoId_fkey" FOREIGN KEY ("gastoId") REFERENCES "Gasto"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "PagoGasto" ADD CONSTRAINT "PagoGasto_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE SET NULL ON UPDATE CASCADE;

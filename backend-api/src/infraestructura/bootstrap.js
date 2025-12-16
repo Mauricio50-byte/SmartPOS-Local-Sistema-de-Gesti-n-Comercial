@@ -11,7 +11,8 @@ async function asegurarPermisosYAdmin() {
     'VENDER',
     'GESTION_INVENTARIO',
     'GESTION_CLIENTES',
-    'VER_REPORTES'
+    'VER_REPORTES',
+    'GESTION_FINANZAS'
   ]
 
   for (const clave of claves) {

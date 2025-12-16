@@ -18,6 +18,7 @@ model Usuario {
   roles        UsuarioRol[]
   permisos     UsuarioPermiso[]
   logs         AuditLog[]
+  pagosGastos  PagoGasto[]
 }
 
 // Modelo para gestión de Módulos del Sistema
@@ -291,4 +292,30 @@ model Abono {
   fecha     DateTime @default(now())
   usuarioId Int?
   nota      String?
+}
+
+model Gasto {
+  id               Int         @id @default(autoincrement())
+  proveedor        String
+  concepto         String
+  montoTotal       Float
+  saldoPendiente   Float
+  fechaVencimiento DateTime?
+  estado           String      @default("PENDIENTE") // PENDIENTE, PAGADO, VENCIDO
+  fechaRegistro    DateTime    @default(now())
+  categoria        String?
+  
+  pagos            PagoGasto[]
+}
+
+model PagoGasto {
+  id            Int      @id @default(autoincrement())
+  gastoId       Int
+  gasto         Gasto    @relation(fields: [gastoId], references: [id])
+  monto         Float
+  fecha         DateTime @default(now())
+  metodoPago    String   @default("EFECTIVO")
+  usuarioId     Int?
+  usuario       Usuario? @relation(fields: [usuarioId], references: [id])
+  nota          String?
 }

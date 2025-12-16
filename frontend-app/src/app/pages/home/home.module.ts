@@ -16,6 +16,7 @@ import { ClientRegistrationFormComponent } from './components/ventas/components/
 import { ModulosComponent } from './components/modulos/modulos.component';
 import { ProductosListaComponent } from './components/productos/modulos/productos-lista/productos-lista.component';
 import { ProductosFormComponent } from './components/productos/modulos/productos-form/productos-form.component';
+import { FinanzasComponent } from './components/finanzas/finanzas.component';
 
 @NgModule({
   imports: [
@@ -26,7 +27,8 @@ import { ProductosFormComponent } from './components/productos/modulos/productos
     SharedModule,
     ReactiveFormsModule,
     ProductosListaComponent,
-    ProductosFormComponent
+    ProductosFormComponent,
+    FinanzasComponent
   ],
   declarations: [
     HomePage,
@@ -35,7 +37,6 @@ import { ProductosFormComponent } from './components/productos/modulos/productos
     VentasComponent,
     ProductosComponent,
     PermissionsModalComponent,
-    ClientSelectorComponent,
     ClientSelectorComponent,
     ClientRegistrationFormComponent,
     ModulosComponent
