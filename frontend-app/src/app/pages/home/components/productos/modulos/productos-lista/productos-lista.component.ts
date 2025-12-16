@@ -23,6 +23,7 @@ interface Column {
 })
 export class ProductosListaComponent implements OnChanges, OnInit {
   @Input() products: Producto[] = [];
+  @Input() modulosActivos: Set<string> = new Set();
   @Output() edit = new EventEmitter<Producto>();
   @Output() delete = new EventEmitter<Producto>();
 
@@ -31,6 +32,8 @@ export class ProductosListaComponent implements OnChanges, OnInit {
   selectedModule: string = 'TODOS';
   
   displayedColumns: Column[] = [];
+  
+  availableModules: any[] = [];
 
   // Configuración de Columnas Base (Comunes)
   private baseColumns: Column[] = [
@@ -93,12 +96,32 @@ export class ProductosListaComponent implements OnChanges, OnInit {
   }
 
   ngOnInit() {
+    this.updateAvailableModules();
     this.updateColumns();
     this.filterProducts();
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['products']) {
+      this.filterProducts();
+    }
+    if (changes['modulosActivos']) {
+      this.updateAvailableModules();
+    }
+  }
+
+  updateAvailableModules() {
+    this.availableModules = this.modules.filter(m => {
+      if (m.id === 'TODOS' || m.id === 'GENERAL') return true;
+      // Convertir el ID del módulo a minúsculas para coincidir con modulosActivos (ej: ROPA -> ropa)
+      return this.modulosActivos.has(m.id.toLowerCase()) || this.modulosActivos.has(m.id);
+    });
+    
+    // Si el módulo seleccionado ya no está disponible, volver a TODOS
+    const isSelectedAvailable = this.availableModules.some(m => m.id === this.selectedModule);
+    if (!isSelectedAvailable) {
+      this.selectedModule = 'TODOS';
+      this.updateColumns();
       this.filterProducts();
     }
   }

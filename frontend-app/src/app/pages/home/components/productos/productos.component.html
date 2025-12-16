@@ -14,6 +14,7 @@
         <div *ngIf="segment === 'info'" class="info-view fade-in">
             <app-productos-lista 
                 [products]="products" 
+                [modulosActivos]="modulosActivos"
                 (edit)="onEdit($event)" 
                 (delete)="onDelete($event)">
             </app-productos-lista>

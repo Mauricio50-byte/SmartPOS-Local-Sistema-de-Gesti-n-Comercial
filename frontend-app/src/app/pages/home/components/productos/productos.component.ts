@@ -31,9 +31,11 @@ export class ProductosComponent implements OnInit {
 
   loadModulos() {
     this.moduloService.listarModulos().subscribe(modulos => {
+      const nuevosModulos = new Set<string>();
       modulos.forEach(m => {
-        if (m.activo) this.modulosActivos.add(m.id);
+        if (m.activo) nuevosModulos.add(m.id);
       });
+      this.modulosActivos = nuevosModulos;
     });
   }
 

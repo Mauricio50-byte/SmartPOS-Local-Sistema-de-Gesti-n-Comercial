@@ -1,6 +1,6 @@
 <div class="filters-container">
   <div class="search-wrapper">
-    <ion-searchbar placeholder="Buscar por nombre o SKU..." animated="true" debounce="500"
+    <ion-searchbar placeholder="Buscar por nombre, SKU o unidad..." animated="true" debounce="500"
       (ionInput)="onSearch($event)"></ion-searchbar>
   </div>
   
@@ -8,7 +8,7 @@
     <ion-item lines="none" class="filter-item">
       <ion-icon name="filter-outline" slot="start" color="medium"></ion-icon>
       <ion-select [value]="selectedModule" (ionChange)="onModuleChange($event)" interface="popover" placeholder="Filtrar por Módulo">
-        <ion-select-option *ngFor="let mod of modules" [value]="mod.id">{{ mod.label }}</ion-select-option>
+        <ion-select-option *ngFor="let mod of availableModules" [value]="mod.id">{{ mod.label }}</ion-select-option>
       </ion-select>
     </ion-item>
   </div>
