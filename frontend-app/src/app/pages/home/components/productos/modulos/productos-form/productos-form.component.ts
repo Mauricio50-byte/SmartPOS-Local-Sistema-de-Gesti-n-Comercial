@@ -2,6 +2,8 @@ import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChange
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import { camera, trash } from 'ionicons/icons';
 import { Producto } from 'src/app/core/models/producto';
 
 import { FormularioRopaComponent } from '../formulario-ropa/formulario-ropa.component';
@@ -39,6 +41,7 @@ export class ProductosFormComponent implements OnInit, OnChanges {
 
   constructor(private fb: FormBuilder) {
     this.productForm = this.initForm();
+    addIcons({ camera, trash });
   }
 
   ngOnInit() {}
@@ -139,6 +142,7 @@ export class ProductosFormComponent implements OnInit, OnChanges {
   }
 
   patchForm(product: Producto) {
+    this.previewImage = null;
     const formValue: any = {
       tipo: product.tipo || 'GENERAL',
       nombre: product.nombre,
@@ -170,6 +174,7 @@ export class ProductosFormComponent implements OnInit, OnChanges {
   }
 
   resetForm() {
+    this.previewImage = null;
     this.productForm.reset({
       tipo: 'GENERAL',
       nombre: '',
@@ -221,6 +226,27 @@ export class ProductosFormComponent implements OnInit, OnChanges {
       notas: '',
       activo: true
     });
+  }
+
+  previewImage: string | null = null;
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.previewImage = reader.result as string;
+        this.productForm.patchValue({ imagen: this.previewImage });
+        this.productForm.get('imagen')?.markAsDirty();
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  removeImage() {
+    this.previewImage = null;
+    this.productForm.patchValue({ imagen: '' });
+    this.productForm.get('imagen')?.markAsDirty();
   }
 
   onSubmit() {

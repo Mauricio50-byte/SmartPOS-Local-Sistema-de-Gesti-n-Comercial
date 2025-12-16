@@ -1,50 +1,63 @@
-<div class="search-container">
-  <ion-searchbar placeholder="Buscar por nombre..." animated="true" debounce="500" (ionInput)="onSearch($event)">
-  </ion-searchbar>
+<div class="filters-container">
+  <div class="search-wrapper">
+    <ion-searchbar placeholder="Buscar por nombre o SKU..." animated="true" debounce="500"
+      (ionInput)="onSearch($event)"></ion-searchbar>
+  </div>
+  
+  <div class="module-selector">
+    <ion-item lines="none" class="filter-item">
+      <ion-icon name="filter-outline" slot="start" color="medium"></ion-icon>
+      <ion-select [value]="selectedModule" (ionChange)="onModuleChange($event)" interface="popover" placeholder="Filtrar por Módulo">
+        <ion-select-option *ngFor="let mod of modules" [value]="mod.id">{{ mod.label }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </div>
 </div>
 
 <div class="table-container">
   <table class="products-table">
     <thead>
       <tr>
-        <th>Nombre</th>
-        <th>Tipo</th>
-        <th>Categoría</th>
-        <th>Marca</th>
-        <th>Precio Venta</th>
-        <th>Stock</th>
-        <th>Estado</th>
+        <th *ngFor="let col of displayedColumns">{{ col.label }}</th>
         <th>Acciones</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let product of filteredProducts">
-        <td>
-          <strong>{{ product.nombre }}</strong>
-          <small *ngIf="product.sku" style="display: block; color: #666;">SKU: {{ product.sku }}</small>
+        <td *ngFor="let col of displayedColumns" [attr.data-label]="col.label">
+          <ng-container [ngSwitch]="col.type">
+            <!-- Currency -->
+            <span *ngSwitchCase="'currency'">{{ getValue(product, col) | currency:'USD' }}</span>
+            
+            <!-- Date -->
+            <span *ngSwitchCase="'date'">{{ getValue(product, col) | date:'shortDate' }}</span>
+            
+            <!-- Badge (Estado) -->
+            <ion-badge *ngSwitchCase="'badge'" [color]="col.badgeColor ? col.badgeColor(getValue(product, col)) : 'primary'">
+              {{ getValue(product, col) ? 'Activo' : 'Inactivo' }}
+            </ion-badge>
+
+            <!-- Boolean -->
+            <span *ngSwitchCase="'boolean'">
+              <ion-icon [name]="getValue(product, col) ? 'checkmark-circle' : 'close-circle'" 
+                [color]="getValue(product, col) ? 'success' : 'medium'"></ion-icon>
+              {{ getValue(product, col) ? 'Sí' : 'No' }}
+            </span>
+
+            <!-- Default Text -->
+            <span *ngSwitchDefault>
+              <!-- Special case for Name to show SKU -->
+              <ng-container *ngIf="col.key === 'nombre'; else simpleText">
+                <strong>{{ product.nombre }}</strong>
+              </ng-container>
+              <ng-template #simpleText>
+                {{ getValue(product, col) || '-' }}
+              </ng-template>
+            </span>
+          </ng-container>
         </td>
-        <td>
-          <ion-badge color="tertiary">{{ product.tipo }}</ion-badge>
-        </td>
-        <td>{{ product.categoria || '-' }}</td>
-        <td>{{ product.marca || '-' }}</td>
-        <td>{{ product.precioVenta | currency:'USD' }}</td>
-        <td>
-          <span [class.low-stock]="product.stockMinimo && product.stock <= product.stockMinimo"
-            [class.out-of-stock]="product.stock === 0">
-            {{ product.stock }}
-          </span>
-          <small *ngIf="product.stockMinimo && product.stock <= product.stockMinimo"
-            style="display: block; color: #e74c3c; font-size: 0.75rem;">
-            ⚠️ Bajo stock
-          </small>
-        </td>
-        <td>
-          <ion-badge [color]="product.activo ? 'success' : 'medium'">
-            {{ product.activo ? 'Activo' : 'Inactivo' }}
-          </ion-badge>
-        </td>
-        <td class="actions">
+        
+        <td class="actions" data-label="Acciones">
           <ion-button fill="clear" size="small" (click)="onEdit(product)">
             <ion-icon slot="icon-only" name="create-outline"></ion-icon>
           </ion-button>
@@ -53,8 +66,11 @@
           </ion-button>
         </td>
       </tr>
+      
       <tr *ngIf="filteredProducts.length === 0">
-        <td colspan="8" class="empty-cell">No se encontraron productos.</td>
+        <td [attr.colspan]="displayedColumns.length + 1" class="empty-cell">
+          No se encontraron productos con los filtros seleccionados.
+        </td>
       </tr>
     </tbody>
   </table>

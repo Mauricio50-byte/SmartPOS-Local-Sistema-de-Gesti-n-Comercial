@@ -16,7 +16,10 @@ const { asegurarPermisosYAdmin } = require('./infraestructura/bootstrap')
 const { prisma } = require('./infraestructura/bd')
 
 async function iniciar() {
-  const app = fastify({ logger: true })
+  const app = fastify({ 
+    logger: true,
+    bodyLimit: 10485760 // 10MB limit for image uploads
+  })
   await app.register(cors, { origin: true })
   if (JWT_SECRETO) await app.register(jwtPlugin, { secret: JWT_SECRETO })
   

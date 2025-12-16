@@ -48,8 +48,19 @@
                 <ion-textarea formControlName="descripcion" rows="3"></ion-textarea>
             </ion-item>
             <ion-item class="input-item">
-                <ion-label position="stacked">URL de Imagen</ion-label>
-                <ion-input formControlName="imagen"></ion-input>
+                <ion-label position="stacked">Imagen del Producto (Opcional)</ion-label>
+                <input type="file" (change)="onFileSelected($event)" accept="image/*" #fileInput hidden>
+                <ion-button expand="block" fill="outline" (click)="fileInput.click()" class="ion-margin-top">
+                    <ion-icon name="camera" slot="start"></ion-icon>
+                    Seleccionar Imagen
+                </ion-button>
+                <div *ngIf="previewImage || productForm.get('imagen')?.value" class="ion-margin-top ion-text-center">
+                    <img [src]="previewImage || productForm.get('imagen')?.value" style="max-height: 200px; border-radius: 8px;">
+                    <ion-button fill="clear" color="danger" (click)="removeImage()">
+                        <ion-icon name="trash" slot="start"></ion-icon>
+                        Quitar Imagen
+                    </ion-button>
+                </div>
             </ion-item>
         </div>
 
