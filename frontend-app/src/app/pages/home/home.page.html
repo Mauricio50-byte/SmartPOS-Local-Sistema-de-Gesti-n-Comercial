@@ -14,7 +14,7 @@
         <ion-item button [class.active]="currentView === 'dashboard'" (click)="setView('dashboard')" title="Inicio"
           aria-label="Inicio">
           <ion-icon slot="start" name="home-outline"></ion-icon>
-          <ion-label>Easthotto</ion-label>
+          <ion-label>Dashboard</ion-label>
         </ion-item>
 
         <ion-item *ngIf="hasPermission('GESTION_INVENTARIO')" button [class.active]="currentView === 'productos'"

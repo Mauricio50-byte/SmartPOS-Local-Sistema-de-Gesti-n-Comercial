@@ -14,6 +14,8 @@ import { PermissionsModalComponent } from '../../shared/components/permissions-m
 import { ClientSelectorComponent } from './components/ventas/components/client-selector/client-selector.component';
 import { ClientRegistrationFormComponent } from './components/ventas/components/client-registration-form/client-registration-form.component';
 import { ModulosComponent } from './components/modulos/modulos.component';
+import { ProductosListaComponent } from './components/productos/modulos/productos-lista/productos-lista.component';
+import { ProductosFormComponent } from './components/productos/modulos/productos-form/productos-form.component';
 
 @NgModule({
   imports: [
@@ -22,7 +24,9 @@ import { ModulosComponent } from './components/modulos/modulos.component';
     IonicModule,
     HomePageRoutingModule,
     SharedModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ProductosListaComponent,
+    ProductosFormComponent
   ],
   declarations: [
     HomePage,

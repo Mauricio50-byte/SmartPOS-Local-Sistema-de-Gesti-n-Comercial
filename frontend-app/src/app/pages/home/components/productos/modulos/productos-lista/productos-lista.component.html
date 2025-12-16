@@ -1,0 +1,61 @@
+<div class="search-container">
+  <ion-searchbar placeholder="Buscar por nombre..." animated="true" debounce="500" (ionInput)="onSearch($event)">
+  </ion-searchbar>
+</div>
+
+<div class="table-container">
+  <table class="products-table">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Tipo</th>
+        <th>Categoría</th>
+        <th>Marca</th>
+        <th>Precio Venta</th>
+        <th>Stock</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let product of filteredProducts">
+        <td>
+          <strong>{{ product.nombre }}</strong>
+          <small *ngIf="product.sku" style="display: block; color: #666;">SKU: {{ product.sku }}</small>
+        </td>
+        <td>
+          <ion-badge color="tertiary">{{ product.tipo }}</ion-badge>
+        </td>
+        <td>{{ product.categoria || '-' }}</td>
+        <td>{{ product.marca || '-' }}</td>
+        <td>{{ product.precioVenta | currency:'USD' }}</td>
+        <td>
+          <span [class.low-stock]="product.stockMinimo && product.stock <= product.stockMinimo"
+            [class.out-of-stock]="product.stock === 0">
+            {{ product.stock }}
+          </span>
+          <small *ngIf="product.stockMinimo && product.stock <= product.stockMinimo"
+            style="display: block; color: #e74c3c; font-size: 0.75rem;">
+            ⚠️ Bajo stock
+          </small>
+        </td>
+        <td>
+          <ion-badge [color]="product.activo ? 'success' : 'medium'">
+            {{ product.activo ? 'Activo' : 'Inactivo' }}
+          </ion-badge>
+        </td>
+        <td class="actions">
+          <ion-button fill="clear" size="small" (click)="onEdit(product)">
+            <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" size="small" color="danger" (click)="onDelete(product)">
+            <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+          </ion-button>
+        </td>
+      </tr>
+      <tr *ngIf="filteredProducts.length === 0">
+        <td colspan="8" class="empty-cell">No se encontraron productos.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
