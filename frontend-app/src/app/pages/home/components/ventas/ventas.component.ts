@@ -65,6 +65,15 @@ export class VentasComponent implements OnInit {
     this.loadProducts();
     this.loadClientes();
     this.loadCurrentUser();
+
+    // Suscribirse a nuevos clientes
+    this.clienteService.clienteCreado$.subscribe(cliente => {
+      this.loadClientes(); // Recargar lista
+      // Si el cliente fue creado desde este componente, seleccionarlo
+      if (this.mostrarRegistroCliente) {
+        this.onClienteSeleccionado(cliente);
+      }
+    });
   }
 
   loadCurrentUser() {
@@ -134,20 +143,22 @@ export class VentasComponent implements OnInit {
       (ctrl) => ctrl.value.product.id === product.id
     );
 
+    const precioVenta = Number(product.precioVenta) || 0;
+
     if (existingIndex > -1) {
       const control = this.detalles.at(existingIndex);
-      const newQuantity = control.value.quantity + 1;
+      const newQuantity = Number(control.value.quantity) + 1;
       control.patchValue({
         quantity: newQuantity,
-        total: newQuantity * product.precioVenta
+        total: newQuantity * precioVenta
       });
     } else {
       const detalleGroup = this.fb.group({
         product: [product],
         productoId: [product.id, Validators.required],
         quantity: [1, [Validators.required, Validators.min(1)]],
-        precioUnitario: [product.precioVenta, Validators.required],
-        total: [product.precioVenta, Validators.required]
+        precioUnitario: [precioVenta, Validators.required],
+        total: [precioVenta, Validators.required]
       });
       this.detalles.push(detalleGroup);
     }
@@ -246,6 +257,26 @@ export class VentasComponent implements OnInit {
     await alert.present();
   }
 
+  async registrarNuevoCliente(datos: any) {
+    const loading = await this.loadingController.create({
+      message: 'Registrando cliente...'
+    });
+    await loading.present();
+
+    this.clienteService.crearCliente(datos).subscribe({
+      next: async (nuevoCliente) => {
+        await loading.dismiss();
+        await this.mostrarAlerta('Cliente Registrado', 'El cliente ha sido registrado exitosamente.');
+        // La suscripción en ngOnInit se encargará de seleccionarlo y cerrar el formulario
+      },
+      error: async (err) => {
+        await loading.dismiss();
+        console.error('Error al registrar cliente', err);
+        await this.mostrarAlerta('Error', 'No se pudo registrar el cliente');
+      }
+    });
+  }
+
   async validarCreditoDisponible(): Promise<boolean> {
     if (!this.clienteSeleccionado) return false;
 
@@ -287,8 +318,10 @@ export class VentasComponent implements OnInit {
   }
 
   async pagar() {
+    console.log('Intento de pago iniciado');
+    
     if (this.detalles.length === 0) {
-      await this.mostrarToast('Agregue productos al carrito', 'warning');
+      await this.mostrarAlerta('Carrito Vacío', 'Agregue productos al carrito antes de pagar.');
       return;
     }
 
@@ -322,84 +355,168 @@ export class VentasComponent implements OnInit {
     }
 
     if (this.ventaForm.invalid) {
-      await this.mostrarToast('Formulario inválido', 'danger');
+      console.log('Formulario inválido:', this.ventaForm.errors);
+      Object.keys(this.ventaForm.controls).forEach(key => {
+        const control = this.ventaForm.get(key);
+        if (control?.invalid) {
+          console.log(`Campo inválido: ${key}`, control.errors);
+        }
+      });
+      await this.mostrarAlerta('Formulario Inválido', 'Por favor revise los datos de la venta. Asegúrese de que todos los campos requeridos estén completos.');
       return;
     }
 
-    const loading = await this.loadingController.create({
-      message: 'Procesando venta...'
+    console.log('Mostrando alerta de confirmación...');
+    const confirmAlert = await this.alertController.create({
+      header: 'Confirmar Venta',
+      subHeader: this.tipoVenta === 'FIADO' ? 'Venta a Crédito' : 'Venta de Contado',
+      message: `¿Confirma procesar la venta por valor de <strong>$${this.totalControl.value.toLocaleString()}</strong>?`,
+      buttons: [
+        { 
+          text: 'Cancelar', 
+          role: 'cancel',
+          handler: () => {
+            console.log('Venta cancelada por usuario');
+          }
+        },
+        {
+          text: 'Procesar Venta',
+          handler: () => {
+            console.log('Usuario confirmó venta');
+            this.procesarVentaReal();
+          }
+        }
+      ]
     });
-    await loading.present();
+    await confirmAlert.present();
+  }
 
-    this.ventaForm.patchValue({ fecha: new Date().toISOString() });
+  async procesarVentaReal() {
+    let loading: HTMLIonLoadingElement | undefined;
+    
+    try {
+      loading = await this.loadingController.create({
+        message: 'Procesando venta...'
+      });
+      await loading.present();
 
-    const ventaData = this.ventaForm.value;
-    const payload: any = {
-      usuarioId: ventaData.usuarioId,
-      metodoPago: ventaData.metodoPago,
-      estadoPago: ventaData.estadoPago,
-      items: ventaData.detalles.map((d: any) => ({
-        productoId: d.productoId,
-        cantidad: d.quantity
-      }))
-    };
+      this.ventaForm.patchValue({ fecha: new Date().toISOString() });
 
-    // Agregar cliente si existe
-    if (this.clienteSeleccionado) {
-      payload.clienteId = this.clienteSeleccionado.id;
-    }
+      const ventaData = this.ventaForm.value;
+      const payload: any = {
+        usuarioId: ventaData.usuarioId,
+        metodoPago: ventaData.metodoPago,
+        estadoPago: ventaData.estadoPago,
+        items: ventaData.detalles.map((d: any) => ({
+          productoId: d.productoId,
+          cantidad: d.quantity
+        }))
+      };
 
-    // Agregar datos de nuevo cliente si se va a registrar
-    if (ventaData.registrarCliente) {
-      payload.registrarCliente = true;
-      payload.datosCliente = ventaData.datosCliente;
-    }
-
-    // Si es venta al contado, el monto pagado es el total
-    if (ventaData.estadoPago === 'PAGADO') {
-      payload.montoPagado = ventaData.total;
-    }
-
-    this.ventaService.crearVenta(payload).subscribe({
-      next: async (venta) => {
-        await loading.dismiss();
-        this.detalles.clear();
-        this.calculateTotal();
-        this.clienteSeleccionado = null;
-        this.mostrarRegistroCliente = false;
-        this.tipoVenta = 'CONTADO';
-        this.ventaForm.patchValue({
-          estadoPago: 'PAGADO',
-          clienteId: null,
-          registrarCliente: false
-        });
-        this.datosClienteGroup.reset();
-
-        let mensaje = `Venta registrada correctamente.\n`;
-        mensaje += `Total: $${venta.total.toLocaleString()}\n`;
-        mensaje += `Método: ${venta.metodoPago}`;
-
-        if (venta.estadoPago === 'FIADO') {
-          mensaje += `\n\n⚠️ Venta FIADA registrada`;
-        }
-
-        await this.mostrarAlerta('Venta Exitosa', mensaje);
-
-        // Recargar clientes si se registró uno nuevo
-        if (payload.registrarCliente) {
-          this.loadClientes();
-        }
-      },
-      error: async (err) => {
-        await loading.dismiss();
-        console.error('Error creating sale:', err);
-        if (err.error && err.error.message) {
-          await this.mostrarAlerta('Error', `No se pudo procesar la venta: ${err.error.message}`);
-        } else {
-          await this.mostrarAlerta('Error', 'No se pudo procesar la venta. Verifique conexión o stock.');
-        }
+      // Agregar cliente si existe
+      if (this.clienteSeleccionado) {
+        payload.clienteId = this.clienteSeleccionado.id;
       }
-    });
+
+      // Agregar datos de nuevo cliente si se va a registrar
+      if (ventaData.registrarCliente) {
+        payload.registrarCliente = true;
+        payload.datosCliente = ventaData.datosCliente;
+      }
+
+      // Si es venta al contado, el monto pagado es el total
+      if (ventaData.estadoPago === 'PAGADO') {
+        payload.montoPagado = Number(ventaData.total);
+      } else {
+        payload.montoPagado = Number(ventaData.montoPagado || 0);
+      }
+
+      // Asegurar que usuarioId sea numérico
+      if (payload.usuarioId) {
+        payload.usuarioId = Number(payload.usuarioId);
+      }
+      
+      // LOG DE DEPURACIÓN
+      console.log('Payload enviado a crearVenta:', JSON.stringify(payload, null, 2));
+
+      this.ventaService.crearVenta(payload).subscribe({
+        next: async (venta) => {
+          console.log('Venta creada exitosamente:', venta);
+          
+          if (!venta) {
+            console.warn('Advertencia: El servidor retornó venta nula, usando datos locales para alerta');
+            // Construir objeto venta temporal para que la UI no falle
+            venta = {
+              id: 0, // Dummy ID
+              fecha: new Date().toISOString(),
+              usuarioId: payload.usuarioId,
+              detalles: [],
+              total: payload.montoPagado || 0,
+              metodoPago: payload.metodoPago,
+              estadoPago: payload.estadoPago,
+              montoPagado: payload.montoPagado || 0,
+              saldoPendiente: 0,
+              cliente: payload.registrarCliente ? payload.datosCliente : this.clienteSeleccionado
+            } as any;
+          }
+
+          // Notificar si se creó un nuevo cliente
+          if (venta.cliente && payload.registrarCliente) {
+            this.clienteService.notificarNuevoCliente(venta.cliente);
+          }
+
+          this.detalles.clear();
+          this.calculateTotal();
+          this.clienteSeleccionado = null;
+          this.mostrarRegistroCliente = false;
+          this.tipoVenta = 'CONTADO';
+          this.ventaForm.patchValue({
+            estadoPago: 'PAGADO',
+            clienteId: null,
+            registrarCliente: false
+          });
+          this.datosClienteGroup.reset();
+
+          let mensaje = `Venta registrada correctamente.\n`;
+          mensaje += `Total: $${venta.total.toLocaleString()}\n`;
+          mensaje += `Método: ${venta.metodoPago}`;
+
+          if (venta.estadoPago === 'FIADO') {
+            mensaje += `\n\n⚠️ Venta FIADA registrada`;
+          }
+
+          if (loading) await loading.dismiss();
+
+          const successAlert = await this.alertController.create({
+            header: '¡Venta Exitosa!',
+            subHeader: venta.estadoPago === 'FIADO' ? 'Registrada en Cuentas por Cobrar' : 'Pago Registrado',
+            message: mensaje,
+            buttons: ['Aceptar'],
+            cssClass: 'success-alert'
+          });
+          await successAlert.present();
+
+          // Recargar clientes si se registró uno nuevo
+          if (payload.registrarCliente) {
+            this.loadClientes();
+          }
+        },
+        error: async (err) => {
+          console.error('Error creating sale:', err);
+          if (loading) await loading.dismiss();
+          
+          if (err.error && err.error.message) {
+            await this.mostrarAlerta('Error', `No se pudo procesar la venta: ${err.error.message}`);
+          } else {
+            await this.mostrarAlerta('Error', 'No se pudo procesar la venta. Verifique conexión o stock.');
+          }
+        }
+      });
+    } catch (e) {
+      console.error('Error inesperado en procesarVentaReal:', e);
+      if (loading) await loading.dismiss();
+      await this.mostrarAlerta('Error Crítico', 'Ocurrió un error inesperado al intentar procesar la venta.');
+    }
   }
 
   async mostrarAlerta(header: string, message: string) {

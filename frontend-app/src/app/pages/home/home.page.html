@@ -35,7 +35,7 @@
           <ion-label>Usuarios</ion-label>
         </ion-item>
 
-        <ion-item *ngIf="hasPermission('GESTION_CLIENTES')" button title="Clientes" aria-label="Clientes">
+        <ion-item *ngIf="hasPermission('GESTION_CLIENTES')" button [class.active]="currentView === 'clientes'" (click)="setView('clientes')" title="Clientes" aria-label="Clientes">
           <ion-icon slot="start" name="people-outline"></ion-icon>
           <ion-label>Clientes</ion-label>
         </ion-item>
@@ -116,6 +116,7 @@
       <app-users *ngIf="currentView === 'users'"></app-users>
       <app-ventas *ngIf="currentView === 'ventas'"></app-ventas>
       <app-productos *ngIf="currentView === 'productos'"></app-productos>
+      <app-clientes *ngIf="currentView === 'clientes'"></app-clientes>
       <app-modulos *ngIf="currentView === 'modulos'"></app-modulos>
       <app-finanzas *ngIf="currentView === 'finanzas'"></app-finanzas>
     </div>

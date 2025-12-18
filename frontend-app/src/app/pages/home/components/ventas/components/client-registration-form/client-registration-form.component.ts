@@ -10,8 +10,15 @@ import { FormGroup } from '@angular/forms';
 export class ClientRegistrationFormComponent {
     @Input() datosClienteGroup!: FormGroup;
     @Output() cancelar = new EventEmitter<void>();
+    @Output() guardar = new EventEmitter<any>();
 
     onCancelar() {
         this.cancelar.emit();
+    }
+
+    onGuardar() {
+        if (this.datosClienteGroup.valid) {
+            this.guardar.emit(this.datosClienteGroup.value);
+        }
     }
 }

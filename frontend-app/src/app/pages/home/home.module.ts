@@ -17,6 +17,7 @@ import { ModulosComponent } from './components/modulos/modulos.component';
 import { ProductosListaComponent } from './components/productos/modulos/productos-lista/productos-lista.component';
 import { ProductosFormComponent } from './components/productos/modulos/productos-form/productos-form.component';
 import { FinanzasComponent } from './components/finanzas/finanzas.component';
+import { ClientesComponent } from './components/clientes/clientes.component';
 
 @NgModule({
   imports: [
@@ -28,7 +29,8 @@ import { FinanzasComponent } from './components/finanzas/finanzas.component';
     ReactiveFormsModule,
     ProductosListaComponent,
     ProductosFormComponent,
-    FinanzasComponent
+    FinanzasComponent,
+    ClientesComponent
   ],
   declarations: [
     HomePage,

@@ -21,6 +21,9 @@ services:
       - sistema-pos
     ports:
       - "3000:3000"
+    volumes:
+      - ./backend-api:/app
+      - /app/node_modules
 
   frontend:
     build: ./frontend-app

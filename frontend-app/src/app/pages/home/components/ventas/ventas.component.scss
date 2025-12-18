@@ -106,6 +106,12 @@
         }
     }
 
+    // Corrección de colores para inputs y labels
+    ion-item, ion-label, ion-input, ion-select, ion-datetime, ion-textarea {
+        --color: var(--ion-color-dark, #222428);
+        color: var(--ion-color-dark, #222428);
+    }
+
     .ticket-footer {
         padding: 16px;
         border-top: 1px solid #f0f0f0;

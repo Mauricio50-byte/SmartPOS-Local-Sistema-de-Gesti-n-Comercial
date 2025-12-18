@@ -42,7 +42,7 @@
         </app-client-selector>
 
         <app-client-registration-form *ngIf="mostrarRegistroCliente" [datosClienteGroup]="datosClienteGroup"
-          (cancelar)="cancelarRegistroCliente()">
+          (cancelar)="cancelarRegistroCliente()" (guardar)="registrarNuevoCliente($event)">
         </app-client-registration-form>
       </div>
 

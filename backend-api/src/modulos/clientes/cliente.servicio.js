@@ -73,9 +73,9 @@ async function crearCliente(datos) {
   return prisma.cliente.create({
     data: {
       nombre,
-      correo,
+      correo: correo || null, // Convertir '' a null para evitar error de unique
       telefono,
-      cedula,
+      cedula: cedula || null, // Convertir '' a null para evitar error de unique
       direccion,
       creditoMaximo
     }
@@ -91,6 +91,7 @@ async function actualizarCliente(id, datos) {
   if (datos.direccion !== undefined) campos.direccion = datos.direccion
   if (typeof datos.activo === 'boolean') campos.activo = datos.activo
   if (typeof datos.creditoMaximo === 'number') campos.creditoMaximo = datos.creditoMaximo
+  if (typeof datos.saldoDeuda === 'number') campos.saldoDeuda = datos.saldoDeuda
 
   return prisma.cliente.update({ where: { id }, data: campos })
 }

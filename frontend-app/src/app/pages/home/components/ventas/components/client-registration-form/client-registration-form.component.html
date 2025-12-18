@@ -21,7 +21,12 @@
         <ion-input formControlName="creditoMaximo" type="number" placeholder="0"></ion-input>
     </ion-item>
 
-    <ion-button size="small" fill="clear" color="danger" (click)="onCancelar()">
-        Cancelar
-    </ion-button>
+    <div class="form-actions">
+        <ion-button size="small" fill="clear" color="danger" (click)="onCancelar()">
+            Cancelar
+        </ion-button>
+        <ion-button size="small" fill="solid" color="primary" (click)="onGuardar()" [disabled]="datosClienteGroup.invalid">
+            Guardar Cliente
+        </ion-button>
+    </div>
 </div>

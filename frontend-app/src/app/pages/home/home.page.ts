@@ -13,7 +13,7 @@ import { ConexionQrComponent } from '../../shared/components/conexion-qr/conexio
   standalone: false,
 })
 export class HomePage implements OnInit {
-  currentView: 'dashboard' | 'users' | 'ventas' | 'productos' | 'modulos' | 'finanzas' = 'dashboard';
+  currentView: 'dashboard' | 'users' | 'ventas' | 'productos' | 'modulos' | 'finanzas' | 'clientes' = 'dashboard';
   pageTitle: string = 'Dashboard';
   currentUser: UsuarioPerfil | null = null;
 
@@ -64,11 +64,14 @@ export class HomePage implements OnInit {
     if (this.currentView === 'modulos' && !this.hasPermission('ADMIN')) {
       this.currentView = 'dashboard';
     }
+    if (this.currentView === 'clientes' && !this.hasPermission('GESTION_CLIENTES')) {
+      this.currentView = 'dashboard';
+    }
     // Update title
     this.setView(this.currentView);
   }
 
-  setView(view: 'dashboard' | 'users' | 'ventas' | 'productos' | 'modulos' | 'finanzas') {
+  setView(view: 'dashboard' | 'users' | 'ventas' | 'productos' | 'modulos' | 'finanzas' | 'clientes') {
     this.currentView = view;
     if (view === 'dashboard') {
       this.pageTitle = 'Dashboard';
@@ -78,6 +81,8 @@ export class HomePage implements OnInit {
       this.pageTitle = 'Ventas';
     } else if (view === 'productos') {
       this.pageTitle = 'Productos';
+    } else if (view === 'clientes') {
+      this.pageTitle = 'Gestión de Clientes';
     } else if (view === 'modulos') {
       this.pageTitle = 'Gestión de Módulos';
     } else if (view === 'finanzas') {
