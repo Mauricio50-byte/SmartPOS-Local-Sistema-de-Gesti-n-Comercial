@@ -18,13 +18,13 @@
 }
 
 ion-menu {
-  --width: 64px;
-  --min-width: 64px;
+  --width: 280px;
+  --min-width: 280px;
 }
 
 ion-split-pane {
-  --side-width: 64px;
-  --side-max-width: 64px;
+  --side-width: 280px;
+  --side-max-width: 280px;
 }
 
 .sidebar .brand {
@@ -63,8 +63,7 @@ ion-split-pane {
 }
 
 .sidebar .brand-info {
-  display: none;
-  /* Hidden by default on small screens/collapsed */
+  display: flex;
   flex-direction: column;
   opacity: 0;
   animation: fadeIn 0.3s forwards;
@@ -109,20 +108,21 @@ ion-split-pane {
   --color: var(--brand-teal-contrast);
   --background: transparent;
   --border-radius: var(--radius-12);
-  --padding-start: 0;
+  --padding-start: 12px;
   --inner-padding-end: 0;
-  --min-height: 38px;
+  --min-height: 48px;
   margin: 0;
   display: flex;
-  justify-content: center;
+  align-items: center;
 }
 
 .sidebar ion-item ion-icon {
-  font-size: 18px;
+  font-size: 20px;
   color: var(--brand-teal-contrast);
   background: rgba(255, 255, 255, 0.12);
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 6px;
+  margin-right: 12px;
 }
 
 .sidebar ion-item:hover ion-icon {
@@ -135,7 +135,9 @@ ion-split-pane {
 }
 
 .sidebar ion-item ion-label {
-  display: none;
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 500;
 }
 
 .sidebar ion-item:hover {
@@ -153,17 +155,32 @@ ion-split-pane {
 
 .dashboard {
   --background: var(--ion-color-light);
-  padding-bottom: 84px;
+  height: 100%;
+}
+
+.content-container {
+  height: calc(100% - 56px); // Subtract header height approx
+  overflow-y: auto;
+  position: relative;
+  
+  @media (max-width: 767px) {
+    height: calc(100% - 56px - 70px); // Subtract header and bottom tabs
+  }
+}
+
+.topbar {
+  background: #134e4a;
 }
 
 .topbar ion-toolbar {
-  --background: #fff;
-  --color: var(--ion-color-dark);
+  --background: #134e4a;
+  --color: white;
   box-shadow: var(--shadow-1);
 }
 
 .topbar ion-title {
   font-weight: 600;
+  color: white;
 }
 
 .user-profile-widget {

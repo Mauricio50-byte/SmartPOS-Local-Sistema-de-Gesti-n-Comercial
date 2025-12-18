@@ -1,7 +1,19 @@
 <div class="sales-wrapper">
+  <!-- Tabs para versión móvil -->
+  <div class="mobile-tabs">
+    <ion-segment [(ngModel)]="mobileView" mode="ios">
+      <ion-segment-button value="catalogo">
+        <ion-label>Catálogo</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="carrito">
+        <ion-label>Carrito <ion-badge *ngIf="detalles.length > 0" color="danger">{{ detalles.length }}</ion-badge></ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
   <div class="sales-container">
     <!-- Panel de Catálogo -->
-    <div class="catalog-panel">
+    <div class="catalog-panel" [class.hidden-mobile]="mobileView !== 'catalogo'">
       <div class="search-bar">
         <ion-searchbar placeholder="Buscar productos" [(ngModel)]="searchTerm"
           (ionInput)="onSearch($event)"></ion-searchbar>
@@ -20,7 +32,7 @@
     </div>
 
     <!-- Panel de Ticket/Carrito -->
-    <div class="ticket-panel">
+    <div class="ticket-panel" [class.hidden-mobile]="mobileView !== 'carrito'">
       <!-- Selector de Tipo de Venta -->
       <div class="sale-type-selector">
         <ion-segment [(ngModel)]="tipoVenta" (ionChange)="setTipoVenta($event.detail.value)">

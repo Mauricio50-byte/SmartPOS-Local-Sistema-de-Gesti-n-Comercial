@@ -26,6 +26,9 @@ export class VentasComponent implements OnInit {
   tipoVenta: 'CONTADO' | 'FIADO' = 'CONTADO';
   clienteSeleccionado: Cliente | null = null;
   mostrarRegistroCliente: boolean = false;
+  
+  // Vista móvil (catalogo o carrito)
+  mobileView: 'catalogo' | 'carrito' = 'catalogo';
 
   // Usuario actual
   currentUserId: number = 1;
@@ -370,7 +373,7 @@ export class VentasComponent implements OnInit {
     const confirmAlert = await this.alertController.create({
       header: 'Confirmar Venta',
       subHeader: this.tipoVenta === 'FIADO' ? 'Venta a Crédito' : 'Venta de Contado',
-      message: `¿Confirma procesar la venta por valor de <strong>$${this.totalControl.value.toLocaleString()}</strong>?`,
+      message: `¿Confirma procesar la venta por valor de $${this.totalControl.value.toLocaleString()}?`,
       buttons: [
         { 
           text: 'Cancelar', 
@@ -506,9 +509,19 @@ export class VentasComponent implements OnInit {
           if (loading) await loading.dismiss();
           
           if (err.error && err.error.message) {
-            await this.mostrarAlerta('Error', `No se pudo procesar la venta: ${err.error.message}`);
+            // Mensaje más amigable si viene del servidor
+            const serverMsg = err.error.message;
+            let friendlyMsg = serverMsg;
+            
+            if (serverMsg.includes('Stock insuficiente')) {
+              friendlyMsg = 'No hay suficiente cantidad de productos en inventario para realizar esta venta.';
+            } else if (serverMsg.includes('Cliente no encontrado')) {
+              friendlyMsg = 'El cliente seleccionado no se encuentra en la base de datos.';
+            }
+
+            await this.mostrarAlerta('Atención', friendlyMsg);
           } else {
-            await this.mostrarAlerta('Error', 'No se pudo procesar la venta. Verifique conexión o stock.');
+            await this.mostrarAlerta('Lo sentimos', 'Hubo un problema de conexión o con el servidor. Por favor verifique su internet e intente nuevamente.');
           }
         }
       });

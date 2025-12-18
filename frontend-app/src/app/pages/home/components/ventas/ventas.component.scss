@@ -4,15 +4,35 @@
     background: #f4f5f8;
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.mobile-tabs {
+    padding: 8px 16px;
+    background: white;
+    border-bottom: 1px solid #e0e0e0;
+    z-index: 10;
+    
+    @media (min-width: 768px) {
+        display: none;
+    }
 }
 
 .sales-container {
     display: flex;
-    height: 100%;
+    flex: 1;
+    overflow: hidden;
     flex-direction: column;
 
     @media (min-width: 768px) {
         flex-direction: row;
+    }
+}
+
+.hidden-mobile {
+    @media (max-width: 767px) {
+        display: none !important;
     }
 }
 
@@ -39,10 +59,12 @@
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
         gap: 12px;
+        padding-bottom: 80px;
 
         @media (min-width: 768px) {
             grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
             gap: 16px;
+            padding-bottom: 16px;
         }
     }
 
@@ -55,14 +77,21 @@
 
 .ticket-panel {
     background: white;
-    width: 100%;
     display: flex;
     flex-direction: column;
-    border-left: 1px solid #e0e0e0;
+    width: 100%;
+    
+    @media (max-width: 767px) {
+        flex: 1;
+        border-top: none;
+        max-height: none;
+        min-height: 0;
+    }
 
     @media (min-width: 768px) {
         width: 380px;
         height: 100%;
+        border-left: 1px solid #e0e0e0;
     }
 
     .sale-type-selector {
@@ -96,6 +125,10 @@
         padding: 0 16px;
         min-height: 200px;
 
+        @media (max-width: 767px) {
+            min-height: 0; // Allow shrinking on mobile to fit footer
+        }
+
         .empty-cart {
             display: flex;
             align-items: center;
@@ -114,8 +147,14 @@
 
     .ticket-footer {
         padding: 16px;
+        padding-bottom: 24px;
         border-top: 1px solid #f0f0f0;
         background: white;
+        
+        // Ensure footer is visible on mobile
+        @media (max-width: 767px) {
+             padding-bottom: 80px; // Increased padding to ensure button is above tab bar
+        }
 
         .subtotal {
             display: flex;

@@ -164,7 +164,7 @@ export class ClientesComponent implements OnInit {
 
     const alert = await this.alertController.create({
       header: `Confirmar ${accion}`,
-      message: `¿Está seguro de que desea ${accion} al cliente <strong>${cliente.nombre}</strong>?`,
+      message: `¿Está seguro de que desea ${accion} al cliente ${cliente.nombre}?`,
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
         {

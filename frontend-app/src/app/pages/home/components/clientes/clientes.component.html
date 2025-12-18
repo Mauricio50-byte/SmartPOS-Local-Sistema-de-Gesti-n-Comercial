@@ -30,20 +30,20 @@
       </thead>
       <tbody>
         <tr *ngFor="let c of filtrados">
-          <td>
+          <td data-label="Cliente">
             <div class="client-info"><span class="name">{{ c.nombre }}</span></div>
           </td>
-          <td>{{ c.telefono || '-' }}</td>
-          <td>{{ c.cedula || '-' }}</td>
-          <td>{{ creditoDisponible(c) | currency:'USD' }}</td>
-          <td class="amount-pending">{{ c.saldoDeuda || 0 | currency:'USD' }}</td>
-          <td>
+          <td data-label="Teléfono">{{ c.telefono || '-' }}</td>
+          <td data-label="Cédula">{{ c.cedula || '-' }}</td>
+          <td data-label="Crédito Disp.">{{ creditoDisponible(c) | currency:'USD' }}</td>
+          <td data-label="Saldo Deuda" class="amount-pending">{{ c.saldoDeuda || 0 | currency:'USD' }}</td>
+          <td data-label="Estado">
             <ion-badge [color]="(c.saldoDeuda || 0) > 0 ? 'warning' : 'success'">
               {{ (c.saldoDeuda || 0) > 0 ? 'Con deuda' : 'Sin deuda' }}
             </ion-badge>
             <ion-badge *ngIf="c.activo === false" color="medium" style="margin-left: 5px;">Inactivo</ion-badge>
           </td>
-          <td>
+          <td data-label="Acciones">
             <ion-button size="small" (click)="verEstado(c)" fill="clear" title="Ver Estado">
               <ion-icon slot="icon-only" name="document-text-outline"></ion-icon>
             </ion-button>
