@@ -42,6 +42,7 @@ export class ProductosListaComponent implements OnChanges, OnInit {
     { key: 'categoria', label: 'Categoría', type: 'text' },
     { key: 'precioVenta', label: 'Precio', type: 'currency' },
     { key: 'stock', label: 'Stock', type: 'text' },
+    { key: 'unidadMedida', label: 'Unidad', type: 'text' },
     { 
       key: 'activo', 
       label: 'Estado', 
