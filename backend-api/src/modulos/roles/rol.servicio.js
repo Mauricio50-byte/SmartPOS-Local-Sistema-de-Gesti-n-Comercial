@@ -23,4 +23,8 @@ async function actualizarRol(id, { nombre, permisos = null }) {
   return rol
 }
 
-module.exports = { listarRoles, crearRol, actualizarRol }
+async function listarPermisos() {
+  return prisma.permiso.findMany({ orderBy: { clave: 'asc' } })
+}
+
+module.exports = { listarRoles, crearRol, actualizarRol, listarPermisos }

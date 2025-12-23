@@ -4,7 +4,7 @@ import { RolService } from '../../../core/services/rol.service';
 import { UsuarioService } from '../../../core/services/usuario.service';
 import { Modulo, ModuloService } from '../../../core/services/modulo.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { Rol, Usuario } from '../../../core/models';
+import { Rol, Usuario, Permiso } from '../../../core/models';
 import { forkJoin, of } from 'rxjs';
 
 @Component({
@@ -21,22 +21,9 @@ export class PermissionsModalComponent implements OnInit {
   rolesLoadError = false;
   modulesLoadError = false;
   
-  // Lista maestra de permisos disponibles en el sistema (idealmente vendría de un servicio)
-  // Por simplicidad, los extraemos de los roles cargados o los hardcodeamos
-  availablePermissions: string[] = [
-    'GESTION_USUARIOS',
-    'CREAR_ADMIN',
-    'CREAR_ROL',
-    'EDITAR_ROL',
-    'ASIGNAR_PERMISOS',
-    'VENDER',
-    'GESTION_INVENTARIO',
-    'GESTION_CLIENTES',
-    'VER_REPORTES',
-    'GESTION_FINANZAS'
-  ];
-
+  availablePermissions: string[] = [];
   visiblePermissions: string[] = [];
+  allPermissionsData: Permiso[] = [];
   
   // Permisos asignados directamente (no por rol)
   directPermissions: string[] = [];
@@ -63,17 +50,44 @@ export class PermissionsModalComponent implements OnInit {
     this.authService.getPerfil$().subscribe(p => {
       this.actorAdminPorDefecto = p?.adminPorDefecto === true;
       this.actorEsAdmin = Array.isArray(p?.roles) ? p!.roles.includes('ADMIN') : false;
-      this.visiblePermissions = this.actorAdminPorDefecto
-        ? [...this.availablePermissions]
-        : ['VENDER', 'GESTION_INVENTARIO', 'GESTION_CLIENTES', 'VER_REPORTES', 'GESTION_FINANZAS'];
+      this.updateVisiblePermissions();
       if (!this.actorAdminPorDefecto && this.activeTab !== 'roles') {
         this.activeTab = 'roles';
       }
     });
     this.loadRoles();
+    this.loadPermissions();
     if (this.usuario) {
       this.loadUserPermissions();
     }
+  }
+
+  loadPermissions() {
+    this.rolService.listarPermisos().subscribe({
+      next: (permisos) => {
+        this.allPermissionsData = permisos;
+        this.availablePermissions = permisos.map(p => p.clave);
+        this.updateVisiblePermissions();
+      },
+      error: (error) => {
+        console.error('Error loading permissions', error);
+        this.availablePermissions = [
+          'GESTION_USUARIOS',
+          'CREAR_ADMIN',
+          'CREAR_ROL',
+          'EDITAR_ROL',
+          'ASIGNAR_PERMISOS',
+          'VENDER',
+          'GESTION_INVENTARIO',
+          'GESTION_CLIENTES',
+          'VER_REPORTES',
+          'GESTION_FINANZAS',
+          'GESTION_MODULOS',
+          'ADMIN'
+        ];
+        this.updateVisiblePermissions();
+      }
+    });
   }
 
   loadUserPermissions() {
@@ -195,6 +209,19 @@ export class PermissionsModalComponent implements OnInit {
 
   isModuleSelected(moduloId: string): boolean {
     return this.selectedModules.includes(moduloId);
+  }
+
+  private updateVisiblePermissions() {
+    if (this.actorAdminPorDefecto) {
+      this.visiblePermissions = [...this.availablePermissions];
+      return;
+    }
+    this.visiblePermissions = ['VENDER', 'GESTION_INVENTARIO', 'GESTION_CLIENTES', 'VER_REPORTES', 'GESTION_FINANZAS'];
+  }
+
+  getPermissionDescription(permiso: string): string {
+    const p = this.allPermissionsData.find(x => x.clave === permiso);
+    return p?.descripcion || 'Sin descripción';
   }
 
   dismiss() {

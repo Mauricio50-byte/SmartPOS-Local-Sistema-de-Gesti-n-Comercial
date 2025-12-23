@@ -70,12 +70,12 @@
         <ion-title>{{ pageTitle }}</ion-title>
         <ion-buttons slot="end">
           <!-- Botón de conexión QR -->
-          <ion-button *ngIf="hasPermission('ADMIN')" aria-label="Conectar Dispositivo" (click)="conectarDispositivo()">
+          <ion-button class="header-action-btn desktop-only" *ngIf="hasPermission('ADMIN')" aria-label="Conectar Dispositivo" (click)="conectarDispositivo()">
             <ion-icon name="qr-code-outline"></ion-icon>
           </ion-button>
 
           <!-- Botón de conexión/push -->
-          <ion-button aria-label="Activar push" (click)="enablePush()">
+          <ion-button class="header-action-btn desktop-only" aria-label="Activar push" (click)="enablePush()">
             <ion-icon name="radio-outline"></ion-icon>
           </ion-button>
 
@@ -127,18 +127,47 @@
         <ion-icon name="home-outline"></ion-icon>
         <span>Inicio</span>
       </button>
-      <button class="item" [class.active]="currentView === 'dashboard'" (click)="setView('dashboard')" role="tab"
-        [attr.aria-selected]="currentView === 'dashboard'">
-        <ion-icon name="bar-chart-outline"></ion-icon>
-        <span>Dashboard</span>
-      </button>
-      <button class="item" role="tab" aria-selected="false">
+
+      <button class="item" *ngIf="hasPermission('GESTION_INVENTARIO')" [class.active]="currentView === 'productos'"
+        (click)="setView('productos')" role="tab" [attr.aria-selected]="currentView === 'productos'">
         <ion-icon name="cube-outline"></ion-icon>
-        <span>Inventario</span>
+        <span>Prod.</span>
       </button>
-      <button class="item" role="tab" aria-selected="false">
-        <ion-icon name="ellipsis-horizontal"></ion-icon>
-        <span>Mas</span>
+
+      <button class="item" *ngIf="hasPermission('VENDER')" [class.active]="currentView === 'ventas'"
+        (click)="setView('ventas')" role="tab" [attr.aria-selected]="currentView === 'ventas'">
+        <ion-icon name="cart-outline"></ion-icon>
+        <span>Ventas</span>
+      </button>
+
+      <button class="item" *ngIf="hasPermission('GESTION_USUARIOS')" [class.active]="currentView === 'users'"
+        (click)="setView('users')" role="tab" [attr.aria-selected]="currentView === 'users'">
+        <ion-icon name="people-circle-outline"></ion-icon>
+        <span>Users</span>
+      </button>
+
+      <button class="item" *ngIf="hasPermission('GESTION_CLIENTES')" [class.active]="currentView === 'clientes'"
+        (click)="setView('clientes')" role="tab" [attr.aria-selected]="currentView === 'clientes'">
+        <ion-icon name="people-outline"></ion-icon>
+        <span>Clientes</span>
+      </button>
+
+      <button class="item" *ngIf="hasPermission('ADMIN')" [class.active]="currentView === 'modulos'"
+        (click)="setView('modulos')" role="tab" [attr.aria-selected]="currentView === 'modulos'">
+        <ion-icon name="grid-outline"></ion-icon>
+        <span>Módulos</span>
+      </button>
+
+      <button class="item" *ngIf="hasPermission('ADMIN') || hasPermission('GESTION_FINANZAS')"
+        [class.active]="currentView === 'finanzas'" (click)="setView('finanzas')" role="tab"
+        [attr.aria-selected]="currentView === 'finanzas'">
+        <ion-icon name="cash-outline"></ion-icon>
+        <span>Finanzas</span>
+      </button>
+
+      <button class="item" *ngIf="hasPermission('ADMIN')" role="tab">
+        <ion-icon name="settings-outline"></ion-icon>
+        <span>Config.</span>
       </button>
     </div>
   </ion-content>

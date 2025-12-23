@@ -40,6 +40,8 @@ async function iniciar() {
           !req.raw.url.startsWith('/usuarios') &&
           !req.raw.url.startsWith('/roles') &&
           !req.raw.url.startsWith('/modulos') &&
+          !req.raw.url.startsWith('/roles') &&
+          !req.raw.url.startsWith('/permisos') &&
           !req.raw.url.startsWith('/sistema') &&
           !req.raw.url.startsWith('/gastos')) {
           return res.sendFile('index.html')

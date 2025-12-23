@@ -3,37 +3,39 @@ const { ADMIN_CORREO, ADMIN_PASSWORD } = require('../configuracion/entorno')
 const bcrypt = require('bcryptjs')
 
 async function asegurarPermisosYAdmin() {
-  const claves = [
-    'GESTION_USUARIOS',
-    'CREAR_ADMIN',
-    'CREAR_ROL',
-    'EDITAR_ROL',
-    'ASIGNAR_PERMISOS',
-    'VENDER',
-    'GESTION_INVENTARIO',
-    'GESTION_CLIENTES',
-    'VER_REPORTES',
-    'GESTION_FINANZAS'
+  const permisosDefinidos = [
+    { clave: 'GESTION_USUARIOS', descripcion: 'Gestión completa de usuarios (crear, editar, eliminar)' },
+    { clave: 'CREAR_ADMIN', descripcion: 'Capacidad para crear administradores' },
+    { clave: 'CREAR_ROL', descripcion: 'Capacidad para crear nuevos roles en el sistema' },
+    { clave: 'EDITAR_ROL', descripcion: 'Capacidad para modificar roles existentes y sus permisos' },
+    { clave: 'ASIGNAR_PERMISOS', descripcion: 'Capacidad para asignar permisos específicos a usuarios' },
+    { clave: 'VENDER', descripcion: 'Acceso al módulo de punto de venta para realizar ventas' },
+    { clave: 'GESTION_INVENTARIO', descripcion: 'Control de stock, productos y categorías' },
+    { clave: 'GESTION_CLIENTES', descripcion: 'Administración de la base de datos de clientes' },
+    { clave: 'VER_REPORTES', descripcion: 'Acceso a reportes de ventas y estadísticas' },
+    { clave: 'GESTION_FINANZAS', descripcion: 'Acceso a módulos financieros, gastos y deudas' },
+    { clave: 'GESTION_MODULOS', descripcion: 'Capacidad para activar/desactivar y configurar módulos del sistema' },
+    { clave: 'ADMIN', descripcion: 'Acceso total al sistema sin restricciones' }
   ]
 
-  for (const clave of claves) {
+  for (const p of permisosDefinidos) {
     await prisma.permiso.upsert({
-      where: { clave },
-      update: {},
-      create: { clave }
+      where: { clave: p.clave },
+      update: { descripcion: p.descripcion },
+      create: { clave: p.clave, descripcion: p.descripcion }
     })
   }
 
   const adminRol = await prisma.rol.upsert({
     where: { nombre: 'ADMIN' },
-    update: {},
-    create: { nombre: 'ADMIN' }
+    update: { descripcion: 'Acceso total al sistema' },
+    create: { nombre: 'ADMIN', descripcion: 'Acceso total al sistema' }
   })
 
   await prisma.rol.upsert({
     where: { nombre: 'TRABAJADOR' },
-    update: {},
-    create: { nombre: 'TRABAJADOR' }
+    update: { descripcion: 'Acceso limitado para ventas y operaciones básicas' },
+    create: { nombre: 'TRABAJADOR', descripcion: 'Acceso limitado para ventas y operaciones básicas' }
   })
 
   const permisos = await prisma.permiso.findMany({})

@@ -181,6 +181,18 @@ ion-split-pane {
 .topbar ion-title {
   font-weight: 600;
   color: white;
+  
+  @media (max-width: 767px) {
+    font-size: 1rem;
+    padding-inline: 0;
+    text-align: center;
+  }
+}
+
+.desktop-only {
+  @media (max-width: 767px) {
+    display: none;
+  }
 }
 
 .user-profile-widget {
@@ -198,6 +210,10 @@ ion-split-pane {
     align-items: flex-end;
     margin-right: 10px;
     line-height: 1.2;
+
+    @media (max-width: 767px) {
+      display: none;
+    }
 
     .user-name {
       font-size: 0.9rem;
@@ -253,10 +269,15 @@ ion-split-pane {
   background: var(--brand-teal);
   padding: 8px 12px;
   box-shadow: var(--shadow-1);
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
+  justify-content: space-around;
+  overflow-x: auto;
   gap: 8px;
   z-index: 10;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .mobile-tabbar .item {
@@ -268,7 +289,9 @@ ion-split-pane {
   background: transparent;
   border: none;
   border-radius: var(--radius-12);
-  padding: 6px 0;
+  padding: 6px 8px;
+  min-width: 60px;
+  flex-shrink: 0;
 }
 
 .mobile-tabbar .item.active {
