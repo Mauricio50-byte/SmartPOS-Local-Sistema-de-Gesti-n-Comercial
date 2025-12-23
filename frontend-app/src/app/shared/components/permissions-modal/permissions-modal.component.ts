@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ModalController, AlertController } from '@ionic/angular';
 import { RolService } from '../../../core/services/rol.service';
 import { UsuarioService } from '../../../core/services/usuario.service';
-import { Rol, Usuario } from '../../../core/models';
+import { Rol, Usuario, Permiso } from '../../../core/models';
 
 @Component({
   selector: 'app-permissions-modal',
@@ -16,12 +16,9 @@ export class PermissionsModalComponent implements OnInit {
   roles: Rol[] = [];
   selectedRoles: string[] = [];
   
-  // Lista maestra de permisos disponibles en el sistema (idealmente vendría de un servicio)
-  // Por simplicidad, los extraemos de los roles cargados o los hardcodeamos
-  availablePermissions: string[] = [
-    'GESTION_USUARIOS', 'CREAR_ROL', 'EDITAR_ROL', 'ASIGNAR_PERMISOS', 
-    'VENDER', 'GESTION_INVENTARIO', 'GESTION_CLIENTES', 'VER_REPORTES'
-  ];
+  // Lista de permisos disponibles cargada del servidor
+  availablePermissions: string[] = [];
+  allPermissionsData: Permiso[] = []; // Para tener acceso a descripciones si se requiere
   
   // Permisos asignados directamente (no por rol)
   directPermissions: string[] = [];
@@ -38,9 +35,28 @@ export class PermissionsModalComponent implements OnInit {
 
   ngOnInit() {
     this.loadRoles();
+    this.loadPermissions();
     if (this.usuario) {
       this.loadUserPermissions();
     }
+  }
+
+  loadPermissions() {
+    this.rolService.listarPermisos().subscribe({
+      next: (permisos) => {
+        this.allPermissionsData = permisos;
+        this.availablePermissions = permisos.map(p => p.clave);
+      },
+      error: (error) => {
+        console.error('Error loading permissions', error);
+        // Fallback en caso de error
+        this.availablePermissions = [
+                'GESTION_USUARIOS', 'CREAR_ROL', 'EDITAR_ROL', 'ASIGNAR_PERMISOS', 
+                'VENDER', 'GESTION_INVENTARIO', 'GESTION_CLIENTES', 'VER_REPORTES',
+                'GESTION_FINANZAS', 'GESTION_MODULOS', 'ADMIN'
+              ];
+      }
+    });
   }
 
   loadUserPermissions() {
@@ -112,6 +128,11 @@ export class PermissionsModalComponent implements OnInit {
       }
     }
     return false;
+  }
+
+  getPermissionDescription(permiso: string): string {
+    const p = this.allPermissionsData.find(x => x.clave === permiso);
+    return p?.descripcion || 'Sin descripción';
   }
 
   dismiss() {

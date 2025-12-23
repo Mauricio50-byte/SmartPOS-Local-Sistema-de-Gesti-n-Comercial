@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Rol } from '../models';
+import { Rol, Permiso } from '../models';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -9,6 +9,7 @@ import { environment } from '../../../environments/environment';
 })
 export class RolService {
   private apiUrl = `${environment.apiUrl}/roles`;
+  private permisosUrl = `${environment.apiUrl}/permisos`;
 
   constructor(private http: HttpClient) { }
 
@@ -18,6 +19,14 @@ export class RolService {
    */
   listarRoles(): Observable<Rol[]> {
     return this.http.get<Rol[]>(this.apiUrl);
+  }
+
+  /**
+   * Obtener todos los permisos disponibles.
+   * @returns Un Observable con un arreglo de permisos.
+   */
+  listarPermisos(): Observable<Permiso[]> {
+    return this.http.get<Permiso[]>(this.permisosUrl);
   }
 
   /**

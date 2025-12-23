@@ -11,6 +11,7 @@ const { registrarRutasVenta } = require('./modulos/ventas/venta.rutas')
 const { registrarRutasAuth } = require('./modulos/auth/auth.rutas')
 const { registrarRutasUsuario } = require('./modulos/usuarios/usuario.rutas')
 const { registrarRutasDeuda } = require('./modulos/deudas/deuda.rutas')
+const { registrarRutasRol } = require('./modulos/roles/rol.rutas')
 const { registrarRutasGasto } = require('./modulos/gastos/gasto.rutas')
 const { registrarRutasSistema } = require('./modulos/sistema/sistema.rutas')
 const { registrarRutasModulos } = require('./modulos/sistema/modulo.rutas')
@@ -38,6 +39,8 @@ async function iniciar() {
           !req.raw.url.startsWith('/ventas') &&
           !req.raw.url.startsWith('/usuarios') &&
           !req.raw.url.startsWith('/modulos') &&
+          !req.raw.url.startsWith('/roles') &&
+          !req.raw.url.startsWith('/permisos') &&
           !req.raw.url.startsWith('/sistema') &&
           !req.raw.url.startsWith('/gastos')) {
           return res.sendFile('index.html')
@@ -74,6 +77,7 @@ async function iniciar() {
   await registrarRutasCliente(app)
   await registrarRutasVenta(app)
   await registrarRutasDeuda(app)
+  await registrarRutasRol(app)
   await registrarRutasGasto(app)
   await registrarRutasSistema(app)
   await registrarRutasModulos(app)

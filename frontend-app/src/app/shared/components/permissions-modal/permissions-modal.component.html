@@ -62,6 +62,7 @@
       <ion-item *ngFor="let permiso of availablePermissions">
         <ion-label>
           <h2>{{ permiso }}</h2>
+          <p>{{ getPermissionDescription(permiso) }}</p>
           <p *ngIf="isPermissionInherited(permiso)" class="inherited-text">
             <ion-icon name="information-circle-outline"></ion-icon>
             Heredado del rol seleccionado
