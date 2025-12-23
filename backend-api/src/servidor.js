@@ -10,6 +10,7 @@ const { registrarRutasCliente } = require('./modulos/clientes/cliente.rutas')
 const { registrarRutasVenta } = require('./modulos/ventas/venta.rutas')
 const { registrarRutasAuth } = require('./modulos/auth/auth.rutas')
 const { registrarRutasUsuario } = require('./modulos/usuarios/usuario.rutas')
+const { registrarRutasRol } = require('./modulos/roles/rol.rutas')
 const { registrarRutasDeuda } = require('./modulos/deudas/deuda.rutas')
 const { registrarRutasGasto } = require('./modulos/gastos/gasto.rutas')
 const { registrarRutasSistema } = require('./modulos/sistema/sistema.rutas')
@@ -37,6 +38,7 @@ async function iniciar() {
           !req.raw.url.startsWith('/productos') &&
           !req.raw.url.startsWith('/ventas') &&
           !req.raw.url.startsWith('/usuarios') &&
+          !req.raw.url.startsWith('/roles') &&
           !req.raw.url.startsWith('/modulos') &&
           !req.raw.url.startsWith('/sistema') &&
           !req.raw.url.startsWith('/gastos')) {
@@ -50,12 +52,13 @@ async function iniciar() {
     await req.jwtVerify(); 
     const permisos = req.user?.permisos || []; 
     const roles = req.user?.roles || [];
+    const adminPorDefecto = req.user?.adminPorDefecto === true
     // Si el usuario tiene el rol de ADMIN, le damos paso libre (o verificamos si la clave es 'ADMIN' específicamente)
-    if (roles.includes('ADMIN') || permisos.includes(clave)) {
+    if ((roles.includes('ADMIN') && adminPorDefecto) || permisos.includes(clave)) {
         return;
     }
     // Caso especial: si se pide permiso 'ADMIN', verificamos si tiene el ROL 'ADMIN'
-    if (clave === 'ADMIN' && roles.includes('ADMIN')) {
+    if (clave === 'ADMIN' && roles.includes('ADMIN') && adminPorDefecto) {
         return;
     }
     
@@ -70,6 +73,7 @@ async function iniciar() {
 
   await registrarRutasAuth(app)
   await registrarRutasUsuario(app)
+  await registrarRutasRol(app)
   await registrarRutasProducto(app)
   await registrarRutasCliente(app)
   await registrarRutasVenta(app)

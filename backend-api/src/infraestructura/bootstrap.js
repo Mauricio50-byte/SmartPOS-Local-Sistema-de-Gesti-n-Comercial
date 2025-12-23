@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs')
 async function asegurarPermisosYAdmin() {
   const claves = [
     'GESTION_USUARIOS',
+    'CREAR_ADMIN',
     'CREAR_ROL',
     'EDITAR_ROL',
     'ASIGNAR_PERMISOS',
@@ -57,6 +58,23 @@ async function asegurarPermisosYAdmin() {
     })
     const yaRol = await prisma.usuarioRol.findUnique({ where: { usuarioId_rolId: { usuarioId: usuario.id, rolId: adminRol.id } } })
     if (!yaRol) await prisma.usuarioRol.create({ data: { usuarioId: usuario.id, rolId: adminRol.id } })
+
+    if (!usuario.negocioId) {
+      const existente = await prisma.negocio.findFirst({ select: { id: true } })
+      const negocio = existente
+        ? existente
+        : await prisma.negocio.create({ data: { nombre: 'Negocio Principal' }, select: { id: true } })
+      await prisma.usuario.update({ where: { id: usuario.id }, data: { negocioId: negocio.id } })
+    }
+  } else {
+    const usuario = await prisma.usuario.findUnique({ where: { correo: ADMIN_CORREO }, select: { id: true, negocioId: true } })
+    if (usuario && !usuario.negocioId) {
+      const existente = await prisma.negocio.findFirst({ select: { id: true } })
+      const negocio = existente
+        ? existente
+        : await prisma.negocio.create({ data: { nombre: 'Negocio Principal' }, select: { id: true } })
+      await prisma.usuario.update({ where: { id: usuario.id }, data: { negocioId: negocio.id } })
+    }
   }
 }
 

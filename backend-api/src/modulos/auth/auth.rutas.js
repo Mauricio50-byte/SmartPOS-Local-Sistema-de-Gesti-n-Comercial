@@ -1,5 +1,6 @@
-const { crearAdministrador, crearUsuarioConRoles, ingresar } = require('./auth.servicio')
+const { crearAdministrador, crearUsuarioConRoles, ingresar, obtenerModulosActivosNegocio } = require('./auth.servicio')
 const { prisma } = require('../../infraestructura/bd')
+const { ADMIN_CORREO } = require('../../configuracion/entorno')
 
 async function registrarRutasAuth(app) {
   app.decorate('autenticar', async (req, res) => { await req.jwtVerify() })
@@ -7,9 +8,21 @@ async function registrarRutasAuth(app) {
   app.post('/auth/ingresar', async (req, res) => {
     const { correo, password } = req.body || {}
     try {
-      const { usuario, roles, permisos } = await ingresar({ correo, password })
-      const token = await res.jwtSign({ id: usuario.id, roles, permisos, nombre: usuario.nombre })
-      return { token, usuario: { id: usuario.id, roles, permisos, nombre: usuario.nombre, correo: usuario.correo } }
+      const { usuario, roles, permisos, negocioId, modulos, adminPorDefecto } = await ingresar({ correo, password })
+      const token = await res.jwtSign({ id: usuario.id, roles, permisos, nombre: usuario.nombre, correo: usuario.correo, negocioId, modulos, adminPorDefecto })
+      return {
+        token,
+        usuario: {
+          id: usuario.id,
+          roles,
+          permisos,
+          nombre: usuario.nombre,
+          correo: usuario.correo,
+          negocioId,
+          modulos,
+          adminPorDefecto
+        }
+      }
     } catch (e) {
       if (e && e.message === 'Credenciales inválidas') {
         res.code(401)
@@ -24,7 +37,8 @@ async function registrarRutasAuth(app) {
     if (totalAdmins > 0) {
       await req.jwtVerify()
       const roles = req.user?.roles || []
-      if (!roles.includes('ADMIN')) { res.code(403); throw new Error('No autorizado') }
+      const adminPorDefecto = req.user?.adminPorDefecto === true
+      if (!(roles.includes('ADMIN') && adminPorDefecto)) { res.code(403); throw new Error('No autorizado') }
     }
     const { nombre, correo, password } = req.body || {}
     const creado = await crearAdministrador({ nombre, correo, password })
@@ -53,7 +67,8 @@ async function registrarRutasAuth(app) {
             }
           }
         },
-        permisos: { include: { permiso: true } }
+        permisos: { include: { permiso: true } },
+        modulos: true
       }
     })
 
@@ -67,14 +82,34 @@ async function registrarRutasAuth(app) {
     const permisosDirectos = usuario.permisos.map(up => up.permiso.clave)
     const permisos = Array.from(new Set([...permisosRoles, ...permisosDirectos]))
 
+    const negocioId = usuario.negocioId ?? null
+    const adminPorDefecto = String(usuario.correo || '').trim().toLowerCase() === String(ADMIN_CORREO || '').trim().toLowerCase()
+    let modulos = []
+    if (negocioId) {
+      const activos = await obtenerModulosActivosNegocio(negocioId)
+      if (roles.includes('ADMIN') && adminPorDefecto) {
+        modulos = activos
+      } else if (roles.includes('ADMIN')) {
+        const asignados = Array.isArray(usuario.modulos) ? usuario.modulos.map(m => m.moduloId) : []
+        modulos = asignados.length ? asignados : activos.slice(0, 3)
+      } else {
+        const asignados = Array.isArray(usuario.modulos) ? usuario.modulos.map(m => m.moduloId) : []
+        modulos = asignados.length ? asignados : activos
+      }
+    }
+
     return {
       usuario: {
         id: usuario.id,
         nombre: usuario.nombre,
         correo: usuario.correo,
         roles,
-        permisos
-      }
+        permisos,
+        negocioId,
+        modulos,
+        adminPorDefecto
+      },
+      token: await res.jwtSign({ id: usuario.id, roles, permisos, nombre: usuario.nombre, correo: usuario.correo, negocioId, modulos, adminPorDefecto })
     }
   })
 }

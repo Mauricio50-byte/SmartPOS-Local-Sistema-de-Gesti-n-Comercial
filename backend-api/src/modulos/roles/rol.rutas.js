@@ -7,10 +7,15 @@ async function registrarRutasRol(app) {
       await req.jwtVerify()
       const permisos = req.user?.permisos || []
       const roles = req.user?.roles || []
+      const adminPorDefecto = req.user?.adminPorDefecto === true
+      if (roles.includes('ADMIN') && !adminPorDefecto) {
+        res.code(403)
+        throw new Error('No autorizado')
+      }
       const tienePermiso = permisos.includes('CREAR_ROL') || 
                            permisos.includes('EDITAR_ROL') || 
                            permisos.includes('GESTION_USUARIOS') ||
-                           roles.includes('ADMIN')
+                           (roles.includes('ADMIN') && adminPorDefecto)
       if (!tienePermiso) {
         res.code(403)
         throw new Error('No autorizado')
@@ -20,13 +25,23 @@ async function registrarRutasRol(app) {
     return listarRoles()
   })
 
-  app.post('/roles', { preHandler: [app.requierePermiso('CREAR_ROL')] }, async (req, res) => {
+  app.post('/roles', { preHandler: [async (req, res) => {
+    await req.jwtVerify()
+    const roles = req.user?.roles || []
+    const adminPorDefecto = req.user?.adminPorDefecto === true
+    if (!(roles.includes('ADMIN') && adminPorDefecto)) { res.code(403); throw new Error('No autorizado') }
+  }] }, async (req, res) => {
     const creado = await crearRol(req.body || {})
     res.code(201)
     return creado
   })
 
-  app.put('/roles/:id', { preHandler: [app.requierePermiso('EDITAR_ROL')] }, async (req) => {
+  app.put('/roles/:id', { preHandler: [async (req, res) => {
+    await req.jwtVerify()
+    const roles = req.user?.roles || []
+    const adminPorDefecto = req.user?.adminPorDefecto === true
+    if (!(roles.includes('ADMIN') && adminPorDefecto)) { res.code(403); throw new Error('No autorizado') }
+  }] }, async (req) => {
     const id = Number(req.params.id)
     return actualizarRol(id, req.body || {})
   })

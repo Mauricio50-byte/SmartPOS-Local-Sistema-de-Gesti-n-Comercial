@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AlertController, ModalController } from '@ionic/angular';
-import { Usuario } from '../../../../core/models';
+import { Rol, Usuario } from '../../../../core/models';
 import { UsuarioService } from '../../../../core/services/usuario.service';
+import { Modulo, ModuloService } from '../../../../core/services/modulo.service';
+import { AuthService } from '../../../../core/services/auth.service';
+import { RolService } from '../../../../core/services/rol.service';
 import { PermissionsModalComponent } from '../../../../shared/components/permissions-modal/permissions-modal.component';
 import { switchMap } from 'rxjs/operators';
 import { of } from 'rxjs';
@@ -19,10 +22,20 @@ export class UsersComponent implements OnInit {
   usuarioSeleccionado: Usuario | null = null;
   mostrarFormulario = false;
   isEditMode = false;
+  actorNegocioId: number | null = null;
+  actorRoles: string[] = [];
+  actorPermisos: string[] = [];
+  actorAdminPorDefecto = false;
+  rolesCatalog: Rol[] = [];
+  catalogModulos: Modulo[] = [];
+  modulosActivosNegocio: Modulo[] = [];
 
   constructor(
     private fb: FormBuilder,
     private usuarioService: UsuarioService,
+    private moduloService: ModuloService,
+    private authService: AuthService,
+    private rolService: RolService,
     private alertController: AlertController,
     private modalController: ModalController
   ) {
@@ -32,11 +45,72 @@ export class UsersComponent implements OnInit {
       rol: ['TRABAJADOR', Validators.required],
       passwordHash: ['', [Validators.required, Validators.minLength(6)]],
       activo: [true, Validators.required]
+      ,
+      crearNuevoNegocio: [false],
+      negocioNombre: [''],
+      modulos: [[]]
     });
   }
 
   ngOnInit() {
     this.getUsuarios();
+    this.authService.getPerfil$().subscribe(p => {
+      this.actorNegocioId = (p?.negocioId ?? null) as any;
+      this.actorRoles = Array.isArray(p?.roles) ? p!.roles : [];
+      this.actorPermisos = Array.isArray(p?.permisos) ? p!.permisos : [];
+      this.actorAdminPorDefecto = p?.adminPorDefecto === true;
+      if (this.actorNegocioId) {
+        this.moduloService.listarModulos().subscribe({
+          next: (mods) => {
+            this.modulosActivosNegocio = (mods || []).filter(m => m.activo);
+            if (!this.isEditMode) {
+              const current = this.getSelectedModulos();
+              if (!current.length) {
+                const porDefecto = this.actorAdminPorDefecto
+                  ? this.modulosActivosNegocio.map(m => m.id)
+                  : (Array.isArray(p?.modulos) && p!.modulos!.length ? p!.modulos : this.modulosActivosNegocio.map(m => m.id));
+                this.formgroup.patchValue({ modulos: porDefecto });
+              }
+            }
+          },
+          error: () => this.modulosActivosNegocio = []
+        });
+      } else {
+        this.modulosActivosNegocio = [];
+      }
+    });
+    this.moduloService.listarCatalogoModulos().subscribe({
+      next: (mods) => this.catalogModulos = mods || [],
+      error: () => this.catalogModulos = []
+    });
+
+    this.rolService.listarRoles().subscribe({
+      next: (roles) => {
+        this.rolesCatalog = roles || [];
+        const actual = this.formgroup.get('rol')?.value;
+        if (actual && !this.rolesCatalog.some(r => r.nombre === actual) && this.rolesCatalog.length) {
+          this.formgroup.patchValue({ rol: this.rolesCatalog[0].nombre });
+        }
+      },
+      error: () => this.rolesCatalog = []
+    });
+
+    this.formgroup.get('rol')?.valueChanges.subscribe((rol) => {
+      if (rol !== 'ADMIN') {
+        this.formgroup.patchValue({ crearNuevoNegocio: false, negocioNombre: '' });
+      }
+    });
+
+    this.formgroup.get('crearNuevoNegocio')?.valueChanges.subscribe((crearNuevo) => {
+      if (crearNuevo) {
+        this.formgroup.patchValue({ modulos: [] });
+      } else if (this.actorNegocioId && !this.isEditMode) {
+        const current = this.getSelectedModulos();
+        if (!current.length) {
+          this.formgroup.patchValue({ modulos: this.modulosActivosNegocio.map(m => m.id) });
+        }
+      }
+    });
   }
 
   // Control del modal
@@ -49,7 +123,10 @@ export class UsersComponent implements OnInit {
     this.mostrarFormulario = false;
     this.formgroup.reset({
       rol: 'TRABAJADOR',
-      activo: true
+      activo: true,
+      crearNuevoNegocio: false,
+      negocioNombre: '',
+      modulos: []
     });
     // Restore password validation for create mode
     this.formgroup.get('passwordHash')?.setValidators([Validators.required, Validators.minLength(6)]);
@@ -78,6 +155,18 @@ export class UsersComponent implements OnInit {
       } else {
         // We are creating
         const formData = this.formgroup.value;
+        const creandoAdmin = formData.rol === 'ADMIN';
+
+        if (creandoAdmin && !this.actorAdminPorDefecto) {
+          this.mostrarAlerta('No autorizado', 'Solo el Administrador por defecto puede crear administradores.');
+          return;
+        }
+
+        if (creandoAdmin && !this.actorAdminPorDefecto) {
+          this.mostrarAlerta('No autorizado', 'Solo el Administrador por defecto puede crear administradores.');
+          return;
+        }
+
         const nuevoUsuario = {
           ...formData,
           password: formData.passwordHash // Send raw password as 'password'
@@ -98,6 +187,33 @@ export class UsersComponent implements OnInit {
         });
       }
     }
+  }
+
+  getSelectedModulos(): string[] {
+    const v = this.formgroup.get('modulos')?.value;
+    return Array.isArray(v) ? v : [];
+  }
+
+  isModuloSeleccionado(id: string): boolean {
+    return this.getSelectedModulos().includes(id);
+  }
+
+  async toggleModuloSeleccion(id: string, max: number | null = null) {
+    const actuales = this.getSelectedModulos();
+    const existe = actuales.includes(id);
+    if (!existe && typeof max === 'number' && actuales.length >= max) {
+      await this.mostrarAlerta('Límite de módulos', `Solo puedes seleccionar hasta ${max} módulos.`);
+      return;
+    }
+    const nuevos = existe ? actuales.filter(m => m !== id) : [...actuales, id];
+    this.formgroup.patchValue({ modulos: nuevos });
+  }
+
+  puedeGestionarPermisos(usuario: Usuario): boolean {
+    const rolesObjetivo = Array.isArray(usuario?.roles) ? usuario.roles : [];
+    if (this.actorAdminPorDefecto) return true;
+    if (this.actorRoles.includes('ADMIN')) return rolesObjetivo.includes('TRABAJADOR');
+    return false;
   }
 
   toggleMenu(usuario: Usuario) {

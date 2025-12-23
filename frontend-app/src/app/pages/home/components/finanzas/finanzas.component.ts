@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { CuentasPorCobrarComponent } from './components/cuentas-por-cobrar/cuentas-por-cobrar.component';
@@ -13,14 +13,12 @@ import { walletOutline, cashOutline, cardOutline } from 'ionicons/icons';
   standalone: true,
   imports: [CommonModule, IonicModule, CuentasPorCobrarComponent, CuentasPorPagarComponent]
 })
-export class FinanzasComponent implements OnInit {
+export class FinanzasComponent {
   segment: 'por-cobrar' | 'por-pagar' = 'por-cobrar';
 
   constructor() {
     addIcons({ walletOutline, cashOutline, cardOutline });
   }
-
-  ngOnInit() {}
 
   segmentChanged(event: any) {
     this.segment = event.detail.value;

@@ -1,18 +1,18 @@
 .user-info {
   margin-bottom: 24px;
   padding-bottom: 16px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--ion-color-step-150, #e5e7eb);
 
   h3 {
     margin: 0 0 4px;
     font-size: 18px;
     font-weight: 600;
-    color: #1f2937;
+    color: var(--ion-text-color);
   }
 
   p {
     margin: 0;
-    color: #6b7280;
+    color: var(--ion-color-medium);
     font-size: 14px;
   }
 }
@@ -22,18 +22,18 @@
     margin: 0 0 8px;
     font-size: 16px;
     font-weight: 600;
-    color: #374151;
+    color: var(--ion-text-color);
   }
 
   .helper-text {
     margin: 0 0 16px;
-    color: #6b7280;
+    color: var(--ion-color-medium);
     font-size: 14px;
   }
 }
 
 .inherited-text {
-  color: #059669; /* Green to indicate it's active via inheritance */
+  color: var(--ion-color-success);
   display: flex;
   align-items: center;
   gap: 4px;
@@ -51,11 +51,12 @@ ion-item {
   
   h2 {
     font-weight: 500;
-    color: #111827;
+    color: var(--ion-text-color);
   }
   
   p {
     font-size: 13px;
+    color: var(--ion-color-medium);
   }
 
   .permisos-list {
@@ -82,6 +83,43 @@ ion-item {
   align-items: center;
   justify-content: center;
   padding: 32px;
-  color: #6b7280;
+  color: var(--ion-color-medium);
   gap: 12px;
+}
+
+ion-toolbar[color="light"] {
+  --background: var(--ion-color-dark);
+  --color: var(--ion-color-light);
+}
+
+ion-toolbar[color="light"] ion-segment-button {
+  --color: var(--ion-color-light);
+  --color-checked: var(--ion-color-primary);
+  --indicator-color: var(--ion-color-primary);
+}
+
+ion-header ion-toolbar.ion-color-light,
+ion-header ion-toolbar[color="light"] {
+  --background: #000;
+  --color: #fff;
+}
+
+ion-header ion-toolbar.ion-color-light ion-segment-button,
+ion-header ion-toolbar[color="light"] ion-segment-button {
+  --color: #fff;
+  --color-checked: #fff;
+  --indicator-color: var(--ion-color-primary);
+}
+
+ion-header ion-toolbar.ion-color-dark,
+ion-header ion-toolbar[color="dark"] {
+  --background: #000;
+  --color: #fff;
+}
+
+ion-header ion-toolbar.ion-color-dark ion-segment-button,
+ion-header ion-toolbar[color="dark"] ion-segment-button {
+  --color: #fff;
+  --color-checked: #fff;
+  --indicator-color: var(--ion-color-primary);
 }

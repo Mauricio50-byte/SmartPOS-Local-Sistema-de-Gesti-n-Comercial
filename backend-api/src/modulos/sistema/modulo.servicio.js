@@ -26,16 +26,51 @@ async function inicializarModulos() {
   }
 }
 
-async function listarModulos() {
+async function listarCatalogoModulos() {
   await inicializarModulos()
   return prisma.modulo.findMany({ orderBy: { nombre: 'asc' } })
 }
 
-async function toggleModulo(id, activo) {
-  return prisma.modulo.update({
-    where: { id },
-    data: { activo }
+async function listarModulos(negocioId) {
+  await inicializarModulos()
+  if (!negocioId) throw new Error('Negocio requerido')
+
+  const negocio = await prisma.negocio.findUnique({ where: { id: negocioId } })
+  if (!negocio) throw new Error('Negocio no encontrado')
+
+  const modulos = await prisma.modulo.findMany({ orderBy: { nombre: 'asc' } })
+  const estados = await prisma.negocioModulo.findMany({ where: { negocioId } })
+  const estadoMap = new Map(estados.map(e => [e.moduloId, e.activo]))
+  return modulos.map(m => ({ ...m, activo: estadoMap.get(m.id) ?? false }))
+}
+
+async function toggleModulo(negocioId, id, activo) {
+  await inicializarModulos()
+  if (!negocioId) throw new Error('Negocio requerido')
+
+  const negocio = await prisma.negocio.findUnique({ where: { id: negocioId } })
+  if (!negocio) throw new Error('Negocio no encontrado')
+
+  const existente = await prisma.negocioModulo.findUnique({
+    where: { negocioId_moduloId: { negocioId, moduloId: id } }
   })
+  const yaActivo = existente?.activo === true
+
+  if (activo && !yaActivo) {
+    const activos = await prisma.negocioModulo.count({ where: { negocioId, activo: true } })
+    if (activos >= negocio.planMaxModulos) {
+      throw new Error(`Tu plan incluye ${negocio.planMaxModulos} módulos. Para habilitar más, contacta al proveedor.`)
+    }
+  }
+
+  await prisma.negocioModulo.upsert({
+    where: { negocioId_moduloId: { negocioId, moduloId: id } },
+    update: { activo: !!activo },
+    create: { negocioId, moduloId: id, activo: !!activo }
+  })
+
+  const modulo = await prisma.modulo.findUnique({ where: { id } })
+  return { ...modulo, activo: !!activo }
 }
 
 async function actualizarConfig(id, config) {
@@ -46,6 +81,7 @@ async function actualizarConfig(id, config) {
 }
 
 module.exports = {
+  listarCatalogoModulos,
   listarModulos,
   toggleModulo,
   actualizarConfig

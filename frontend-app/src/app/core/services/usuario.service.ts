@@ -100,4 +100,8 @@ export class UsuarioService {
   asignarPermisosDirectos(id: number, permisos: string[]): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}/permisos`, { permisos });
   }
+
+  asignarModulos(id: number, modulos: string[]): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}/modulos`, { modulos });
+  }
 }

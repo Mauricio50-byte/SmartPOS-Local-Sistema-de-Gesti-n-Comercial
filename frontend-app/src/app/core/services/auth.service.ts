@@ -6,7 +6,7 @@ import { environment } from '../../../environments/environment';
 import { UsuarioPerfil, AuthResponse } from '../models';
 
 @Injectable({ providedIn: 'root' })
-export class AuthService {
+export class AuthService implements OnDestroy {
   private tokenKey = 'auth_token';
   private rememberKey = 'remember_email';
   private perfil$ = new BehaviorSubject<UsuarioPerfil | null>(null);
@@ -59,8 +59,11 @@ export class AuthService {
   }
 
   fetchPerfil(): Observable<UsuarioPerfil> {
-    return this.http.get<{ usuario: UsuarioPerfil }>(`${environment.apiUrl}/auth/perfil`).pipe(
-      tap(({ usuario }) => this.perfil$.next(usuario)),
+    return this.http.get<{ usuario: UsuarioPerfil, token?: string }>(`${environment.apiUrl}/auth/perfil`).pipe(
+      tap(({ usuario, token }) => {
+        if (token) this.setToken(token);
+        this.perfil$.next(usuario);
+      }),
       map(({ usuario }) => usuario)
     );
   }

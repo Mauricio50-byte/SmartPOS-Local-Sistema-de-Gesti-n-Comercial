@@ -91,6 +91,14 @@ export class ProductosListaComponent implements OnChanges, OnInit {
     { id: 'PAPELERIA', label: 'Papelería' },
     { id: 'RESTAURANTE', label: 'Restaurante' }
   ];
+  private tipoToModuloId: Record<string, string> = {
+    ROPA: 'ropa',
+    ALIMENTO: 'alimentos',
+    SERVICIO: 'servicios',
+    FARMACIA: 'farmacia',
+    PAPELERIA: 'papeleria',
+    RESTAURANTE: 'restaurante'
+  };
 
   constructor() {
     addIcons({ createOutline, trashOutline, eyeOutline, filterOutline });
@@ -153,7 +161,7 @@ export class ProductosListaComponent implements OnChanges, OnInit {
   }
 
   filterProducts() {
-    let temp = this.products;
+    let temp = (this.products || []).filter(p => this.isTipoPermitido(p?.tipo));
 
     // 1. Filtro por Módulo
     if (this.selectedModule !== 'TODOS') {
@@ -170,6 +178,14 @@ export class ProductosListaComponent implements OnChanges, OnInit {
     }
 
     this.filteredProducts = temp;
+  }
+
+  private isTipoPermitido(tipo: any): boolean {
+    const t = String(tipo || 'GENERAL').toUpperCase();
+    if (t === 'GENERAL') return true;
+    const moduloId = this.tipoToModuloId[t];
+    if (!moduloId) return false;
+    return this.modulosActivos.has(moduloId) || this.modulosActivos.has(moduloId.toUpperCase());
   }
 
   // Helper para obtener valores anidados de forma segura

@@ -45,8 +45,7 @@ export class HomePage implements OnInit {
 
   hasPermission(permiso: string): boolean {
     if (!this.currentUser) return false;
-    // Admin has access to everything by default (optional, but good practice)
-    if (this.currentUser.roles && this.currentUser.roles.includes('ADMIN')) return true;
+    if (permiso === 'ADMIN') return this.currentUser.adminPorDefecto === true;
     return this.currentUser.permisos ? this.currentUser.permisos.includes(permiso) : false;
   }
 

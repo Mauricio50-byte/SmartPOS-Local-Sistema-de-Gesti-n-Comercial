@@ -17,10 +17,20 @@ import { FormBuilder, FormGroup, FormArray, Validators, AbstractControl } from '
 })
 export class VentasComponent implements OnInit {
   ventaForm: FormGroup;
+  allProductos: Producto[] = [];
   productos: Producto[] = [];
   filteredProductos: Producto[] = [];
   clientes: Cliente[] = [];
   searchTerm: string = '';
+  private allowedTipos: Set<string> | null = null;
+  private moduloIdToTipo: Record<string, string> = {
+    ropa: 'ROPA',
+    alimentos: 'ALIMENTO',
+    servicios: 'SERVICIO',
+    farmacia: 'FARMACIA',
+    papeleria: 'PAPELERIA',
+    restaurante: 'RESTAURANTE'
+  };
 
   // Configuración de venta
   tipoVenta: 'CONTADO' | 'FIADO' = 'CONTADO';
@@ -68,6 +78,7 @@ export class VentasComponent implements OnInit {
     this.loadProducts();
     this.loadClientes();
     this.loadCurrentUser();
+    this.loadAllowedModules();
 
     // Suscribirse a nuevos clientes
     this.clienteService.clienteCreado$.subscribe(cliente => {
@@ -85,6 +96,19 @@ export class VentasComponent implements OnInit {
         this.currentUserId = user.id;
         this.ventaForm.patchValue({ usuarioId: user.id });
       }
+    });
+  }
+
+  loadAllowedModules() {
+    this.authService.getPerfil$().subscribe(user => {
+      const modulos = Array.isArray(user?.modulos) ? user!.modulos : [];
+      const tipos = new Set<string>(['GENERAL']);
+      for (const moduloId of modulos) {
+        const tipo = this.moduloIdToTipo[String(moduloId).toLowerCase()];
+        if (tipo) tipos.add(tipo);
+      }
+      this.allowedTipos = tipos;
+      this.aplicarFiltroModulosEnProductos();
     });
   }
 
@@ -107,8 +131,10 @@ export class VentasComponent implements OnInit {
   loadProducts() {
     this.productoService.listarProductos().subscribe({
       next: (data) => {
-        this.productos = data;
-        this.filteredProductos = data;
+        this.allProductos = data || [];
+        this.productos = this.allProductos;
+        this.filteredProductos = this.allProductos;
+        this.aplicarFiltroModulosEnProductos();
       },
       error: (err) => {
         console.error('Error cargando productos', err);
@@ -139,6 +165,21 @@ export class VentasComponent implements OnInit {
     this.filteredProductos = this.productos.filter(p =>
       p.nombre.toLowerCase().includes(term.toLowerCase())
     );
+  }
+
+  private aplicarFiltroModulosEnProductos() {
+    if (!this.allowedTipos) {
+      this.productos = this.allProductos;
+    } else {
+      this.productos = (this.allProductos || []).filter(p => this.allowedTipos!.has(String(p.tipo || 'GENERAL').toUpperCase()));
+    }
+    const term = this.searchTerm;
+    if (!term) {
+      this.filteredProductos = this.productos;
+      return;
+    }
+    const lower = String(term).toLowerCase();
+    this.filteredProductos = this.productos.filter(p => p.nombre.toLowerCase().includes(lower));
   }
 
   addToCart(product: Producto) {

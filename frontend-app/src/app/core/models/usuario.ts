@@ -4,6 +4,9 @@ export interface UsuarioPerfil {
   correo: string;
   roles: string[];
   permisos: string[];
+  negocioId?: number | null;
+  modulos?: string[];
+  adminPorDefecto?: boolean;
 }
 
 export interface Usuario {
@@ -12,8 +15,10 @@ export interface Usuario {
   correo: string;
   activo: boolean;
   creadoEn?: string;
+  negocioId?: number | null;
   roles?: string[];
   permisos?: string[]; // Permisos efectivos (Rol + Directos)
   permisosDirectos?: string[]; // Solo permisos asignados directamente
+  modulos?: string[];
+  adminPorDefecto?: boolean;
 }
-

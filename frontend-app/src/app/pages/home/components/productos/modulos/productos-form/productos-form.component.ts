@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
@@ -30,11 +30,11 @@ import { FormularioRestauranteComponent } from '../formulario-restaurante/formul
     FormularioRestauranteComponent
   ]
 })
-export class ProductosFormComponent implements OnInit, OnChanges {
+export class ProductosFormComponent implements OnChanges {
   @Input() product: Producto | null = null;
   @Input() modulosActivos: Set<string> = new Set();
-  @Output() save = new EventEmitter<any>();
-  @Output() cancel = new EventEmitter<void>();
+  @Output() saveProduct = new EventEmitter<any>();
+  @Output() cancelAction = new EventEmitter<void>();
 
   productForm: FormGroup;
   isEditing: boolean = false;
@@ -43,8 +43,6 @@ export class ProductosFormComponent implements OnInit, OnChanges {
     this.productForm = this.initForm();
     addIcons({ camera, trash });
   }
-
-  ngOnInit() {}
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['product'] && this.product) {
@@ -254,11 +252,11 @@ export class ProductosFormComponent implements OnInit, OnChanges {
       this.productForm.markAllAsTouched();
       return;
     }
-    this.save.emit(this.productForm.value);
+    this.saveProduct.emit(this.productForm.value);
   }
 
   onCancel() {
-    this.cancel.emit();
+    this.cancelAction.emit();
   }
 
   isModuleActive(moduleId: string): boolean {

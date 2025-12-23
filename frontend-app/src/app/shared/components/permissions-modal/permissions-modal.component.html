@@ -7,13 +7,16 @@
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
-  <ion-toolbar color="light">
+  <ion-toolbar color="dark" style="--background: #000; --color: #fff;">
     <ion-segment [(ngModel)]="activeTab">
-      <ion-segment-button value="roles">
+      <ion-segment-button value="roles" *ngIf="actorAdminPorDefecto">
         <ion-label>Roles</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="permisos">
+      <ion-segment-button value="permisos" *ngIf="actorAdminPorDefecto || actorEsAdmin">
         <ion-label>Permisos Individuales</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="modulos" *ngIf="actorAdminPorDefecto && usuario && usuario.negocioId">
+        <ion-label>Módulos</ion-label>
       </ion-segment-button>
     </ion-segment>
   </ion-toolbar>
@@ -25,14 +28,14 @@
     <p>{{ usuario.correo }}</p>
   </div>
 
-  <div [hidden]="activeTab !== 'roles'" class="roles-section">
+  <div *ngIf="actorAdminPorDefecto" [hidden]="activeTab !== 'roles'" class="roles-section">
     <h4>Asignar Roles</h4>
     <p class="helper-text">Seleccione los roles que desea asignar a este usuario.</p>
     
     <ion-list>
       <ion-item *ngFor="let rol of roles">
         <ion-label>
-          <h2>{{ rol.nombre | titlecase }}</h2>
+          <h2>{{ rol.nombre }}</h2>
           <p>{{ rol.descripcion || 'Sin descripción' }}</p>
           <div class="permisos-list" *ngIf="rol.permisos && rol.permisos.length > 0">
             <ion-chip *ngFor="let p of rol.permisos" outline color="medium" class="permiso-chip">
@@ -52,14 +55,18 @@
       <ion-spinner></ion-spinner>
       <p>Cargando roles...</p>
     </div>
+    <div *ngIf="!loading && roles.length === 0" class="loading-state">
+      <p *ngIf="rolesLoadError">No se pudieron cargar los roles.</p>
+      <p *ngIf="!rolesLoadError">No hay roles para mostrar.</p>
+    </div>
   </div>
 
-  <div [hidden]="activeTab !== 'permisos'" class="permisos-section">
+  <div *ngIf="actorAdminPorDefecto || actorEsAdmin" [hidden]="activeTab !== 'permisos'" class="permisos-section">
     <h4>Permisos Individuales</h4>
     <p class="helper-text">Habilite permisos específicos para este usuario, independientes de su rol.</p>
 
     <ion-list>
-      <ion-item *ngFor="let permiso of availablePermissions">
+      <ion-item *ngFor="let permiso of visiblePermissions">
         <ion-label>
           <h2>{{ permiso }}</h2>
           <p *ngIf="isPermissionInherited(permiso)" class="inherited-text">
@@ -76,13 +83,36 @@
       </ion-item>
     </ion-list>
   </div>
+
+  <div *ngIf="actorAdminPorDefecto && usuario && usuario.negocioId" [hidden]="activeTab !== 'modulos'" class="permisos-section">
+    <h4>Módulos del Usuario</h4>
+    <p class="helper-text">Seleccione los módulos que este usuario puede usar.</p>
+
+    <ion-list>
+      <ion-item *ngFor="let mod of availableModules">
+        <ion-label>
+          <h2>{{ mod.nombre }}</h2>
+          <p>{{ mod.descripcion }}</p>
+        </ion-label>
+        <ion-checkbox
+          slot="end"
+          [checked]="isModuleSelected(mod.id)"
+          (ionChange)="toggleModule(mod.id)">
+        </ion-checkbox>
+      </ion-item>
+    </ion-list>
+    <div *ngIf="availableModules.length === 0" class="loading-state">
+      <p *ngIf="modulesLoadError">No se pudieron cargar los módulos.</p>
+      <p *ngIf="!modulesLoadError">No hay módulos para este negocio.</p>
+    </div>
+  </div>
 </ion-content>
 
 <ion-footer>
   <ion-toolbar>
     <ion-buttons slot="end">
       <ion-button (click)="dismiss()">Cancelar</ion-button>
-      <ion-button color="primary" fill="solid" (click)="save()" [disabled]="loading">
+      <ion-button *ngIf="actorAdminPorDefecto || actorEsAdmin" color="primary" fill="solid" (click)="save()" [disabled]="loading">
         <span *ngIf="!loading">Guardar Cambios</span>
         <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
       </ion-button>
