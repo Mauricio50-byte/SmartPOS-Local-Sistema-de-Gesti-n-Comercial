@@ -41,7 +41,11 @@
             "styles": ["src/global.scss", "src/theme/variables.scss"],
             "scripts": [],
             "allowedCommonJsDependencies": [
-              "qrcode"
+              "qrcode",
+              "canvg",
+              "raf",
+              "rgbcolor",
+              "file-saver"
             ]
           },
           "configurations": {

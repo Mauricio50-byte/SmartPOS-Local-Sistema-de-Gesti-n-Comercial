@@ -38,6 +38,18 @@
         </div>
       </div>
     </div>
+    <div class="metric-card">
+      <div class="metric-icon">
+        <ion-icon name="pricetags-outline"></ion-icon>
+      </div>
+      <div class="metric-content">
+        <div class="metric-value">{{ ticketPromedio | currency:'USD':'symbol':'1.0-0' }}</div>
+        <div class="metric-label">Ticket Promedio</div>
+        <div class="metric-trend positive" *ngIf="dataLoaded">
+          <ion-icon name="trending-up-outline"></ion-icon> +2% vs mes anterior
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Panel de Ventas Mensuales -->
@@ -66,6 +78,87 @@
     </div>
   </div>
 
+  <!-- Panel de Acciones Rápidas -->
+  <div class="panel actions-panel">
+    <div class="panel-header">
+      <h3 class="panel-title">Acciones Rápidas</h3>
+    </div>
+    <div class="panel-content actions-content">
+      <ion-button expand="block" color="primary" routerLink="/home/ventas">
+        <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+        Nueva Venta
+      </ion-button>
+      <ion-button expand="block" color="secondary" routerLink="/home/productos">
+        <ion-icon slot="start" name="cube-outline"></ion-icon>
+        Ver Productos
+      </ion-button>
+      <ion-button expand="block" color="tertiary" routerLink="/home/clientes">
+        <ion-icon slot="start" name="person-add-outline"></ion-icon>
+        Nuevo Cliente
+      </ion-button>
+      <ion-button expand="block" color="medium" routerLink="/home/reportes">
+        <ion-icon slot="start" name="document-text-outline"></ion-icon>
+        Ver Reportes
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Transacciones Recientes -->
+  <div class="panel recent-transactions-panel">
+    <div class="panel-header">
+      <h3 class="panel-title">Transacciones Recientes</h3>
+      <span class="panel-subtitle">Últimas 5 ventas registradas</span>
+    </div>
+    <div class="panel-content table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Fecha</th>
+            <th>Total</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let venta of recentTransactions">
+            <td>#{{ venta.id }}</td>
+            <td>{{ venta.fecha | date:'short' }}</td>
+            <td class="font-bold">{{ venta.total | currency:'USD':'symbol':'1.0-0' }}</td>
+            <td>
+              <span class="status-badge success">Completado</span>
+            </td>
+          </tr>
+          <tr *ngIf="recentTransactions.length === 0">
+            <td colspan="4" class="text-center">No hay transacciones recientes</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Alertas de Stock Bajo -->
+  <div class="panel low-stock-panel">
+    <div class="panel-header">
+      <h3 class="panel-title">Stock Bajo</h3>
+      <span class="panel-subtitle">Productos por agotarse</span>
+    </div>
+    <div class="panel-content list-content">
+      <div class="stock-item" *ngFor="let prod of lowStockProducts">
+        <div class="stock-info">
+          <div class="stock-name">{{ prod.nombre }}</div>
+          <div class="stock-category">{{ prod.categoria || 'General' }}</div>
+        </div>
+        <div class="stock-value warning">
+          {{ prod.stock }} un.
+        </div>
+      </div>
+      <div *ngIf="lowStockProducts.length === 0" class="empty-state">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        <span>Inventario saludable</span>
+      </div>
+    </div>
+  </div>
+
   <!-- Panel de Productos Más Vendidos -->
   <div class="panel top-products-panel">
     <div class="panel-header">
@@ -83,21 +176,30 @@
     </div>
   </div>
 
-  <!-- Panel de Ventas por Categoría -->
+  <!-- Panel de Ventas por Categoría (Nuevo Componente) -->
   <div class="panel category-panel">
-    <div class="panel-header">
-      <h3 class="panel-title">Por Categoría</h3>
-      <span class="panel-subtitle">Distribución de ingresos</span>
-    </div>
-    <div class="panel-content">
-      <div class="chart-container doughnut-container" *ngIf="categoriasChartData && dataLoaded; else loading">
-        <canvas baseChart
-          [data]="categoriasChartData"
-          [options]="doughnutChartOptions"
-          [type]="doughnutChartType">
-        </canvas>
-      </div>
-    </div>
+    <app-category-distribution
+      *ngIf="dataLoaded; else loading"
+      [ventas]="allVentas" 
+      [productos]="allProductos">
+    </app-category-distribution>
+  </div>
+
+  <!-- Panel de Métodos de Pago -->
+  <div class="panel payment-panel">
+    <app-payment-distribution
+      *ngIf="dataLoaded; else loading"
+      [ventas]="allVentas">
+    </app-payment-distribution>
+  </div>
+
+  <!-- Panel de Mejores Clientes -->
+  <div class="panel top-customers-panel-wrapper">
+    <app-top-customers
+      *ngIf="dataLoaded; else loading"
+      [ventas]="allVentas"
+      [clientes]="allClientes">
+    </app-top-customers>
   </div>
 
   <ng-template #loading>

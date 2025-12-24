@@ -1,0 +1,36 @@
+<div class="panel payment-distribution-panel">
+  <div class="panel-header">
+    <h3 class="panel-title">Métodos de Pago</h3>
+    <span class="panel-subtitle">Distribución de ingresos</span>
+  </div>
+  
+  <div class="panel-content chart-layout">
+    <div class="chart-wrapper">
+      <canvas baseChart
+        [data]="chartData"
+        [options]="chartOptions"
+        [type]="chartType">
+      </canvas>
+      <div class="chart-center-text" *ngIf="stats.length > 0">
+        <span class="total-label">Total</span>
+      </div>
+    </div>
+
+    <div class="legend-wrapper">
+      <div class="legend-item" *ngFor="let stat of stats">
+        <div class="legend-indicator" [style.background-color]="stat.color"></div>
+        <div class="legend-info">
+          <div class="legend-name">{{ stat.name }}</div>
+          <div class="legend-value">{{ stat.percentage | number:'1.0-1' }}%</div>
+        </div>
+        <div class="legend-amount">
+          {{ stat.revenue | currency:'USD':'symbol':'1.0-0' }}
+        </div>
+      </div>
+      
+      <div *ngIf="stats.length === 0" class="empty-state">
+        <p>No hay datos disponibles</p>
+      </div>
+    </div>
+  </div>
+</div>

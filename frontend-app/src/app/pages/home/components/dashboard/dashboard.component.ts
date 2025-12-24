@@ -20,14 +20,22 @@ export class DashboardComponent implements OnInit {
   totalIngresos = 0;
   totalVentas = 0;
   nuevosClientes = 0;
+  ticketPromedio = 0;
+
+  // Lists
+  recentTransactions: any[] = [];
+  lowStockProducts: any[] = [];
   
+  // Full Data
+  allVentas: any[] = [];
+  allProductos: any[] = [];
+  allClientes: any[] = [];
+
   // Charts Data
   public ventasChartData: ChartData<'bar'> | undefined;
   public productosChartData: ChartData<'bar'> | undefined;
-  public categoriasChartData: ChartData<'doughnut'> | undefined;
 
   public barChartType: ChartType = 'bar';
-  public doughnutChartType: ChartType = 'doughnut';
 
   dataLoaded = false;
   timeFilter: 'week' | 'month' | 'year' = 'month';
@@ -62,14 +70,6 @@ export class DashboardComponent implements OnInit {
     }
   };
 
-  public doughnutChartOptions: ChartConfiguration['options'] = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }
-    }
-  };
-
   ngOnInit() {
     this.loadDashboardData();
   }
@@ -82,10 +82,15 @@ export class DashboardComponent implements OnInit {
       clientes: this.clientesServices.listarClientes()
     }).subscribe({
       next: ({ ventas, productos, clientes }) => {
+        this.allVentas = ventas;
+        this.allProductos = productos;
+        this.allClientes = clientes;
+
         this.processMetrics(ventas, clientes);
         this.processSalesChart(ventas);
         this.processTopProductsChart(ventas, productos);
-        this.processCategoriesChart(ventas, productos);
+        this.processRecentTransactions(ventas);
+        this.processLowStock(productos);
         this.dataLoaded = true;
       },
       error: (err) => {
@@ -102,6 +107,9 @@ export class DashboardComponent implements OnInit {
     // Total Ventas
     this.totalVentas = ventas.length;
 
+    // Ticket Promedio
+    this.ticketPromedio = this.totalVentas > 0 ? this.totalIngresos / this.totalVentas : 0;
+
     // Nuevos Clientes (Last 30 days)
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -109,6 +117,21 @@ export class DashboardComponent implements OnInit {
       const createdAt = c.createdAt ? new Date(c.createdAt) : new Date(); // Fallback if no date
       return createdAt >= thirtyDaysAgo;
     }).length;
+  }
+
+  private processRecentTransactions(ventas: any[]) {
+    // Sort by date descending and take top 5
+    this.recentTransactions = [...ventas]
+      .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
+      .slice(0, 5);
+  }
+
+  private processLowStock(productos: any[]) {
+    // Filter products with stock <= stockMinimo or default 10
+    this.lowStockProducts = productos
+      .filter(p => p.stock <= (p.stockMinimo || 10))
+      .sort((a, b) => a.stock - b.stock)
+      .slice(0, 5);
   }
 
   private processSalesChart(ventas: any[]) {
@@ -185,37 +208,6 @@ export class DashboardComponent implements OnInit {
           backgroundColor: '#2dd36f',
           borderRadius: 4,
           indexAxis: 'y'
-        }
-      ]
-    };
-  }
-
-  private processCategoriesChart(ventas: any[], productos: any[]) {
-    const categorySales: Record<string, number> = {};
-    const productMap = new Map(productos.map(p => [p.id, p]));
-
-    ventas.forEach(v => {
-      const items = v.items || v.detalles || [];
-      items.forEach((item: any) => {
-        const pId = item.producto?.id || item.productoId;
-        const product = productMap.get(pId);
-        if (product) {
-          const cat = product.categoria || product.tipo || 'General';
-          categorySales[cat] = (categorySales[cat] || 0) + (Number(item.total) || 0);
-        }
-      });
-    });
-
-    const labels = Object.keys(categorySales);
-    const data = Object.values(categorySales);
-
-    this.categoriasChartData = {
-      labels,
-      datasets: [
-        {
-          data,
-          backgroundColor: ['#3880ff', '#3dc2ff', '#5260ff', '#2dd36f', '#ffc409', '#eb445a'],
-          hoverOffset: 4
         }
       ]
     };

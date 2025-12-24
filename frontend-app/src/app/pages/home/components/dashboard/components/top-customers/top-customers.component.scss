@@ -1,0 +1,56 @@
+.top-customers-panel {
+  height: 100%;
+}
+
+.customer-item {
+  display: flex;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid #f3f4f6;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.customer-rank {
+  width: 24px;
+  height: 24px;
+  background: #f3f4f6;
+  color: #6b7280;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  margin-right: 16px;
+}
+
+.customer-info {
+  flex: 1;
+}
+
+.customer-name {
+  font-weight: 600;
+  color: #111827;
+  font-size: 14px;
+}
+
+.customer-stats {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.customer-total {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ion-color-success);
+}
+
+.empty-state {
+  padding: 40px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 14px;
+}

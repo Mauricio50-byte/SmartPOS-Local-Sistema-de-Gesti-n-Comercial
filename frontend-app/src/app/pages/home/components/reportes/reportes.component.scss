@@ -1,0 +1,30 @@
+.reportes-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: 100%;
+  background-color: #f8fafc;
+}
+
+ion-card {
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1) !important;
+  border-radius: 0.5rem !important;
+}
+
+// Ensure chart canvas is responsive
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+// Table styles override
+th {
+  transition: background-color 0.2s;
+}
+
+ion-searchbar {
+  --background: #f3f4f6;
+  --box-shadow: none;
+  --border-radius: 0.5rem;
+  padding-top: 0;
+  padding-bottom: 0;
+}

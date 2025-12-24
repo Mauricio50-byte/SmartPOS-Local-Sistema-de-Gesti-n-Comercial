@@ -18,8 +18,11 @@ import { ProductosListaComponent } from './components/productos/modulos/producto
 import { ProductosFormComponent } from './components/productos/modulos/productos-form/productos-form.component';
 import { FinanzasComponent } from './components/finanzas/finanzas.component';
 import { ClientesComponent } from './components/clientes/clientes.component';
-import { ReporteCategoriasComponent } from './components/reporte-categorias/reporte-categorias.component';
+import { ReportesModule } from './components/reportes/reportes.module';
 import { BaseChartDirective } from 'ng2-charts';
+import { CategoryDistributionComponent } from './components/dashboard/components/category-distribution/category-distribution.component';
+import { TopCustomersComponent } from './components/dashboard/components/top-customers/top-customers.component';
+import { PaymentDistributionComponent } from './components/dashboard/components/payment-distribution/payment-distribution.component';
 
 @NgModule({
   imports: [
@@ -33,7 +36,8 @@ import { BaseChartDirective } from 'ng2-charts';
     ProductosListaComponent,
     ProductosFormComponent,
     FinanzasComponent,
-    ClientesComponent
+    ClientesComponent,
+    ReportesModule
   ],
   declarations: [
     HomePage,
@@ -44,7 +48,9 @@ import { BaseChartDirective } from 'ng2-charts';
     ClientSelectorComponent,
     ClientRegistrationFormComponent,
     ModulosComponent,
-    ReporteCategoriasComponent
+    CategoryDistributionComponent,
+    TopCustomersComponent,
+    PaymentDistributionComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
