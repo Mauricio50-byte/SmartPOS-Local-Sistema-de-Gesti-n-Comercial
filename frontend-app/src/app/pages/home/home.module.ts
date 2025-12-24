@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -18,6 +18,8 @@ import { ProductosListaComponent } from './components/productos/modulos/producto
 import { ProductosFormComponent } from './components/productos/modulos/productos-form/productos-form.component';
 import { FinanzasComponent } from './components/finanzas/finanzas.component';
 import { ClientesComponent } from './components/clientes/clientes.component';
+import { ReporteCategoriasComponent } from './components/reporte-categorias/reporte-categorias.component';
+import { BaseChartDirective } from 'ng2-charts';
 
 @NgModule({
   imports: [
@@ -27,6 +29,7 @@ import { ClientesComponent } from './components/clientes/clientes.component';
     HomePageRoutingModule,
     SharedModule,
     ReactiveFormsModule,
+    BaseChartDirective,
     ProductosListaComponent,
     ProductosFormComponent,
     FinanzasComponent,
@@ -38,10 +41,11 @@ import { ClientesComponent } from './components/clientes/clientes.component';
     UsersComponent,
     VentasComponent,
     ProductosComponent,
-    PermissionsModalComponent,
     ClientSelectorComponent,
     ClientRegistrationFormComponent,
-    ModulosComponent
-  ]
+    ModulosComponent,
+    ReporteCategoriasComponent
+  ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class HomePageModule { }

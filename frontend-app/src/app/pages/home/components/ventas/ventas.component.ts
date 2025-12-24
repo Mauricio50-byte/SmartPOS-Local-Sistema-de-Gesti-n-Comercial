@@ -38,7 +38,7 @@ export class VentasComponent implements OnInit {
   mostrarRegistroCliente: boolean = false;
   
   // Vista móvil (catalogo o carrito)
-  mobileView: 'catalogo' | 'carrito' = 'catalogo';
+  cartVisibleMobile: boolean = false;
 
   // Usuario actual
   currentUserId: number = 1;
@@ -210,6 +210,11 @@ export class VentasComponent implements OnInit {
     this.searchTerm = '';
     this.filteredProductos = this.productos;
     this.calculateTotal();
+    this.mostrarToast('Producto agregado', 'success', 1000);
+  }
+
+  toggleCartMobile() {
+    this.cartVisibleMobile = !this.cartVisibleMobile;
   }
 
   removeFromCart(index: number) {
@@ -582,12 +587,13 @@ export class VentasComponent implements OnInit {
     await alert.present();
   }
 
-  async mostrarToast(message: string, color: 'success' | 'danger' | 'warning' = 'danger') {
+  async mostrarToast(message: string, color: 'success' | 'danger' | 'warning' = 'danger', duration: number = 2000) {
     const toast = await this.toastController.create({
       message,
-      duration: 2000,
+      duration,
       position: 'bottom',
-      color
+      color,
+      cssClass: 'custom-toast' // Para estilos personalizados si se requiere
     });
     await toast.present();
   }

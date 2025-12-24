@@ -7,13 +7,15 @@ import { ProductCardComponent } from './components/product-card/product-card.com
 import { CartItemComponent } from './components/cart-item/cart-item.component';
 import { PaymentSelectorComponent } from './components/payment-selector/payment-selector.component';
 import { ConexionQrComponent } from './components/conexion-qr/conexion-qr.component';
+import { PermissionsModalComponent } from './components/permissions-modal/permissions-modal.component';
 
 @NgModule({
     declarations: [
         ProductCardComponent,
         CartItemComponent,
         PaymentSelectorComponent,
-        ConexionQrComponent
+        ConexionQrComponent,
+        PermissionsModalComponent
     ],
     imports: [
         CommonModule,
@@ -25,6 +27,7 @@ import { ConexionQrComponent } from './components/conexion-qr/conexion-qr.compon
         CartItemComponent,
         PaymentSelectorComponent,
         ConexionQrComponent,
+        PermissionsModalComponent,
         CommonModule,
         IonicModule,
         FormsModule

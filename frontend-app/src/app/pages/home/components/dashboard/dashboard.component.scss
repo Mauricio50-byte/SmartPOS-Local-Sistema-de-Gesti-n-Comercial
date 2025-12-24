@@ -5,244 +5,110 @@
 
 // Variables CSS
 :root {
-  --brand-teal: #0d9488;
-  --brand-teal-contrast: #ffffff;
-  --space-8: 8px;
-  --space-12: 12px;
+  --brand-primary: var(--ion-color-primary, #3880ff);
+  --brand-success: var(--ion-color-success, #2dd36f);
   --space-16: 16px;
   --space-24: 24px;
-  --radius-12: 12px;
-  --radius-24: 24px;
-  --shadow-1: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --radius-16: 16px;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-// Grid responsive con Tailwind-like classes
 .grid { 
   display: grid; 
   grid-template-columns: 1fr; 
   gap: var(--space-24); 
   padding: var(--space-24); 
   width: 100%; 
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
 .panel { 
   background: #fff; 
-  border-radius: var(--radius-24); 
-  box-shadow: var(--shadow-1); 
+  border-radius: var(--radius-16); 
+  box-shadow: var(--shadow-sm); 
   width: 100%; 
-}
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
 
-// Contenedor de gráficos
-.chart-container {
-  width: 100%;
-  height: 192px; // h-48 equivalente
-  position: relative;
-}
-
-// Estilos para Chart.js
-canvas {
-  width: 100% !important;
-  height: 100% !important;
-}
-
-.chart-bars { 
-  display: grid; 
-  gap: var(--space-12); 
-  width: 100%;
-}
-
-.chart-bars .bar { 
-  display: grid; 
-  align-items: center; 
-  grid-template-columns: 1fr auto; 
-  background: #f7fafb; 
-  border: 1px solid #e0e0e0; 
-  border-radius: var(--radius-12); 
-  padding: var(--space-12); 
-  position: relative; 
-  width: 100%;
-}
-
-.chart-bars .bar::before { 
-  content: ''; 
-  position: absolute; 
-  left: 0; 
-  top: 0; 
-  bottom: 0; 
-  width: var(--value); 
-  background: var(--brand-teal); 
-  opacity: .18; 
-  border-radius: var(--radius-12); 
-}
-
-.chart-bars .bar span { 
-  z-index: 1; 
-  color: var(--ion-color-dark); 
-}
-
-.chart-bars .bar-value { 
-  font-weight: 600; 
-  color: var(--brand-teal); 
-}
-
-// Media queries para responsive
-@media (min-width: 640px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .metrics-panel {
-    grid-column: span 2;
+  &:hover {
+    box-shadow: var(--shadow-md);
   }
 }
 
-@media (min-width: 768px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-24);
-  }
-  
-  // Ajuste específico para el panel de métricas
-  .panel:nth-child(3) { // metrics-panel
-    grid-column: span 2;
-  }
-  
-  .panel:nth-child(4) { // ventas por categoría
-    grid-column: span 2;
-  }
-}
-
-@media (min-width: 1024px) {
-  .grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  
-  .panel:nth-child(1),
-  .panel:nth-child(2) {
-    grid-column: span 1;
-  }
-  
-  .panel:nth-child(3) { // metrics-panel
-    grid-column: span 3;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-16);
-  }
-  
-  .panel:nth-child(4) { // ventas por categoría
-    grid-column: span 3;
-  }
-  
-  .chart-container {
-    height: 160px; // Más pequeño en desktop grande
-  }
-}
-
-@media (min-width: 1280px) {
-  .grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--space-24);
-  }
-  
-  .panel:nth-child(1),
-  .panel:nth-child(2),
-  .panel:nth-child(4) {
-    grid-column: span 2;
-  }
-  
-  .panel:nth-child(3) { // metrics-panel
-    grid-column: span 4;
-    grid-template-columns: repeat(3, 1fr);
-  }
-  
-  .chart-container {
-    height: 180px;
-  }
-}
-
-// Estilos de paneles
+// Header de Panel
 .panel-header {
-  padding: var(--space-16) var(--space-24);
-  border-bottom: 1px solid #f0f0f0;
+  padding: 20px 24px;
+  border-bottom: 1px solid #f3f4f6;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
 }
 
 .panel-title {
   margin: 0;
   font-size: 16px;
-  font-weight: 600;
-  color: var(--ion-color-dark);
+  font-weight: 700;
+  color: #111827;
 }
 
 .panel-subtitle {
-  font-size: 12px;
-  color: var(--ion-color-medium);
+  font-size: 13px;
+  color: #6b7280;
+  display: block;
+  margin-top: 2px;
 }
 
 .panel-content {
-  padding: var(--space-16) var(--space-24);
-  width: 100%;
+  padding: 24px;
+  flex: 1;
+  position: relative;
+  min-height: 250px;
 }
 
-.chart-loading {
-  height: 192px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: var(--ion-color-medium);
-  width: 100%;
-}
-
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid #f0f0f0;
-  border-top-color: var(--brand-teal);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: var(--space-12);
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
+// Métricas
 .metrics-panel {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--space-16);
-  padding: var(--space-24);
-  width: 100%;
+  gap: 16px;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  
+  &:hover {
+    box-shadow: none;
+  }
 }
 
 .metric-card {
+  background: white;
+  border-radius: var(--radius-16);
+  padding: 24px;
   display: flex;
-  align-items: center;
-  gap: var(--space-16);
-  padding: var(--space-16);
-  background: #f7fafb;
-  border-radius: var(--radius-12);
-  border: 1px solid #e0e0e0;
-  width: 100%;
+  align-items: flex-start;
+  gap: 20px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
 }
 
 .metric-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-12);
-  background: #e0e0e0;
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background: rgba(var(--ion-color-primary-rgb), 0.1);
+  color: var(--ion-color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #666666;
-}
-
-.metric-icon ion-icon {
-  font-size: 20px;
+  font-size: 24px;
+  flex-shrink: 0;
 }
 
 .metric-content {
@@ -250,95 +116,125 @@ canvas {
 }
 
 .metric-value {
-  font-size: 20px;
-  font-weight: 600;
-  color: #666666;
-  margin-bottom: 2px;
-}
-
-.metric-label {
-  font-size: 12px;
-  color: var(--ion-color-medium);
+  font-size: 28px;
+  font-weight: 800;
+  color: #111827;
+  line-height: 1.2;
   margin-bottom: 4px;
 }
 
+.metric-label {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
 .metric-trend {
-  font-size: 11px;
+  margin-top: 12px;
+  font-size: 13px;
   font-weight: 600;
-  
-  &.positive {
-    color: #10b981;
-  }
-  
-  &.neutral {
-    color: #666666;
-  }
-}
-
-// Estilos para gráficas vacías
-.chart-bars-empty {
-  display: grid;
-  gap: var(--space-12);
-  width: 100%;
-}
-
-.bar-placeholder {
-  display: grid;
+  display: flex;
   align-items: center;
-  grid-template-columns: 1fr auto;
-  background: #f7fafb;
-  border: 1px dashed #e0e0e0;
-  border-radius: var(--radius-12);
-  padding: var(--space-12);
-  color: #999999;
-  font-style: italic;
+  gap: 4px;
+  
+  &.positive { color: var(--brand-success); }
+  &.negative { color: var(--ion-color-danger); }
+  &.neutral { color: #9ca3af; }
+}
+
+// Chart Containers
+.chart-container {
+  position: relative;
   width: 100%;
+  height: 100%;
+  min-height: 300px;
 }
 
-.bar-placeholder .bar-value {
-  color: #999999;
-  font-weight: normal;
+.doughnut-container {
+  min-height: 250px;
+  max-width: 400px;
+  margin: 0 auto;
 }
 
-// Ajustes responsivos específicos
-@media (max-width: 639px) {
-  .grid {
-    padding: var(--space-16);
-    gap: var(--space-16);
-  }
+// Loading State
+.chart-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(2px);
+  z-index: 10;
   
-  .panel {
-    border-radius: var(--radius-16);
-  }
-  
-  .panel-header {
-    padding: var(--space-12) var(--space-16);
-  }
-  
-  .panel-content {
-    padding: var(--space-12) var(--space-16);
-  }
-  
-  .chart-container {
-    height: 160px; // Más pequeño en móvil
-  }
-  
-  .metric-card {
-    padding: var(--space-12);
-  }
-  
-  .metric-icon {
+  .loading-spinner {
     width: 40px;
     height: 40px;
+    border: 3px solid #e5e7eb;
+    border-top-color: var(--brand-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 12px;
   }
   
-  .metric-value {
-    font-size: 18px;
+  p {
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 500;
   }
 }
 
-// Asegurar que los gráficos sean responsivos
-.chart-container canvas {
-  max-width: 100% !important;
-  max-height: 100% !important;
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// Responsive Layout
+@media (min-width: 640px) {
+  .metrics-panel {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto auto;
+  }
+
+  .metrics-panel {
+    grid-column: 1 / -1;
+  }
+
+  .sales-chart-panel {
+    grid-column: span 2;
+  }
+
+  .top-products-panel {
+    grid-column: span 1;
+  }
+  
+  .category-panel {
+    grid-column: span 1;
+  }
+}
+
+@media (min-width: 1280px) {
+  .sales-chart-panel {
+    grid-column: span 2;
+  }
+}
+
+// Filter Control
+.filter-control {
+  ion-select {
+    --padding-top: 8px;
+    --padding-bottom: 8px;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    background: #f9fafb;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+  }
 }

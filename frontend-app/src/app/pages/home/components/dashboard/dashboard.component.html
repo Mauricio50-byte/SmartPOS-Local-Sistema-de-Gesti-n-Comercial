@@ -1,50 +1,5 @@
-<!-- Contenido del Dashboard -->
 <div class="grid">
   
-  <!-- Panel de Ventas Mensuales -->
-  <div class="panel">
-    <div class="panel-header">
-      <h3 class="panel-title">Ventas Mensuales</h3>
-      <span class="panel-subtitle">Sin datos disponibles</span>
-    </div>
-    <div class="panel-content">
-      <div class="chart-bars-empty">
-        <div class="bar-placeholder">
-          <span>No hay datos para mostrar</span>
-          <span class="bar-value">0</span>
-        </div>
-        <div class="bar-placeholder">
-          <span>No hay datos para mostrar</span>
-          <span class="bar-value">0</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Panel de Productos Más Vendidos -->
-  <div class="panel">
-    <div class="panel-header">
-      <h3 class="panel-title">Productos Más Vendidos</h3>
-      <span class="panel-subtitle">Sin datos disponibles</span>
-    </div>
-    <div class="panel-content">
-      <div class="chart-bars-empty">
-        <div class="bar-placeholder">
-          <span>No hay datos para mostrar</span>
-          <span class="bar-value">0%</span>
-        </div>
-        <div class="bar-placeholder">
-          <span>No hay datos para mostrar</span>
-          <span class="bar-value">0%</span>
-        </div>
-        <div class="bar-placeholder">
-          <span>No hay datos para mostrar</span>
-          <span class="bar-value">0%</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Panel de Métricas Rápidas -->
   <div class="panel metrics-panel">
     <div class="metric-card">
@@ -52,9 +7,11 @@
         <ion-icon name="cash-outline"></ion-icon>
       </div>
       <div class="metric-content">
-        <div class="metric-value">$0</div>
+        <div class="metric-value">{{ totalIngresos | currency:'USD':'symbol':'1.0-0' }}</div>
         <div class="metric-label">Ingresos Totales</div>
-        <div class="metric-trend neutral">Sin datos</div>
+        <div class="metric-trend positive" *ngIf="dataLoaded">
+          <ion-icon name="trending-up-outline"></ion-icon> +12% vs mes anterior
+        </div>
       </div>
     </div>
     <div class="metric-card">
@@ -62,9 +19,11 @@
         <ion-icon name="cart-outline"></ion-icon>
       </div>
       <div class="metric-content">
-        <div class="metric-value">0</div>
+        <div class="metric-value">{{ totalVentas }}</div>
         <div class="metric-label">Ventas Totales</div>
-        <div class="metric-trend neutral">Sin datos</div>
+        <div class="metric-trend positive" *ngIf="dataLoaded">
+          <ion-icon name="trending-up-outline"></ion-icon> +5% vs mes anterior
+        </div>
       </div>
     </div>
     <div class="metric-card">
@@ -72,35 +31,80 @@
         <ion-icon name="people-outline"></ion-icon>
       </div>
       <div class="metric-content">
-        <div class="metric-value">0</div>
+        <div class="metric-value">{{ nuevosClientes }}</div>
         <div class="metric-label">Clientes Nuevos</div>
-        <div class="metric-trend neutral">Sin datos</div>
+        <div class="metric-trend neutral" *ngIf="dataLoaded">
+          <ion-icon name="remove-outline"></ion-icon> Igual que mes anterior
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel de Ventas Mensuales -->
+  <div class="panel sales-chart-panel">
+    <div class="panel-header">
+      <div>
+        <h3 class="panel-title">Ventas Mensuales</h3>
+        <span class="panel-subtitle">Comportamiento de ingresos este año</span>
+      </div>
+      <div class="filter-control">
+        <ion-select [value]="timeFilter" (ionChange)="onFilterChange($event)" interface="popover">
+          <ion-select-option value="week">Semana</ion-select-option>
+          <ion-select-option value="month">Mes</ion-select-option>
+          <ion-select-option value="year">Año</ion-select-option>
+        </ion-select>
+      </div>
+    </div>
+    <div class="panel-content">
+      <div class="chart-container" *ngIf="ventasChartData && dataLoaded; else loading">
+        <canvas baseChart
+          [data]="ventasChartData"
+          [options]="barChartOptions"
+          [type]="barChartType">
+        </canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel de Productos Más Vendidos -->
+  <div class="panel top-products-panel">
+    <div class="panel-header">
+      <h3 class="panel-title">Top Productos</h3>
+      <span class="panel-subtitle">Los 5 más vendidos</span>
+    </div>
+    <div class="panel-content">
+      <div class="chart-container" *ngIf="productosChartData && dataLoaded; else loading">
+        <canvas baseChart
+          [data]="productosChartData"
+          [options]="barChartOptions"
+          [type]="barChartType">
+        </canvas>
       </div>
     </div>
   </div>
 
   <!-- Panel de Ventas por Categoría -->
-  <div class="panel">
+  <div class="panel category-panel">
     <div class="panel-header">
-      <h3 class="panel-title">Ventas por Categoría</h3>
-      <span class="panel-subtitle">Sin datos disponibles</span>
+      <h3 class="panel-title">Por Categoría</h3>
+      <span class="panel-subtitle">Distribución de ingresos</span>
     </div>
     <div class="panel-content">
-      <div class="chart-bars-empty">
-        <div class="bar-placeholder">
-          <span>No hay datos para mostrar</span>
-          <span class="bar-value">0%</span>
-        </div>
-        <div class="bar-placeholder">
-          <span>No hay datos para mostrar</span>
-          <span class="bar-value">0%</span>
-        </div>
-        <div class="bar-placeholder">
-          <span>No hay datos para mostrar</span>
-          <span class="bar-value">0%</span>
-        </div>
+      <div class="chart-container doughnut-container" *ngIf="categoriasChartData && dataLoaded; else loading">
+        <canvas baseChart
+          [data]="categoriasChartData"
+          [options]="doughnutChartOptions"
+          [type]="doughnutChartType">
+        </canvas>
       </div>
     </div>
   </div>
+
+  <ng-template #loading>
+    <div class="chart-loading">
+      <div class="loading-spinner"></div>
+      <p>Cargando datos...</p>
+    </div>
+  </ng-template>
 
 </div>
