@@ -145,15 +145,15 @@
           </thead>
           <tbody class="divide-y divide-gray-200">
             <tr *ngFor="let item of filteredMetrics" class="hover:bg-gray-50 transition-colors">
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ item.name }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">{{ item.revenue | currency }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">{{ item.salesVolume }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-right">
+              <td data-label="Categoría" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ item.name }}</td>
+              <td data-label="Ventas" class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">{{ item.revenue | currency }}</td>
+              <td data-label="Volumen" class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">{{ item.salesVolume }}</td>
+              <td data-label="Margen" class="px-6 py-4 whitespace-nowrap text-sm text-right">
                 <span [class.text-green-600]="item.margin >= 20" [class.text-orange-600]="item.margin < 20">
                   {{ item.margin | number:'1.1-1' }}%
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-right">
+              <td data-label="Crecimiento" class="px-6 py-4 whitespace-nowrap text-sm text-right">
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
                   [ngClass]="item.growth >= 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
                   <ion-icon [name]="item.growth >= 0 ? 'arrow-up-outline' : 'arrow-down-outline'" class="mr-1"></ion-icon>

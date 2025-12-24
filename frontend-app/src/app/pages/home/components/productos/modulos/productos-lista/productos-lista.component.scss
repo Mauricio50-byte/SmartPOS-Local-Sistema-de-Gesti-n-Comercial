@@ -123,7 +123,7 @@
             border: 1px solid #e0e0e0;
             border-radius: 12px;
             background: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
             overflow: hidden;
         }
 
@@ -132,14 +132,16 @@
             justify-content: space-between;
             align-items: center;
             text-align: right;
-            padding: 12px 16px;
+            padding: 10px 16px;
             border-bottom: 1px solid #f5f5f5;
-            min-height: 48px;
+            min-height: 40px;
+            font-size: 0.9rem;
 
             &:last-child {
                 border-bottom: none;
                 background: #fafafa;
                 justify-content: flex-end;
+                padding: 8px 16px;
             }
 
             &::before {
@@ -150,6 +152,44 @@
                 text-transform: uppercase;
                 margin-right: 16px;
                 text-align: left;
+                min-width: 100px; /* Ensure labels align somewhat nicely */
+            }
+
+            /* Estilo especial para el Nombre del Producto (Cabecera de la tarjeta) */
+            &[data-label="Producto"] {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                justify-content: center;
+                text-align: left;
+                background-color: #f8f9fa;
+                padding: 14px 16px;
+                border-bottom: 2px solid #eaeaea;
+
+                &::before {
+                    display: none; /* Ocultar la etiqueta "Producto" */
+                }
+
+                strong {
+                    font-size: 1.1rem;
+                    color: var(--ion-color-dark);
+                    font-weight: 700;
+                }
+            }
+
+            /* Resaltar Precios */
+            &[data-label="P. Venta"], &[data-label="Precio"] {
+                color: var(--ion-color-success);
+                font-weight: 600;
+                font-size: 1rem;
+            }
+            
+            &[data-label="P. Costo"] {
+                color: var(--ion-color-medium);
+            }
+            
+            &[data-label="Stock"] {
+                font-weight: 600;
             }
         }
         

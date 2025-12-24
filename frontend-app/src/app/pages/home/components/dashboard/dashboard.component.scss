@@ -293,6 +293,70 @@
 }
 
 // Responsive Layout
+@media (max-width: 768px) {
+  .grid {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .panel-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    
+    .filter-control {
+      width: 100%;
+      ion-select {
+        width: 100%;
+      }
+    }
+  }
+
+  .data-table {
+    display: block;
+    
+    thead {
+      display: none;
+    }
+
+    tbody {
+      display: block;
+    }
+
+    tr {
+      display: block;
+      margin-bottom: 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    td {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border: none;
+      
+      &:before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #6b7280;
+        margin-right: 12px;
+      }
+
+      &:first-child {
+        padding-top: 0;
+        font-weight: 600;
+        color: var(--brand-primary);
+      }
+
+      &:last-child {
+        padding-bottom: 0;
+      }
+    }
+  }
+}
+
 @media (min-width: 640px) {
   .metrics-panel {
     grid-template-columns: repeat(2, 1fr);

@@ -40,7 +40,10 @@ export class ProductosListaComponent implements OnChanges, OnInit {
     { key: 'nombre', label: 'Producto', type: 'text' },
     { key: 'sku', label: 'SKU', type: 'text' },
     { key: 'categoria', label: 'Categoría', type: 'text' },
-    { key: 'precioVenta', label: 'Precio', type: 'currency' },
+    { key: 'marca', label: 'Marca', type: 'text' },
+    { key: 'precioCosto', label: 'P. Costo', type: 'currency' },
+    { key: 'precioVenta', label: 'P. Venta', type: 'currency' },
+    { key: 'iva', label: 'IVA', type: 'text' },
     { key: 'stock', label: 'Stock', type: 'text' },
     { key: 'unidadMedida', label: 'Unidad', type: 'text' },
     { 
@@ -55,8 +58,7 @@ export class ProductosListaComponent implements OnChanges, OnInit {
   private moduleColumns: { [key: string]: Column[] } = {
     'ROPA': [
       { key: 'talla', label: 'Talla', path: 'detalleRopa.talla', type: 'text' },
-      { key: 'color', label: 'Color', path: 'detalleRopa.color', type: 'text' },
-      { key: 'marca', label: 'Marca', type: 'text' }
+      { key: 'color', label: 'Color', path: 'detalleRopa.color', type: 'text' }
     ],
     'ALIMENTO': [
       { key: 'fechaVencimiento', label: 'Vence', path: 'detalleAlimento.fechaVencimiento', type: 'date' },
@@ -72,8 +74,7 @@ export class ProductosListaComponent implements OnChanges, OnInit {
       { key: 'laboratorio', label: 'Laboratorio', path: 'detalleFarmacia.laboratorio', type: 'text' }
     ],
     'PAPELERIA': [
-      { key: 'tipoPapel', label: 'Tipo Papel', path: 'detallePapeleria.tipoPapel', type: 'text' },
-      { key: 'marca', label: 'Marca', type: 'text' }
+      { key: 'tipoPapel', label: 'Tipo Papel', path: 'detallePapeleria.tipoPapel', type: 'text' }
     ],
     'RESTAURANTE': [
       { key: 'tiempoPreparacion', label: 'T. Prep (min)', path: 'detalleRestaurante.tiempoPreparacion', type: 'text' },

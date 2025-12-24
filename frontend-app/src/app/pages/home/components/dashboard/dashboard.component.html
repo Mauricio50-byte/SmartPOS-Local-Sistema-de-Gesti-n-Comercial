@@ -121,10 +121,10 @@
         </thead>
         <tbody>
           <tr *ngFor="let venta of recentTransactions">
-            <td>#{{ venta.id }}</td>
-            <td>{{ venta.fecha | date:'short' }}</td>
-            <td class="font-bold">{{ venta.total | currency:'USD':'symbol':'1.0-0' }}</td>
-            <td>
+            <td data-label="ID">#{{ venta.id }}</td>
+            <td data-label="Fecha">{{ venta.fecha | date:'short' }}</td>
+            <td data-label="Total" class="font-bold">{{ venta.total | currency:'USD':'symbol':'1.0-0' }}</td>
+            <td data-label="Estado">
               <span class="status-badge success">Completado</span>
             </td>
           </tr>
