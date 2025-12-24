@@ -6,6 +6,8 @@ import { UsuarioPerfil } from '../../core/models';
 import { ModalController } from '@ionic/angular';
 import { ConexionQrComponent } from '../../shared/components/conexion-qr/conexion-qr.component';
 
+export type HomeView = 'dashboard' | 'users' | 'ventas' | 'productos' | 'modulos' | 'finanzas' | 'clientes' | 'reportes';
+
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -13,7 +15,7 @@ import { ConexionQrComponent } from '../../shared/components/conexion-qr/conexio
   standalone: false,
 })
 export class HomePage implements OnInit {
-  currentView: 'dashboard' | 'users' | 'ventas' | 'productos' | 'modulos' | 'finanzas' | 'clientes' | 'reportes' = 'dashboard';
+  currentView: HomeView = 'dashboard';
   pageTitle: string = 'Dashboard';
   currentUser: UsuarioPerfil | null = null;
 
@@ -70,8 +72,8 @@ export class HomePage implements OnInit {
     this.setView(this.currentView);
   }
 
-  setView(view: 'dashboard' | 'users' | 'ventas' | 'productos' | 'modulos' | 'finanzas' | 'clientes' | 'reportes') {
-    this.currentView = view;
+  setView(view: HomeView | string) {
+    this.currentView = view as HomeView;
     if (view === 'dashboard') {
       this.pageTitle = 'Dashboard';
     } else if (view === 'users') {

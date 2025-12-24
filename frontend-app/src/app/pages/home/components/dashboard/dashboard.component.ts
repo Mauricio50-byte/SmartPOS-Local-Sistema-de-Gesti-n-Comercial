@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, Output, EventEmitter } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { VentaServices } from '../../../../core/services/venta.service';
 import { ProductosServices } from '../../../../core/services/producto.service';
@@ -12,6 +12,8 @@ import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
   standalone: false
 })
 export class DashboardComponent implements OnInit {
+  @Output() navigate = new EventEmitter<string>();
+
   private ventaServices = inject(VentaServices);
   private productosServices = inject(ProductosServices);
   private clientesServices = inject(ClientesServices);
@@ -217,5 +219,9 @@ export class DashboardComponent implements OnInit {
     this.timeFilter = event.detail.value;
     // Implement filter logic here (reload data with params)
     this.loadDashboardData();
+  }
+
+  onNavigate(view: string) {
+    this.navigate.emit(view);
   }
 }

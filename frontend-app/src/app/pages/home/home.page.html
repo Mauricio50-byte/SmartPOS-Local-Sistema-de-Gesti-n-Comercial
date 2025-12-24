@@ -118,7 +118,7 @@
     </ion-header>
 
     <div class="content-container">
-      <app-dashboard *ngIf="currentView === 'dashboard'"></app-dashboard>
+      <app-dashboard *ngIf="currentView === 'dashboard'" (navigate)="setView($event)"></app-dashboard>
       <app-users *ngIf="currentView === 'users'"></app-users>
       <app-ventas *ngIf="currentView === 'ventas'"></app-ventas>
       <app-productos *ngIf="currentView === 'productos'"></app-productos>

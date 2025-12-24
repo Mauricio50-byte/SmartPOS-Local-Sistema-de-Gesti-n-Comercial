@@ -45,9 +45,11 @@ ion-searchbar {
       display: block;
       margin-bottom: 1rem;
       border: 1px solid #e5e7eb;
+      border-left: 4px solid var(--ion-color-primary); /* Accent border */
       border-radius: 0.5rem;
       background: white;
       padding: 1rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Subtle shadow */
     }
 
     td {

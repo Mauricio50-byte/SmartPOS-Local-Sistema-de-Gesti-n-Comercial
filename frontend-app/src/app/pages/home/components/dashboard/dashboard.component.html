@@ -84,19 +84,19 @@
       <h3 class="panel-title">Acciones Rápidas</h3>
     </div>
     <div class="panel-content actions-content">
-      <ion-button expand="block" color="primary" routerLink="/home/ventas">
+      <ion-button expand="block" color="primary" (click)="onNavigate('ventas')">
         <ion-icon slot="start" name="add-circle-outline"></ion-icon>
         Nueva Venta
       </ion-button>
-      <ion-button expand="block" color="secondary" routerLink="/home/productos">
+      <ion-button expand="block" color="secondary" (click)="onNavigate('productos')">
         <ion-icon slot="start" name="cube-outline"></ion-icon>
         Ver Productos
       </ion-button>
-      <ion-button expand="block" color="tertiary" routerLink="/home/clientes">
+      <ion-button expand="block" color="tertiary" (click)="onNavigate('clientes')">
         <ion-icon slot="start" name="person-add-outline"></ion-icon>
         Nuevo Cliente
       </ion-button>
-      <ion-button expand="block" color="medium" routerLink="/home/reportes">
+      <ion-button expand="block" color="medium" (click)="onNavigate('reportes')">
         <ion-icon slot="start" name="document-text-outline"></ion-icon>
         Ver Reportes
       </ion-button>
@@ -194,7 +194,7 @@
   </div>
 
   <!-- Panel de Mejores Clientes -->
-  <div class="panel top-customers-panel-wrapper">
+  <div class="top-customers-panel-wrapper">
     <app-top-customers
       *ngIf="dataLoaded; else loading"
       [ventas]="allVentas"
