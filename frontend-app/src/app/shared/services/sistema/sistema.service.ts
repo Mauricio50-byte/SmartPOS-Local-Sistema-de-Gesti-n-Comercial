@@ -18,7 +18,11 @@ export class SistemaService {
 
     constructor(private http: HttpClient) { }
 
-    obtenerDatosConexion(): Observable<DatosConexion> {
-        return this.http.get<DatosConexion>(`${this.apiUrl}/sistema/conexion-qr`);
+    obtenerDatosConexion(usuarioId?: number): Observable<DatosConexion> {
+        let url = `${this.apiUrl}/sistema/conexion-qr`;
+        if (usuarioId) {
+            url += `?usuarioId=${usuarioId}`;
+        }
+        return this.http.get<DatosConexion>(url);
     }
 }

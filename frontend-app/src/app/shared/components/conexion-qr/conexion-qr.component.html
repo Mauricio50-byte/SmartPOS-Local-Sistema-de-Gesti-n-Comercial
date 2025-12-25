@@ -1,52 +1,112 @@
-<ion-header>
+<ion-header class="ion-no-border">
     <ion-toolbar>
-        <ion-title>Conectar Dispositivo</ion-title>
+        <ion-title class="modal-title">Conectar Dispositivo</ion-title>
         <ion-buttons slot="end">
-            <ion-button (click)="cerrar()">
-                <ion-icon name="close-outline"></ion-icon>
+            <ion-button (click)="cerrar()" color="medium">
+                <ion-icon name="close-outline" size="large"></ion-icon>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding ion-text-center">
+<ion-content class="ion-padding content-bg">
+    
     <div *ngIf="cargando" class="loading-container">
-        <ion-spinner></ion-spinner>
-        <p>Generando código de conexión...</p>
-    </div>
-
-    <div *ngIf="!cargando && token" class="qr-container">
-
-        <!-- Input de IP siempre visible para corrección manual -->
-        <div class="ip-config">
-            <ion-item lines="full">
-                <ion-label position="stacked">IP del Servidor (Verifica que sea correcta)</ion-label>
-                <ion-input [(ngModel)]="ipManual" placeholder="Ej: 192.168.1.5" (ionChange)="generarQr()"></ion-input>
-                <ion-note slot="helper">Debe ser la IP de tu WiFi (ej. 192.168.x.x)</ion-note>
-            </ion-item>
-        </div>
-
-        <div [style.display]="urlQr ? 'block' : 'none'" class="qr-wrapper">
-            <p class="instruccion">
-                Escanea con la cámara de tu celular:
-            </p>
-            <canvas #qrCanvas></canvas>
-        </div>
-
-        <div class="info-adicional">
-            <p><strong>URL:</strong> {{ urlQr }}</p>
-            <p>Token válido por 24 horas</p>
-            <p *ngIf="mostrarInputIp" class="warning">
-                <ion-icon name="warning-outline"></ion-icon>
-                Estás en localhost. Debes poner la IP real para que el celular se conecte.
-            </p>
-        </div>
+        <ion-spinner name="crescent" color="primary"></ion-spinner>
+        <p>Generando código seguro...</p>
     </div>
 
     <div *ngIf="error" class="error-container">
-        <ion-text color="danger">
-            <p>{{ error }}</p>
-        </ion-text>
-        <ion-button (click)="cargarDatos()">Reintentar</ion-button>
+        <div class="error-icon">
+            <ion-icon name="alert-circle-outline"></ion-icon>
+        </div>
+        <h3>Ocurrió un error</h3>
+        <p>{{ error }}</p>
+        <ion-button (click)="cargarDatos()" fill="outline" color="danger">Intentar de nuevo</ion-button>
     </div>
+
+    <div *ngIf="!cargando && !error && token" class="main-container">
+        <ion-grid fixed>
+            <ion-row>
+                <!-- COLUMNA IZQUIERDA: CONFIGURACIÓN -->
+                <ion-col size="12" size-md="6" class="config-col">
+                    
+                    <div class="step-card">
+                        <div class="step-header">
+                            <div class="step-number">1</div>
+                            <h4>Configuración de Red</h4>
+                        </div>
+                        <p class="step-desc">Asegúrate que la IP sea correcta y ambos dispositivos estén en el mismo WiFi.</p>
+                        
+                        <div class="ip-input-wrapper">
+                            <ion-item lines="none" class="custom-input">
+                                <ion-label position="stacked">IP del Servidor (PC)</ion-label>
+                                <ion-input [(ngModel)]="ipManual" placeholder="Ej: 192.168.1.50" (ionChange)="generarQr()"></ion-input>
+                                <ion-icon name="wifi-outline" slot="start" color="primary"></ion-icon>
+                            </ion-item>
+                            <div *ngIf="mostrarInputIp" class="ip-warning">
+                                <ion-icon name="warning" color="warning"></ion-icon>
+                                <small>Detectamos localhost. Ingresa tu IP de red local.</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-card" *ngIf="esAdmin">
+                        <div class="step-header">
+                            <div class="step-number">2</div>
+                            <h4>Seleccionar Usuario</h4>
+                        </div>
+                        <p class="step-desc">Elige quién iniciará sesión al escanear este código.</p>
+                        
+                        <ion-item lines="none" class="custom-select">
+                            <ion-icon name="person-circle-outline" slot="start" color="secondary"></ion-icon>
+                            <ion-label>Usuario</ion-label>
+                            <ion-select [(ngModel)]="usuarioSeleccionadoId" (ionChange)="onUsuarioChange()" interface="popover" placeholder="Seleccionar...">
+                                <ion-select-option [value]="null">Administrador (Yo)</ion-select-option>
+                                <ion-select-option *ngFor="let u of usuarios" [value]="u.id">{{ u.nombre }}</ion-select-option>
+                            </ion-select>
+                        </ion-item>
+                    </div>
+
+                    <div class="step-card help-card">
+                        <div class="step-header">
+                            <div class="step-number">?</div>
+                            <h4>¿Problemas?</h4>
+                        </div>
+                        <ul class="help-list">
+                            <li>Verifica que el Firewall de Windows permita el puerto 3000.</li>
+                            <li>No uses datos móviles en el celular, usa WiFi.</li>
+                        </ul>
+                    </div>
+
+                </ion-col>
+
+                <!-- COLUMNA DERECHA: QR -->
+                <ion-col size="12" size-md="6" class="qr-col">
+                    <div class="qr-card">
+                        <h3>Escanear Código</h3>
+                        <p class="qr-instruction">Abre la cámara o App en tu celular</p>
+                        
+                        <div class="qr-wrapper">
+                            <canvas #qrCanvas></canvas>
+                        </div>
+
+                        <div class="url-section">
+                            <p class="url-label">Enlace Directo</p>
+                            <div class="url-box">
+                                <span class="url-text">{{ urlQr }}</span>
+                                <ion-button fill="clear" size="small" (click)="copiarUrl()">
+                                    <ion-icon name="copy-outline" slot="icon-only"></ion-icon>
+                                </ion-button>
+                            </div>
+                            <p class="token-expiry">
+                                <ion-icon name="time-outline"></ion-icon> Válido por 24 horas
+                            </p>
+                        </div>
+                    </div>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </div>
+
 </ion-content>

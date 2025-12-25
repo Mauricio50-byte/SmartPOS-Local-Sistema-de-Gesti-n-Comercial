@@ -1,4 +1,5 @@
 const os = require('os')
+const { obtenerUsuarioPorId } = require('../usuarios/usuario.servicio')
 
 function obtenerIpLocal() {
     const interfaces = os.networkInterfaces()
@@ -24,11 +25,19 @@ function obtenerIpLocal() {
 
 async function obtenerDatosConexion(req, reply) {
     // Asegurarnos de que tenemos el usuario solicitante (Admin)
-    const usuario = req.user
+    let usuario = req.user
+    const { usuarioId } = req.query
+
+    // Si se especifica un ID de usuario y el solicitante es Admin, generamos token para ese usuario
+    if (usuarioId && (usuario.roles.includes('ADMIN') || usuario.adminPorDefecto)) {
+        const usuarioObjetivo = await obtenerUsuarioPorId(parseInt(usuarioId))
+        if (usuarioObjetivo) {
+            usuario = usuarioObjetivo
+        }
+    }
 
     // Generar token que dura 24 horas con la misma info del usuario
     // Esto permitirá que quien escanee "sea" este usuario por 24h.
-    // Idealmente, en el futuro, se podría seleccionar "Para qué usuario es el token".
     const payload = {
         id: usuario.id,
         roles: usuario.roles,

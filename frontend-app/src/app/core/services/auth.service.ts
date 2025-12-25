@@ -70,6 +70,10 @@ export class AuthService implements OnDestroy {
 
   getPerfil$(): Observable<UsuarioPerfil | null> { return this.perfil$.asObservable(); }
 
+  getUser(): UsuarioPerfil | null {
+    return this.perfil$.value;
+  }
+
   getRememberedEmail(): string { return localStorage.getItem(this.rememberKey) || ''; }
 
   setToken(token: string): void {
