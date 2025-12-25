@@ -25,6 +25,10 @@ export class ConexionQrComponent implements OnInit {
     usuarios: Usuario[] = [];
     usuarioSeleccionadoId: number | null = null;
     esAdmin = false;
+    
+    // Modo Online
+    modoOnline = false;
+    urlPublica = '';
 
     constructor(
         private modalCtrl: ModalController,
@@ -36,6 +40,15 @@ export class ConexionQrComponent implements OnInit {
     ngOnInit() {
         this.detectarEntorno();
         this.verificarPermisos();
+        
+        // Recuperar config guardada
+        const savedUrl = localStorage.getItem('pos_public_url');
+        if (savedUrl) {
+            this.urlPublica = savedUrl;
+            // Si hay URL guardada, activamos modo online por defecto si no es localhost
+            if (!this.mostrarInputIp) this.modoOnline = true;
+        }
+
         this.cargarDatos();
     }
 
@@ -114,25 +127,46 @@ export class ConexionQrComponent implements OnInit {
     generarQr() {
         if (!this.token || !this.qrCanvas) return;
 
-        // Guardar IP si se ingresó manualmente
+        // Guardar configuración
         if (this.mostrarInputIp && this.ipManual) {
             localStorage.setItem('pos_server_ip', this.ipManual);
         }
-
-        // Si necesitamos IP manual y está vacía, no generamos QR válido aún
-        if (this.mostrarInputIp && (!this.ipManual || this.ipManual.length < 7)) {
-            this.urlQr = ''; 
-            const context = this.qrCanvas.nativeElement.getContext('2d');
-            if (context) context.clearRect(0, 0, 256, 256);
-            return;
+        if (this.urlPublica) {
+            localStorage.setItem('pos_public_url', this.urlPublica);
         }
 
-        const ipUsar = this.ipManual || window.location.hostname;
-        const port = window.location.port || '80';
-        const protocol = window.location.protocol;
-        
-        // Construir URL completa basada en el entorno actual
-        this.urlQr = `${protocol}//${ipUsar}:${port}?token=${this.token}`;
+        let baseUrl = '';
+
+        if (this.modoOnline) {
+            // Lógica para Modo Online
+            if (!this.urlPublica || this.urlPublica.length < 5) {
+                this.urlQr = ''; // URL inválida aún
+                this.limpiarCanvas();
+                return;
+            }
+            // Asegurar protocolo
+            baseUrl = this.urlPublica;
+            if (!baseUrl.startsWith('http')) baseUrl = 'https://' + baseUrl;
+            // Quitar slash final si tiene
+            if (baseUrl.endsWith('/')) baseUrl = baseUrl.slice(0, -1);
+            
+            // Construir URL completa
+            this.urlQr = `${baseUrl}?token=${this.token}`;
+
+        } else {
+            // Lógica para Modo Local (Original)
+            if (this.mostrarInputIp && (!this.ipManual || this.ipManual.length < 7)) {
+                this.urlQr = ''; 
+                this.limpiarCanvas();
+                return;
+            }
+
+            const ipUsar = this.ipManual || window.location.hostname;
+            const port = window.location.port || '80';
+            const protocol = window.location.protocol;
+            
+            this.urlQr = `${protocol}//${ipUsar}:${port}?token=${this.token}`;
+        }
 
         QRCode.toCanvas(this.qrCanvas.nativeElement, this.urlQr, {
             width: 256,
@@ -145,6 +179,12 @@ export class ConexionQrComponent implements OnInit {
             if (error) console.error(error);
         });
     }
+
+    limpiarCanvas() {
+        const context = this.qrCanvas.nativeElement.getContext('2d');
+        if (context) context.clearRect(0, 0, 256, 256);
+    }
+
 
     cerrar() {
         this.modalCtrl.dismiss();

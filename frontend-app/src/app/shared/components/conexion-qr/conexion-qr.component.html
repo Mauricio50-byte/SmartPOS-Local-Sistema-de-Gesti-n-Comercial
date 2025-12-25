@@ -34,19 +34,48 @@
                     <div class="step-card">
                         <div class="step-header">
                             <div class="step-number">1</div>
-                            <h4>Configuración de Red</h4>
+                            <h4>Tipo de Conexión</h4>
                         </div>
-                        <p class="step-desc">Asegúrate que la IP sea correcta y ambos dispositivos estén en el mismo WiFi.</p>
                         
-                        <div class="ip-input-wrapper">
-                            <ion-item lines="none" class="custom-input">
-                                <ion-label position="stacked">IP del Servidor (PC)</ion-label>
-                                <ion-input [(ngModel)]="ipManual" placeholder="Ej: 192.168.1.50" (ionChange)="generarQr()"></ion-input>
-                                <ion-icon name="wifi-outline" slot="start" color="primary"></ion-icon>
-                            </ion-item>
-                            <div *ngIf="mostrarInputIp" class="ip-warning">
-                                <ion-icon name="warning" color="warning"></ion-icon>
-                                <small>Detectamos localhost. Ingresa tu IP de red local.</small>
+                        <ion-segment [(ngModel)]="modoOnline" (ionChange)="generarQr()">
+                            <ion-segment-button [value]="false">
+                                <ion-label>WiFi Local</ion-label>
+                            </ion-segment-button>
+                            <ion-segment-button [value]="true">
+                                <ion-label>Internet (Túnel)</ion-label>
+                            </ion-segment-button>
+                        </ion-segment>
+
+                        <!-- CONFIG MODO LOCAL -->
+                        <div *ngIf="!modoOnline" class="ion-margin-top">
+                            <p class="step-desc">Asegúrate que la IP sea correcta y ambos dispositivos estén en el mismo WiFi.</p>
+                            
+                            <div class="ip-input-wrapper">
+                                <ion-item lines="none" class="custom-input">
+                                    <ion-label position="stacked">IP del Servidor (PC)</ion-label>
+                                    <ion-input [(ngModel)]="ipManual" placeholder="Ej: 192.168.1.50" (ionChange)="generarQr()"></ion-input>
+                                    <ion-icon name="wifi-outline" slot="start" color="primary"></ion-icon>
+                                </ion-item>
+                                <div *ngIf="mostrarInputIp" class="ip-warning">
+                                    <ion-icon name="warning" color="warning"></ion-icon>
+                                    <small>Detectamos localhost. Ingresa tu IP de red local.</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CONFIG MODO ONLINE -->
+                        <div *ngIf="modoOnline" class="ion-margin-top">
+                            <p class="step-desc">Pega aquí la URL pública generada por el script <code>iniciar_modo_online.bat</code>.</p>
+                            
+                            <div class="ip-input-wrapper">
+                                <ion-item lines="none" class="custom-input">
+                                    <ion-label position="stacked">URL Pública (Tunnel)</ion-label>
+                                    <ion-input [(ngModel)]="urlPublica" placeholder="Ej: https://tenda-pepe.loca.lt" (ionChange)="generarQr()"></ion-input>
+                                    <ion-icon name="globe-outline" slot="start" color="success"></ion-icon>
+                                </ion-item>
+                                <ion-note color="medium" style="font-size: 0.8rem; display: block; margin-top: 5px;">
+                                    Esta URL cambia cada vez que reinicias el túnel.
+                                </ion-note>
                             </div>
                         </div>
                     </div>
