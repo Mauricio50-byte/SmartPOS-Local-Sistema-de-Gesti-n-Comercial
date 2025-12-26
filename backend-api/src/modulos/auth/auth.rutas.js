@@ -54,6 +54,9 @@ async function registrarRutasAuth(app) {
   })
 
   app.get('/auth/perfil', { preHandler: [app.autenticar] }, async (req, res) => {
+    // Debug: Log para ver qué está llegando en el token
+    // console.log('DEBUG /auth/perfil - req.user:', req.user)
+
     // Consultar la base de datos para obtener los permisos actualizados
     const usuario = await prisma.usuario.findUnique({
       where: { id: req.user.id },
@@ -73,6 +76,7 @@ async function registrarRutasAuth(app) {
     })
 
     if (!usuario || !usuario.activo) {
+      console.warn('Usuario no encontrado o inactivo:', req.user.id)
       res.code(401)
       return { mensaje: 'Usuario no autorizado' }
     }

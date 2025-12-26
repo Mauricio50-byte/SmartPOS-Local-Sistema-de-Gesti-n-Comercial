@@ -5,6 +5,7 @@ import { environment } from 'src/environments/environment';
 
 export interface DatosConexion {
     ip: string;
+    ips?: { nombre: string; ip: string }[];
     puerto: number;
     url: string;
     token: string;

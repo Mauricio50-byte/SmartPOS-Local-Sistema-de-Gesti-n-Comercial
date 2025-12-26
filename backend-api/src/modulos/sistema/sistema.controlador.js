@@ -1,26 +1,30 @@
 const os = require('os')
 const { obtenerUsuarioPorId } = require('../usuarios/usuario.servicio')
 
-function obtenerIpLocal() {
+function obtenerIpsLocales() {
     const interfaces = os.networkInterfaces()
-    let ipCandidata = '127.0.0.1';
+    const ips = [];
 
     for (const name of Object.keys(interfaces)) {
         for (const iface of interfaces[name]) {
             // Skip over non-IPv4 and internal (i.e. 127.0.0.1) addresses
             if (iface.family === 'IPv4' && !iface.internal) {
-                // Si encontramos una 192.168.x.x, es casi seguro la buena (WiFi/LAN Hogar)
-                if (iface.address.startsWith('192.168.')) {
-                    return iface.address;
-                }
-                // Si no, guardamos la primera que encontremos como backup (podría ser 172.x o 10.x)
-                if (ipCandidata === '127.0.0.1') {
-                    ipCandidata = iface.address;
-                }
+                ips.push({
+                    nombre: name,
+                    ip: iface.address
+                });
             }
         }
     }
-    return ipCandidata;
+    
+    // Ordenar: preferir 192.168.x.x
+    return ips.sort((a, b) => {
+        const aEs192 = a.ip.startsWith('192.168.');
+        const bEs192 = b.ip.startsWith('192.168.');
+        if (aEs192 && !bEs192) return -1;
+        if (!aEs192 && bEs192) return 1;
+        return 0;
+    });
 }
 
 async function obtenerDatosConexion(req, reply) {
@@ -43,18 +47,25 @@ async function obtenerDatosConexion(req, reply) {
         roles: usuario.roles,
         permisos: usuario.permisos,
         nombre: usuario.nombre,
+        correo: usuario.correo,
+        negocioId: usuario.negocioId,
+        modulos: usuario.modulos,
+        adminPorDefecto: usuario.adminPorDefecto,
         es_conexion_qr: true,
         fecha: new Date().toISOString()
     }
 
     const token = req.server.jwt.sign(payload, { expiresIn: '24h' })
 
-    const ip = obtenerIpLocal()
+    const ips = obtenerIpsLocales()
+    // IP principal (la primera de la lista ordenada)
+    const ipPrincipal = ips.length > 0 ? ips[0].ip : '127.0.0.1';
 
     return {
-        ip,
+        ip: ipPrincipal,
+        ips: ips, // Enviamos todas las IPs
         puerto: 3000,
-        url: `http://${ip}:3000?token=${token}`,
+        url: `http://${ipPrincipal}:3000?token=${token}`,
         token
     }
 }
