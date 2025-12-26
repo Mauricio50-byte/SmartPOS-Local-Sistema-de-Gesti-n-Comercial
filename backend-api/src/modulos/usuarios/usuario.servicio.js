@@ -169,21 +169,24 @@ async function crearUsuario(datos, actor) {
 
   if (negocioId) {
     const modulosSolicitados = Array.isArray(datos.modulos) ? datos.modulos : []
+    // Asegurar que sean strings si vienen como números, o validar que coincidan con ID de schema (String)
+    const modulosSanitizados = modulosSolicitados.map(m => String(m))
+
     if (creandoAdmin && (crearNuevoNegocio || !actorNegocioId)) {
-      if (modulosSolicitados.length) {
-        const modulosDb = await prisma.modulo.findMany({ where: { id: { in: modulosSolicitados } }, select: { id: true } })
+      if (modulosSanitizados.length) {
+        const modulosDb = await prisma.modulo.findMany({ where: { id: { in: modulosSanitizados } }, select: { id: true } })
         const validosSet = new Set(modulosDb.map(m => m.id))
-        const invalidos = modulosSolicitados.filter(m => !validosSet.has(m))
+        const invalidos = modulosSanitizados.filter(m => !validosSet.has(m))
         if (invalidos.length) throw new Error('Módulos inválidos')
         await prisma.negocioModulo.createMany({
-          data: modulosSolicitados.map(moduloId => ({ negocioId, moduloId, activo: true })),
+          data: modulosSanitizados.map(moduloId => ({ negocioId, moduloId, activo: true })),
           skipDuplicates: true
         })
-        await asignarModulosAUsuario(usuario.id, modulosSolicitados)
+        await asignarModulosAUsuario(usuario.id, modulosSanitizados)
       }
     } else if (creandoAdmin) {
       const activosNegocio = await obtenerModulosActivosNegocio(negocioId)
-      const modulosParaUsuario = modulosSolicitados.length ? modulosSolicitados : activosNegocio
+      const modulosParaUsuario = modulosSanitizados.length ? modulosSanitizados : activosNegocio
       const activosSet = new Set(activosNegocio)
       const invalidos = modulosParaUsuario.filter(m => !activosSet.has(m))
       if (invalidos.length) throw new Error('Módulos inválidos para este negocio')
@@ -193,11 +196,13 @@ async function crearUsuario(datos, actor) {
       const heredarModulos = actor && Array.isArray(actor?.modulos) && actor.modulos.length > 0
       const modulosParaUsuario = heredarModulos
         ? actor.modulos
-        : (modulosSolicitados.length ? modulosSolicitados : activosNegocio)
+        : (modulosSanitizados.length ? modulosSanitizados : activosNegocio)
+      
+      // Filter out any that are not active in the business, just in case
       const activosSet = new Set(activosNegocio)
-      const invalidos = modulosParaUsuario.filter(m => !activosSet.has(m))
-      if (invalidos.length) throw new Error('Módulos inválidos para este negocio')
-      await asignarModulosAUsuario(usuario.id, modulosParaUsuario)
+      const finales = modulosParaUsuario.filter(m => activosSet.has(m))
+      
+      await asignarModulosAUsuario(usuario.id, finales)
     }
   }
 
@@ -244,6 +249,29 @@ async function asignarPermisosDirectos(id, permisos = [], adminId = null) {
   return obtenerUsuarioPorId(id)
 }
 
+async function eliminarUsuario(id) {
+  const usuario = await prisma.usuario.findUnique({ where: { id } })
+  if (!usuario) throw new Error('Usuario no encontrado')
+
+  if (String(usuario.correo || '').trim().toLowerCase() === String(ADMIN_CORREO || '').trim().toLowerCase()) {
+    throw new Error('No se puede eliminar el administrador por defecto')
+  }
+
+  try {
+    await prisma.usuarioRol.deleteMany({ where: { usuarioId: id } })
+    await prisma.usuarioPermiso.deleteMany({ where: { usuarioId: id } })
+    await prisma.usuarioModulo.deleteMany({ where: { usuarioId: id } })
+    
+    await prisma.usuario.delete({ where: { id } })
+    return { id, mensaje: 'Usuario eliminado correctamente' }
+  } catch (error) {
+    if (error.code === 'P2003') {
+      throw new Error('No se puede eliminar el usuario porque tiene registros relacionados (ej. ventas). Considere desactivarlo en su lugar.')
+    }
+    throw error
+  }
+}
+
 module.exports = {
   listarUsuarios,
   obtenerUsuarioPorId,
@@ -255,5 +283,6 @@ module.exports = {
   asignarModulosAUsuario,
   crearUsuario,
   asignarPermisosDirectos,
-  obtenerModulosActivosNegocio
+  obtenerModulosActivosNegocio,
+  eliminarUsuario
 }

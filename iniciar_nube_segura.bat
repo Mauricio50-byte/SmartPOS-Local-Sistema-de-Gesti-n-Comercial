@@ -18,7 +18,7 @@ echo [....] Descargando Cloudflared (esto solo pasa la primera vez)...
 echo.
 
 REM Usamos PowerShell para descargar
-powershell -Command "Invoke-WebRequest -Uri 'https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe' -OutFile 'cloudflared.exe'"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -Uri 'https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe' -OutFile 'cloudflared.exe'"
 
 if not exist "cloudflared.exe" (
     echo [ERROR] No se pudo descargar automaticamente.
@@ -34,34 +34,40 @@ echo [OK] Descarga completada.
 echo.
 
 :backend_check
-REM 2. Iniciar Backend (si no esta corriendo)
-netstat -an | find "3000" >nul
-if %errorlevel% equ 0 (
-    echo [INFO] Servidor local ya detectado en puerto 3000.
-    goto :tunnel_start
+echo [INFO] Verificando estado del servidor...
+
+REM Reconstruir frontend para asegurar que existe la carpeta www
+echo [INFO] Verificando archivos del frontend...
+if not exist "frontend-app\www\index.html" (
+    echo [INFO] Construyendo frontend - puede tardar unos minutos...
+    cd frontend-app
+    call npm.cmd install
+    call npm.cmd run build
+    cd ..
 )
 
-echo [1/2] El servidor local no parece estar activo.
-echo        Iniciando Backend en segundo plano...
-start "BACKEND POS" /B cmd /c "cd backend-api && npm start"
-echo        Esperando 15 segundos a que inicie...
+REM Matar proceso en puerto 3000 usando PowerShell para evitar errores de sintaxis en Batch
+echo [INFO] Asegurando que el servidor este actualizado...
+powershell -NoProfile -ExecutionPolicy Bypass -Command "try { Get-NetTCPConnection -LocalPort 3000 -ErrorAction Stop | Select-Object -ExpandProperty OwningProcess | Where-Object { $_ -ne 0 } | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue } } catch {}"
+
+echo [INFO] Iniciando Backend POS...
+start "BACKEND POS" cmd /k "cd backend-api && npm.cmd start"
+echo [INFO] Esperando a que el sistema cargue (15s)...
 timeout /t 15 >nul
 
 :tunnel_start
 REM 3. Iniciar Tunel
 echo.
-echo [2/2] Estableciendo conexion segura con Cloudflare...
+echo [INFO] Estableciendo conexion segura con Cloudflare...
 echo.
 echo ========================================================
-echo   INSTRUCCIONES PARA EL USUARIO:
+echo   INSTRUCCIONES:
 echo ========================================================
 echo.
-echo   1. Espera a que aparezca un cuadro con enlaces abajo.
-echo   2. Busca el enlace que termina en ".trycloudflare.com"
-echo      (Suele ser el ultimo o estar dentro de un cuadro)
-echo   3. Copia ese enlace.
-echo   4. Ve al Sistema POS -^> Conectar -^> Internet.
-echo   5. Pega el enlace y genera el QR.
+echo   1. Copia el enlace que termina en ".trycloudflare.com"
+echo      (Aparecera abajo en unos segundos)
+echo   2. Ve al Sistema POS -^> Conectar -^> Internet.
+echo   3. Pega el enlace y genera el QR.
 echo.
 echo ========================================================
 echo.

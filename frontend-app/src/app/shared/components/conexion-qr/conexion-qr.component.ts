@@ -22,6 +22,9 @@ export class ConexionQrComponent implements OnInit {
         // Inicializar vacío para obligar a pegar el nuevo enlace
         this.urlPublica = '';
         this.urlQr = '';
+    }
+
+    ngAfterViewInit() {
         this.limpiarCanvas();
     }
 

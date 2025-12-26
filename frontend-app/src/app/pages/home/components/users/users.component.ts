@@ -312,6 +312,37 @@ export class UsersComponent implements OnInit {
     }
   }
 
+  async eliminarUsuario(usuario: Usuario) {
+    const alert = await this.alertController.create({
+      header: 'Confirmar Eliminación',
+      message: `¿Estás seguro de que deseas eliminar permanentemente al usuario <strong>${usuario.nombre}</strong>? Esta acción no se puede deshacer.`,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          handler: () => {
+            this.usuarioService.deleteUsuario(usuario.id).subscribe({
+              next: () => {
+                this.mostrarAlerta('Éxito', 'Usuario eliminado correctamente');
+                this.getUsuarios();
+              },
+              error: (error) => {
+                console.error('Error eliminando usuario', error);
+                this.mostrarAlerta('Error', 'No se pudo eliminar el usuario. ' + (error.error?.message || error.message || ''));
+              }
+            });
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
   activarUsuario(id: number) {
     this.usuarioService.activarUsuario(id).subscribe(() => {
       console.log('Usuario activado exitosamente');

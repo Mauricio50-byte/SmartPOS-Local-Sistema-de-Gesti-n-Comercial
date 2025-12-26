@@ -11,17 +11,12 @@ const {
   asignarModulosAUsuario,
   crearUsuario,
   asignarPermisosDirectos,
-  obtenerModulosActivosNegocio
+  obtenerModulosActivosNegocio,
+  eliminarUsuario
 } = require('./usuario.servicio')
 
 async function asegurarAdmin(req, res) {
   await req.jwtVerify()
-  // Recalcular permisos antes de verificar
-  // Nota: req.user viene del token. Si los permisos cambiaron, el token podría estar desactualizado.
-  // Idealmente deberíamos consultar la DB, pero por performance a veces se confía en el token.
-  // Sin embargo, como estamos gestionando permisos críticos, consultaremos DB o confiaremos en que el frontend refresca token si es necesario.
-  // Pero espera, req.user en fastify-jwt es el payload del token.
-  
   // Vamos a verificar permisos extendidos
   const roles = req.user?.roles || []
   const permisos = req.user?.permisos || []
@@ -181,6 +176,16 @@ async function registrarRutasUsuario(app) {
     }
     await asignarModulosAUsuario(id, modulos)
     return obtenerUsuarioPorId(id)
+  })
+
+  app.delete('/usuarios/:id', { preHandler: [asegurarAdmin] }, async (req, res) => {
+    const id = Number(req.params.id)
+    await asegurarAccesoMismoNegocio(req, res, id)
+    if (req.user.id === id) {
+        res.code(400)
+        throw new Error('No puedes eliminar tu propio usuario')
+    }
+    return eliminarUsuario(id)
   })
 }
 
