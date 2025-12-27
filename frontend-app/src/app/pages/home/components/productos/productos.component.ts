@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ProductosServices } from 'src/app/core/services/producto.service';
 import { Producto } from 'src/app/core/models/producto';
 import { AlertController, ToastController, LoadingController } from '@ionic/angular';
-import { AuthService } from 'src/app/core/services/auth.service';
+import { ModuloService } from 'src/app/core/services/modulo.service';
 
 @Component({
   standalone: false,
@@ -15,18 +15,10 @@ export class ProductosComponent implements OnInit {
   products: Producto[] = [];
   selectedProduct: Producto | null = null;
   modulosActivos: Set<string> = new Set();
-  private tipoToModuloId: Record<string, string> = {
-    ROPA: 'ropa',
-    ALIMENTO: 'alimentos',
-    SERVICIO: 'servicios',
-    FARMACIA: 'farmacia',
-    PAPELERIA: 'papeleria',
-    RESTAURANTE: 'restaurante'
-  };
 
   constructor(
     private productoService: ProductosServices,
-    private authService: AuthService,
+    private moduloService: ModuloService,
     private alertController: AlertController,
     private toastController: ToastController,
     private loadingController: LoadingController
@@ -34,13 +26,16 @@ export class ProductosComponent implements OnInit {
 
   ngOnInit() {
     this.loadProducts();
-    this.authService.getPerfil$().subscribe(user => {
-      const modulos = Array.isArray(user?.modulos) ? user!.modulos : [];
-      this.modulosActivos = new Set(modulos.map(m => String(m).toLowerCase()));
-      if (this.selectedProduct && !this.tieneAccesoProducto(this.selectedProduct)) {
-        this.selectedProduct = null;
-        this.segment = 'info';
-      }
+    this.loadModulos();
+  }
+
+  loadModulos() {
+    this.moduloService.listarModulos().subscribe(modulos => {
+      const nuevosModulos = new Set<string>();
+      modulos.forEach(m => {
+        if (m.activo) nuevosModulos.add(m.id);
+      });
+      this.modulosActivos = nuevosModulos;
     });
   }
 
@@ -65,10 +60,6 @@ export class ProductosComponent implements OnInit {
   }
 
   onEdit(product: Producto) {
-    if (!this.tieneAccesoProducto(product)) {
-      this.mostrarToast('No tienes acceso a este tipo de producto');
-      return;
-    }
     this.selectedProduct = product;
     this.segment = 'gestion';
   }
@@ -159,13 +150,5 @@ export class ProductosComponent implements OnInit {
       position: 'bottom'
     });
     toast.present();
-  }
-
-  private tieneAccesoProducto(product: Producto): boolean {
-    const tipo = String(product?.tipo || 'GENERAL').toUpperCase();
-    if (tipo === 'GENERAL') return true;
-    const moduloId = this.tipoToModuloId[tipo];
-    if (!moduloId) return false;
-    return this.modulosActivos.has(moduloId);
   }
 }

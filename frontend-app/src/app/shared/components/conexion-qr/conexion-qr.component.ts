@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import * as QRCode from 'qrcode';
 
@@ -8,7 +8,7 @@ import * as QRCode from 'qrcode';
     styleUrls: ['./conexion-qr.component.scss'],
     standalone: false
 })
-export class ConexionQrComponent implements OnInit {
+export class ConexionQrComponent implements OnInit, AfterViewInit {
     @ViewChild('qrCanvas') qrCanvas!: ElementRef<HTMLCanvasElement>;
 
     urlPublica = '';
@@ -24,7 +24,7 @@ export class ConexionQrComponent implements OnInit {
         this.urlQr = '';
     }
 
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
         this.limpiarCanvas();
     }
 

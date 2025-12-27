@@ -33,8 +33,8 @@ import { FormularioRestauranteComponent } from '../formulario-restaurante/formul
 export class ProductosFormComponent implements OnChanges {
   @Input() product: Producto | null = null;
   @Input() modulosActivos: Set<string> = new Set();
-  @Output() saveProduct = new EventEmitter<any>();
-  @Output() cancelAction = new EventEmitter<void>();
+  @Output() save = new EventEmitter<any>();
+  @Output() cancelled = new EventEmitter<void>();
 
   productForm: FormGroup;
   isEditing: boolean = false;
@@ -252,11 +252,11 @@ export class ProductosFormComponent implements OnChanges {
       this.productForm.markAllAsTouched();
       return;
     }
-    this.saveProduct.emit(this.productForm.value);
+    this.save.emit(this.productForm.value);
   }
 
   onCancel() {
-    this.cancelAction.emit();
+    this.cancelled.emit();
   }
 
   isModuleActive(moduleId: string): boolean {

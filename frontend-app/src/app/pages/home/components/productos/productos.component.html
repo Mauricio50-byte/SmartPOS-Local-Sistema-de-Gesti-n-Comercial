@@ -24,8 +24,8 @@
             <app-productos-form 
                 [product]="selectedProduct" 
                 [modulosActivos]="modulosActivos"
-                (saveProduct)="onSave($event)"
-                (cancelAction)="onCancel()">
+                (save)="onSave($event)"
+                (cancelled)="onCancel()">
             </app-productos-form>
         </div>
     </div>

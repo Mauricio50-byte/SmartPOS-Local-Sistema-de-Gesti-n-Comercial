@@ -15,22 +15,36 @@ model Usuario {
   activo       Boolean  @default(true)
   creadoEn     DateTime @default(now())
   negocioId    Int?
-  negocio      Negocio? @relation(fields: [negocioId], references: [id])
+  negocio      Negocio? @relation(fields: [negocioId], references: [id], onDelete: SetNull)
   ventas       Venta[]
   roles        UsuarioRol[]
   permisos     UsuarioPermiso[]
-  modulos      UsuarioModulo[]
   logs         AuditLog[]
   pagosGastos  PagoGasto[]
+  modulos      UsuarioModulo[]
+}
+
+// Modelo para gestión de Módulos del Sistema
+model Modulo {
+  id          String   @id // e.g., "ropa", "alimentos", "servicios"
+  nombre      String
+  descripcion String?
+  activo      Boolean  @default(false)
+  version     String   @default("1.0.0")
+  config      Json?    // Configuración específica del módulo
+  creadoEn    DateTime @default(now())
+  actualizadoEn DateTime @updatedAt
+  negocios    NegocioModulo[]
+  usuarios    UsuarioModulo[]
 }
 
 model Negocio {
-  id             Int            @id @default(autoincrement())
-  nombre         String
-  planMaxModulos Int            @default(3)
-  creadoEn       DateTime       @default(now())
-  usuarios       Usuario[]
-  modulos        NegocioModulo[]
+  id            Int            @id @default(autoincrement())
+  nombre        String
+  planMaxModulos Int           @default(3)
+  creadoEn      DateTime       @default(now())
+  usuarios      Usuario[]
+  modulos       NegocioModulo[]
 }
 
 model NegocioModulo {
@@ -50,20 +64,6 @@ model UsuarioModulo {
   modulo    Modulo  @relation(fields: [moduloId], references: [id], onDelete: Cascade)
 
   @@id([usuarioId, moduloId])
-}
-
-// Modelo para gestión de Módulos del Sistema
-model Modulo {
-  id          String   @id // e.g., "ropa", "alimentos", "servicios"
-  nombre      String
-  descripcion String?
-  activo      Boolean  @default(false)
-  version     String   @default("1.0.0")
-  config      Json?    // Configuración específica del módulo
-  creadoEn    DateTime @default(now())
-  actualizadoEn DateTime @updatedAt
-  negocios    NegocioModulo[]
-  usuarios    UsuarioModulo[]
 }
 
 model Producto {

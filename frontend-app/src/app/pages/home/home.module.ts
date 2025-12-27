@@ -1,5 +1,5 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, CurrencyPipe } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HomePage } from './home.page';
@@ -32,6 +32,7 @@ import { PaymentDistributionComponent } from './components/dashboard/components/
     HomePageRoutingModule,
     SharedModule,
     ReactiveFormsModule,
+    CurrencyPipe,
     BaseChartDirective,
     ProductosListaComponent,
     ProductosFormComponent,

@@ -40,10 +40,7 @@ export class ProductosListaComponent implements OnChanges, OnInit {
     { key: 'nombre', label: 'Producto', type: 'text' },
     { key: 'sku', label: 'SKU', type: 'text' },
     { key: 'categoria', label: 'Categoría', type: 'text' },
-    { key: 'marca', label: 'Marca', type: 'text' },
-    { key: 'precioCosto', label: 'P. Costo', type: 'currency' },
-    { key: 'precioVenta', label: 'P. Venta', type: 'currency' },
-    { key: 'iva', label: 'IVA', type: 'text' },
+    { key: 'precioVenta', label: 'Precio', type: 'currency' },
     { key: 'stock', label: 'Stock', type: 'text' },
     { key: 'unidadMedida', label: 'Unidad', type: 'text' },
     { 
@@ -58,7 +55,8 @@ export class ProductosListaComponent implements OnChanges, OnInit {
   private moduleColumns: { [key: string]: Column[] } = {
     'ROPA': [
       { key: 'talla', label: 'Talla', path: 'detalleRopa.talla', type: 'text' },
-      { key: 'color', label: 'Color', path: 'detalleRopa.color', type: 'text' }
+      { key: 'color', label: 'Color', path: 'detalleRopa.color', type: 'text' },
+      { key: 'marca', label: 'Marca', type: 'text' }
     ],
     'ALIMENTO': [
       { key: 'fechaVencimiento', label: 'Vence', path: 'detalleAlimento.fechaVencimiento', type: 'date' },
@@ -74,7 +72,8 @@ export class ProductosListaComponent implements OnChanges, OnInit {
       { key: 'laboratorio', label: 'Laboratorio', path: 'detalleFarmacia.laboratorio', type: 'text' }
     ],
     'PAPELERIA': [
-      { key: 'tipoPapel', label: 'Tipo Papel', path: 'detallePapeleria.tipoPapel', type: 'text' }
+      { key: 'tipoPapel', label: 'Tipo Papel', path: 'detallePapeleria.tipoPapel', type: 'text' },
+      { key: 'marca', label: 'Marca', type: 'text' }
     ],
     'RESTAURANTE': [
       { key: 'tiempoPreparacion', label: 'T. Prep (min)', path: 'detalleRestaurante.tiempoPreparacion', type: 'text' },
@@ -92,14 +91,6 @@ export class ProductosListaComponent implements OnChanges, OnInit {
     { id: 'PAPELERIA', label: 'Papelería' },
     { id: 'RESTAURANTE', label: 'Restaurante' }
   ];
-  private tipoToModuloId: Record<string, string> = {
-    ROPA: 'ropa',
-    ALIMENTO: 'alimentos',
-    SERVICIO: 'servicios',
-    FARMACIA: 'farmacia',
-    PAPELERIA: 'papeleria',
-    RESTAURANTE: 'restaurante'
-  };
 
   constructor() {
     addIcons({ createOutline, trashOutline, eyeOutline, filterOutline });
@@ -162,7 +153,7 @@ export class ProductosListaComponent implements OnChanges, OnInit {
   }
 
   filterProducts() {
-    let temp = (this.products || []).filter(p => this.isTipoPermitido(p?.tipo));
+    let temp = this.products;
 
     // 1. Filtro por Módulo
     if (this.selectedModule !== 'TODOS') {
@@ -179,14 +170,6 @@ export class ProductosListaComponent implements OnChanges, OnInit {
     }
 
     this.filteredProducts = temp;
-  }
-
-  private isTipoPermitido(tipo: any): boolean {
-    const t = String(tipo || 'GENERAL').toUpperCase();
-    if (t === 'GENERAL') return true;
-    const moduloId = this.tipoToModuloId[t];
-    if (!moduloId) return false;
-    return this.modulosActivos.has(moduloId) || this.modulosActivos.has(moduloId.toUpperCase());
   }
 
   // Helper para obtener valores anidados de forma segura

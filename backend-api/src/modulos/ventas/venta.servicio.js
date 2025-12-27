@@ -1,28 +1,6 @@
 const { prisma } = require('../../infraestructura/bd')
 const { crearDeuda } = require('../deudas/deuda.servicio')
 
-const tipoToModuloId = {
-  ROPA: 'ropa',
-  ALIMENTO: 'alimentos',
-  SERVICIO: 'servicios',
-  FARMACIA: 'farmacia',
-  PAPELERIA: 'papeleria',
-  RESTAURANTE: 'restaurante'
-}
-
-function asegurarAccesoTipoProducto(actor, tipo) {
-  const roles = actor?.roles || []
-  const adminPorDefecto = actor?.adminPorDefecto === true
-  if (roles.includes('ADMIN') && adminPorDefecto) return
-  const t = String(tipo || 'GENERAL').toUpperCase()
-  if (t === 'GENERAL') return
-  const moduloId = tipoToModuloId[t]
-  const modulos = Array.isArray(actor?.modulos) ? actor.modulos : []
-  if (!moduloId || !modulos.includes(moduloId)) {
-    throw new Error('No autorizado')
-  }
-}
-
 async function listarVentas(filtro = {}) {
   return prisma.venta.findMany({
     where: filtro,
@@ -33,7 +11,7 @@ async function listarVentas(filtro = {}) {
       },
       cliente: true,
       usuario: {
-        select: { id: true, nombre: true, negocioId: true }
+        select: { id: true, nombre: true }
       }
     }
   })
@@ -48,7 +26,7 @@ async function obtenerVentaPorId(id) {
       },
       cliente: true,
       usuario: {
-        select: { id: true, nombre: true, negocioId: true }
+        select: { id: true, nombre: true }
       },
       deuda: {
         include: {
@@ -59,7 +37,7 @@ async function obtenerVentaPorId(id) {
   })
 }
 
-async function crearVenta(payload, actor = {}) {
+async function crearVenta(payload) {
   console.log('--- INICIO CREAR VENTA ---');
   console.log('Payload recibido:', JSON.stringify(payload, null, 2));
 
@@ -129,10 +107,6 @@ async function crearVenta(payload, actor = {}) {
       where: { id: { in: items.map(i => Number(i.productoId)) } }
     })
     console.log('Productos recuperados BD:', JSON.stringify(productos, null, 2));
-
-    for (const p of productos) {
-      asegurarAccesoTipoProducto(actor, p.tipo)
-    }
 
     const mapa = new Map(productos.map(p => [p.id, p]))
 

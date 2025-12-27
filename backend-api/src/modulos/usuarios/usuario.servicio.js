@@ -1,6 +1,5 @@
 const { prisma } = require('../../infraestructura/bd')
 const bcrypt = require('bcryptjs')
-const { ADMIN_CORREO } = require('../../configuracion/entorno')
 
 async function listarUsuarios(filtro = {}) {
   const usuarios = await prisma.usuario.findMany({
@@ -12,7 +11,6 @@ async function listarUsuarios(filtro = {}) {
       correo: true,
       activo: true,
       creadoEn: true,
-      negocioId: true,
       roles: { select: { rol: { select: { nombre: true } } } }
     }
   })
@@ -35,7 +33,6 @@ async function obtenerUsuarioPorId(id) {
     }
   })
   if (usuario) {
-    usuario.adminPorDefecto = String(usuario.correo || '').trim().toLowerCase() === String(ADMIN_CORREO || '').trim().toLowerCase()
     const rolesNombres = usuario.roles.map(r => r.rol.nombre)
     // Flatten permissions from roles
     const permisosRoles = usuario.roles.flatMap(r => r.rol.permisos.map(p => p.permiso.clave))
@@ -45,7 +42,7 @@ async function obtenerUsuarioPorId(id) {
     usuario.roles = rolesNombres
     usuario.permisos = [...new Set([...permisosRoles, ...permisosDirectos])]
     usuario.permisosDirectos = permisosDirectos // To distinguish in frontend if needed
-    usuario.modulos = usuario.modulos.map(m => m.moduloId)
+    usuario.modulos = Array.isArray(usuario.modulos) ? usuario.modulos.map(m => m.moduloId) : []
   }
   return usuario
 }
@@ -93,55 +90,8 @@ async function asignarRolesAUsuario(id, roles = []) {
   return { id }
 }
 
-async function obtenerModulosActivosNegocio(negocioId) {
-  if (!negocioId) return []
-  const activos = await prisma.negocioModulo.findMany({
-    where: { negocioId, activo: true },
-    select: { moduloId: true }
-  })
-  return activos.map(a => a.moduloId)
-}
-
-async function asignarModulosAUsuario(id, modulos = []) {
-  await prisma.usuarioModulo.deleteMany({ where: { usuarioId: id } })
-  if (Array.isArray(modulos) && modulos.length) {
-    await prisma.usuarioModulo.createMany({
-      data: modulos.map(moduloId => ({ usuarioId: id, moduloId })),
-      skipDuplicates: true
-    })
-  }
-  return { id }
-}
-
-async function crearUsuario(datos, actor) {
+async function crearUsuario(datos) {
   const passwordHash = await bcrypt.hash(datos.password, 10)
-
-  const actorNegocioId = actor?.negocioId ?? null
-  const actorRoles = Array.isArray(actor?.roles) ? actor.roles : []
-  const actorPermisos = Array.isArray(actor?.permisos) ? actor.permisos : []
-  const actorAdminPorDefecto = actor?.adminPorDefecto === true
-  const creandoAdmin = datos.rol === 'ADMIN'
-  const crearNuevoNegocio = datos?.crearNuevoNegocio === true
-
-  if (creandoAdmin && !actorAdminPorDefecto) {
-    throw new Error('No autorizado para crear administradores')
-  }
-
-  if (creandoAdmin && !actorRoles.includes('ADMIN') && !actorPermisos.includes('CREAR_ADMIN')) {
-    throw new Error('No autorizado para crear administradores')
-  }
-
-  let negocioId = actorNegocioId
-  if (creandoAdmin && (crearNuevoNegocio || !actorNegocioId)) {
-    const negocioNombre = typeof datos.negocioNombre === 'string' && datos.negocioNombre.trim()
-      ? datos.negocioNombre.trim()
-      : `Negocio ${datos.nombre}`
-
-    const negocio = await prisma.negocio.create({
-      data: { nombre: negocioNombre }
-    })
-    negocioId = negocio.id
-  }
   
   // Create user
   const usuario = await prisma.usuario.create({
@@ -149,8 +99,7 @@ async function crearUsuario(datos, actor) {
       nombre: datos.nombre,
       correo: datos.correo,
       passwordHash,
-      activo: datos.activo !== undefined ? datos.activo : true,
-      negocioId
+      activo: datos.activo !== undefined ? datos.activo : true
     }
   })
 
@@ -164,58 +113,12 @@ async function crearUsuario(datos, actor) {
           rolId: rol.id
         }
       })
-    }
-  }
-
-  if (negocioId) {
-    const modulosSolicitados = Array.isArray(datos.modulos) ? datos.modulos : []
-    // Asegurar que sean strings si vienen como números, o validar que coincidan con ID de schema (String)
-    const modulosSanitizados = modulosSolicitados.map(m => String(m))
-
-    if (creandoAdmin && (crearNuevoNegocio || !actorNegocioId)) {
-      if (modulosSanitizados.length) {
-        const modulosDb = await prisma.modulo.findMany({ where: { id: { in: modulosSanitizados } }, select: { id: true } })
-        const validosSet = new Set(modulosDb.map(m => m.id))
-        const invalidos = modulosSanitizados.filter(m => !validosSet.has(m))
-        if (invalidos.length) throw new Error('Módulos inválidos')
-        await prisma.negocioModulo.createMany({
-          data: modulosSanitizados.map(moduloId => ({ negocioId, moduloId, activo: true })),
-          skipDuplicates: true
-        })
-        await asignarModulosAUsuario(usuario.id, modulosSanitizados)
-      }
-    } else if (creandoAdmin) {
-      const activosNegocio = await obtenerModulosActivosNegocio(negocioId)
-      const modulosParaUsuario = modulosSanitizados.length ? modulosSanitizados : activosNegocio
-      const activosSet = new Set(activosNegocio)
-      const invalidos = modulosParaUsuario.filter(m => !activosSet.has(m))
-      if (invalidos.length) throw new Error('Módulos inválidos para este negocio')
-      await asignarModulosAUsuario(usuario.id, modulosParaUsuario)
-    } else {
-      const activosNegocio = await obtenerModulosActivosNegocio(negocioId)
-      const heredarModulos = actor && Array.isArray(actor?.modulos) && actor.modulos.length > 0
-      const modulosParaUsuario = heredarModulos
-        ? actor.modulos
-        : (modulosSanitizados.length ? modulosSanitizados : activosNegocio)
-      
-      // Filter out any that are not active in the business, just in case
-      const activosSet = new Set(activosNegocio)
-      const finales = modulosParaUsuario.filter(m => activosSet.has(m))
-      
-      await asignarModulosAUsuario(usuario.id, finales)
-    }
-  }
-
-  const heredarPermisos = !creandoAdmin && actor && actorRoles.includes('ADMIN') && !actorAdminPorDefecto
-  if (heredarPermisos && actorPermisos.length) {
-    const permitidosSet = new Set(['VENDER', 'GESTION_INVENTARIO', 'GESTION_CLIENTES', 'VER_REPORTES', 'GESTION_FINANZAS'])
-    const filtrados = actorPermisos.filter(p => permitidosSet.has(p))
-    const permisosDb = await prisma.permiso.findMany({ where: { clave: { in: filtrados } }, select: { id: true, clave: true } })
-    if (permisosDb.length) {
-      await prisma.usuarioPermiso.createMany({
-        data: permisosDb.map(p => ({ usuarioId: usuario.id, permisoId: p.id })),
-        skipDuplicates: true
-      })
+    } else if (datos.rol === 'trabajador') {
+        // Create 'trabajador' role if it doesn't exist? 
+        // Better to assume roles should exist. 
+        // But for safety let's try to find 'TRABAJADOR' (uppercase usually) or whatever the convention is.
+        // bootstrap.js created 'ADMIN'. Let's see if there are other roles.
+        // For now, let's just try to find by name.
     }
   }
 
@@ -249,40 +152,20 @@ async function asignarPermisosDirectos(id, permisos = [], adminId = null) {
   return obtenerUsuarioPorId(id)
 }
 
-async function eliminarUsuario(id) {
-  const usuario = await prisma.usuario.findUnique({ where: { id } })
-  if (!usuario) throw new Error('Usuario no encontrado')
-
-  if (String(usuario.correo || '').trim().toLowerCase() === String(ADMIN_CORREO || '').trim().toLowerCase()) {
-    throw new Error('No se puede eliminar el administrador por defecto')
-  }
-
-  try {
-    await prisma.usuarioRol.deleteMany({ where: { usuarioId: id } })
-    await prisma.usuarioPermiso.deleteMany({ where: { usuarioId: id } })
-    await prisma.usuarioModulo.deleteMany({ where: { usuarioId: id } })
-    
-    await prisma.usuario.delete({ where: { id } })
-    return { id, mensaje: 'Usuario eliminado correctamente' }
-  } catch (error) {
-    if (error.code === 'P2003') {
-      throw new Error('No se puede eliminar el usuario porque tiene registros relacionados (ej. ventas). Considere desactivarlo en su lugar.')
+async function asignarModulosAUsuario(id, modulos = []) {
+  await prisma.usuarioModulo.deleteMany({ where: { usuarioId: id } })
+  const ids = Array.from(new Set((Array.isArray(modulos) ? modulos : []).map(m => String(m)).filter(Boolean)))
+  if (ids.length) {
+    const existentes = await prisma.modulo.findMany({ where: { id: { in: ids } }, select: { id: true } })
+    const validos = existentes.map(m => m.id)
+    if (validos.length) {
+      await prisma.usuarioModulo.createMany({
+        data: validos.map(moduloId => ({ usuarioId: id, moduloId })),
+        skipDuplicates: true
+      })
     }
-    throw error
   }
+  return obtenerUsuarioPorId(id)
 }
 
-module.exports = {
-  listarUsuarios,
-  obtenerUsuarioPorId,
-  actualizarUsuario,
-  cambiarPassword,
-  activarUsuario,
-  desactivarUsuario,
-  asignarRolesAUsuario,
-  asignarModulosAUsuario,
-  crearUsuario,
-  asignarPermisosDirectos,
-  obtenerModulosActivosNegocio,
-  eliminarUsuario
-}
+module.exports = { listarUsuarios, obtenerUsuarioPorId, actualizarUsuario, cambiarPassword, activarUsuario, desactivarUsuario, asignarRolesAUsuario, crearUsuario, asignarPermisosDirectos, asignarModulosAUsuario }

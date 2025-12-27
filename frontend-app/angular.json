@@ -43,6 +43,7 @@
             "allowedCommonJsDependencies": [
               "qrcode",
               "canvg",
+              "core-js",
               "raf",
               "rgbcolor",
               "file-saver"

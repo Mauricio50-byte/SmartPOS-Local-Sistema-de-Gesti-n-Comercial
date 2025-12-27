@@ -26,6 +26,20 @@ async function inicializarModulos() {
   }
 }
 
+async function ensureNegocioModulos(negocioId) {
+  if (!Number.isFinite(negocioId)) return
+  const negocio = await prisma.negocio.findUnique({ where: { id: negocioId }, select: { id: true } })
+  if (!negocio) throw new Error('Negocio no encontrado')
+
+  const modulos = await prisma.modulo.findMany({ select: { id: true } })
+  if (!modulos.length) return
+
+  await prisma.negocioModulo.createMany({
+    data: modulos.map(m => ({ negocioId, moduloId: m.id, activo: false })),
+    skipDuplicates: true
+  })
+}
+
 async function listarCatalogoModulos() {
   await inicializarModulos()
   return prisma.modulo.findMany({ orderBy: { nombre: 'asc' } })
@@ -33,44 +47,46 @@ async function listarCatalogoModulos() {
 
 async function listarModulos(negocioId) {
   await inicializarModulos()
-  if (!negocioId) throw new Error('Negocio requerido')
+  const negocioIdNum = Number(negocioId)
+  if (!Number.isFinite(negocioIdNum)) {
+    return prisma.modulo.findMany({ orderBy: { nombre: 'asc' } })
+  }
 
-  const negocio = await prisma.negocio.findUnique({ where: { id: negocioId } })
-  if (!negocio) throw new Error('Negocio no encontrado')
+  await ensureNegocioModulos(negocioIdNum)
 
-  const modulos = await prisma.modulo.findMany({ orderBy: { nombre: 'asc' } })
-  const estados = await prisma.negocioModulo.findMany({ where: { negocioId } })
-  const estadoMap = new Map(estados.map(e => [e.moduloId, e.activo]))
-  return modulos.map(m => ({ ...m, activo: estadoMap.get(m.id) ?? false }))
+  const filas = await prisma.negocioModulo.findMany({
+    where: { negocioId: negocioIdNum },
+    include: { modulo: true },
+    orderBy: { moduloId: 'asc' }
+  })
+
+  return filas
+    .map(f => ({
+      ...f.modulo,
+      activo: f.activo
+    }))
+    .sort((a, b) => String(a.nombre).localeCompare(String(b.nombre)))
 }
 
 async function toggleModulo(negocioId, id, activo) {
   await inicializarModulos()
-  if (!negocioId) throw new Error('Negocio requerido')
-
-  const negocio = await prisma.negocio.findUnique({ where: { id: negocioId } })
-  if (!negocio) throw new Error('Negocio no encontrado')
-
-  const existente = await prisma.negocioModulo.findUnique({
-    where: { negocioId_moduloId: { negocioId, moduloId: id } }
-  })
-  const yaActivo = existente?.activo === true
-
-  if (activo && !yaActivo) {
-    const activos = await prisma.negocioModulo.count({ where: { negocioId, activo: true } })
-    if (activos >= negocio.planMaxModulos) {
-      throw new Error(`Tu plan incluye ${negocio.planMaxModulos} módulos. Para habilitar más, contacta al proveedor.`)
-    }
+  const negocioIdNum = Number(negocioId)
+  if (!Number.isFinite(negocioIdNum)) {
+    return prisma.modulo.update({
+      where: { id },
+      data: { activo: Boolean(activo) }
+    })
   }
 
-  await prisma.negocioModulo.upsert({
-    where: { negocioId_moduloId: { negocioId, moduloId: id } },
-    update: { activo: !!activo },
-    create: { negocioId, moduloId: id, activo: !!activo }
+  await ensureNegocioModulos(negocioIdNum)
+  const actualizado = await prisma.negocioModulo.update({
+    where: { negocioId_moduloId: { negocioId: negocioIdNum, moduloId: id } },
+    data: { activo: Boolean(activo) }
   })
 
   const modulo = await prisma.modulo.findUnique({ where: { id } })
-  return { ...modulo, activo: !!activo }
+  if (!modulo) throw new Error('Módulo no encontrado')
+  return { ...modulo, activo: actualizado.activo }
 }
 
 async function actualizarConfig(id, config) {

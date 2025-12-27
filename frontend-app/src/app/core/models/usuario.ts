@@ -20,5 +20,4 @@ export interface Usuario {
   permisos?: string[]; // Permisos efectivos (Rol + Directos)
   permisosDirectos?: string[]; // Solo permisos asignados directamente
   modulos?: string[];
-  adminPorDefecto?: boolean;
 }

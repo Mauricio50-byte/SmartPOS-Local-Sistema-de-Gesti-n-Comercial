@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { AuthService } from './core/services/auth.service';
 import { Router } from '@angular/router';
 
@@ -8,13 +8,9 @@ import { Router } from '@angular/router';
   styleUrls: ['app.component.scss'],
   standalone: false,
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   constructor(
     private authService: AuthService,
     private router: Router
   ) { }
-
-  ngOnInit() {
-    // Ya no verificamos token en URL
-  }
 }

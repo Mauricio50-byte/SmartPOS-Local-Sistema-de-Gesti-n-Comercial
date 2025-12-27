@@ -59,20 +59,13 @@ export class AuthService implements OnDestroy {
   }
 
   fetchPerfil(): Observable<UsuarioPerfil> {
-    return this.http.get<{ usuario: UsuarioPerfil, token?: string }>(`${environment.apiUrl}/auth/perfil`).pipe(
-      tap(({ usuario, token }) => {
-        if (token) this.setToken(token);
-        this.perfil$.next(usuario);
-      }),
+    return this.http.get<{ usuario: UsuarioPerfil }>(`${environment.apiUrl}/auth/perfil`).pipe(
+      tap(({ usuario }) => this.perfil$.next(usuario)),
       map(({ usuario }) => usuario)
     );
   }
 
   getPerfil$(): Observable<UsuarioPerfil | null> { return this.perfil$.asObservable(); }
-
-  getUser(): UsuarioPerfil | null {
-    return this.perfil$.value;
-  }
 
   getRememberedEmail(): string { return localStorage.getItem(this.rememberKey) || ''; }
 

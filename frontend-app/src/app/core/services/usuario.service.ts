@@ -104,12 +104,4 @@ export class UsuarioService {
   asignarModulos(id: number, modulos: string[]): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}/modulos`, { modulos });
   }
-
-  /**
-   * Elimina un usuario permanentemente.
-   * @param id El ID del usuario.
-   */
-  deleteUsuario(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
-  }
 }

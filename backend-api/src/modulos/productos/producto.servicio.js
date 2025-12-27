@@ -4,10 +4,7 @@ const { obtenerPlugin } = require('./producto.factory')
 const baseInclude = {
   detalleRopa: true,
   detalleAlimento: true,
-  detalleServicio: true,
-  detalleFarmacia: true,
-  detallePapeleria: true,
-  detalleRestaurante: true
+  detalleServicio: true
 }
 
 async function listarProductos() {

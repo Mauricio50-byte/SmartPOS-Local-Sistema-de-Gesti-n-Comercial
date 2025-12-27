@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
@@ -19,18 +19,17 @@ export class ModuloService {
 
   constructor(private http: HttpClient) {}
 
-  listarCatalogoModulos(): Observable<Modulo[]> {
-    return this.http.get<Modulo[]>(`${this.apiUrl}/catalogo`);
+  listarModulos(negocioId?: number): Observable<Modulo[]> {
+    const url = typeof negocioId === 'number' ? `${this.apiUrl}?negocioId=${negocioId}` : this.apiUrl;
+    return this.http.get<Modulo[]>(url);
   }
 
-  listarModulos(negocioId?: number | null): Observable<Modulo[]> {
-    const params = typeof negocioId === 'number' ? new HttpParams().set('negocioId', String(negocioId)) : undefined;
-    return this.http.get<Modulo[]>(this.apiUrl, params ? { params } : undefined);
-  }
-
-  toggleModulo(id: string, activo: boolean, negocioId?: number | null): Observable<Modulo> {
-    const params = typeof negocioId === 'number' ? new HttpParams().set('negocioId', String(negocioId)) : undefined;
-    return this.http.patch<Modulo>(`${this.apiUrl}/${id}/toggle`, { activo }, params ? { params } : undefined);
+  toggleModulo(id: string, activo: boolean, negocioId?: number): Observable<Modulo> {
+    const url =
+      typeof negocioId === 'number'
+        ? `${this.apiUrl}/${id}/toggle?negocioId=${negocioId}`
+        : `${this.apiUrl}/${id}/toggle`;
+    return this.http.patch<Modulo>(url, { activo });
   }
 
   actualizarConfig(id: string, config: any): Observable<Modulo> {

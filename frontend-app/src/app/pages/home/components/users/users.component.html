@@ -28,7 +28,7 @@
         
         <div class="roles-container">
           <div class="role-badge" *ngFor="let rol of usuario.roles">
-            {{ rol }}
+            {{ rol | titlecase }}
           </div>
           <div class="role-badge empty" *ngIf="!usuario.roles || usuario.roles.length === 0">
             Sin roles asignados
@@ -41,7 +41,7 @@
           <ion-icon slot="icon-only" name="create-outline"></ion-icon>
         </ion-button>
         
-        <ion-button *ngIf="puedeGestionarPermisos(usuario)" fill="clear" size="small" color="secondary" (click)="gestionarPermisos(usuario)" title="Gestionar Permisos">
+        <ion-button fill="clear" size="small" color="secondary" (click)="gestionarPermisos(usuario)" title="Gestionar Permisos">
           <ion-icon slot="icon-only" name="shield-checkmark-outline"></ion-icon>
         </ion-button>
 
@@ -52,15 +52,6 @@
           (click)="toggleEstadoUsuario(usuario)"
           [title]="usuario.activo ? 'Desactivar usuario' : 'Activar usuario'">
           <ion-icon slot="icon-only" name="power-outline"></ion-icon>
-        </ion-button>
-
-        <ion-button 
-          fill="clear" 
-          size="small" 
-          color="danger" 
-          (click)="eliminarUsuario(usuario)"
-          title="Eliminar usuario permanentemente">
-          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
         </ion-button>
       </div>
     </div>
@@ -120,39 +111,11 @@
           <ion-item class="form-item">
             <ion-label position="stacked">Rol Principal</ion-label>
             <ion-select formControlName="rol" placeholder="Seleccionar rol">
-              <ion-select-option *ngFor="let r of rolesCatalog" [value]="r.nombre" [disabled]="!actorAdminPorDefecto && r.nombre === 'ADMIN'">{{ r.nombre }}</ion-select-option>
-              <ion-select-option *ngIf="rolesCatalog.length === 0 && actorAdminPorDefecto" value="ADMIN">ADMIN</ion-select-option>
-              <ion-select-option *ngIf="rolesCatalog.length === 0" value="TRABAJADOR">TRABAJADOR</ion-select-option>
+              <ion-select-option value="ADMIN">Administrador</ion-select-option>
+              <ion-select-option value="TRABAJADOR">Trabajador</ion-select-option>
             </ion-select>
             <ion-note slot="helper">Este rol define el acceso base del usuario.</ion-note>
           </ion-item>
-
-          <ion-item class="form-item" *ngIf="!isEditMode && formgroup.get('rol')?.value === 'ADMIN'">
-            <ion-label>Crear nuevo negocio</ion-label>
-            <ion-toggle formControlName="crearNuevoNegocio"></ion-toggle>
-          </ion-item>
-
-          <ion-item class="form-item" *ngIf="!isEditMode && formgroup.get('rol')?.value === 'ADMIN' && (formgroup.get('crearNuevoNegocio')?.value || !actorNegocioId)">
-            <ion-label position="stacked">Nombre del Negocio</ion-label>
-            <ion-input formControlName="negocioNombre" type="text" placeholder="Ej. Mi Negocio"></ion-input>
-          </ion-item>
-
-          <div class="form-item" *ngIf="!isEditMode">
-            <ion-label class="ion-padding-start">Módulos</ion-label>
-            <ion-list>
-              <ion-item *ngFor="let mod of (formgroup.get('rol')?.value === 'ADMIN' && (formgroup.get('crearNuevoNegocio')?.value || !actorNegocioId) ? catalogModulos : modulosActivosNegocio)">
-                <ion-label>
-                  <h3>{{ mod.nombre }}</h3>
-                  <p>{{ mod.descripcion }}</p>
-                </ion-label>
-                <ion-checkbox
-                  slot="end"
-                  [checked]="isModuloSeleccionado(mod.id)"
-                  (ionChange)="toggleModuloSeleccion(mod.id, null)">
-                </ion-checkbox>
-              </ion-item>
-            </ion-list>
-          </div>
 
           <ion-item class="form-item">
             <ion-label position="stacked">Estado</ion-label>

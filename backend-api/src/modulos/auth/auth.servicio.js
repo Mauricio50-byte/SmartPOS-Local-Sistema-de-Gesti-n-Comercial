@@ -2,15 +2,6 @@ const { prisma } = require('../../infraestructura/bd')
 const bcrypt = require('bcryptjs')
 const { ADMIN_CORREO } = require('../../configuracion/entorno')
 
-async function obtenerModulosActivosNegocio(negocioId) {
-  if (!negocioId) return []
-  const activos = await prisma.negocioModulo.findMany({
-    where: { negocioId, activo: true },
-    select: { moduloId: true }
-  })
-  return activos.map(a => a.moduloId)
-}
-
 async function crearAdministrador({ nombre, correo, password }) {
   const c = (correo || '').trim().toLowerCase()
   const existe = await prisma.usuario.findUnique({ where: { correo: c } })
@@ -64,9 +55,8 @@ async function ingresar({ correo, password }) {
   const permisosRoles = usuario.roles.flatMap(ur => ur.rol.permisos.map(rp => rp.permiso.clave))
   const permisosDirectos = usuario.permisos.map(up => up.permiso.clave)
   const permisos = Array.from(new Set([...permisosRoles, ...permisosDirectos]))
-
-  const adminPorDefecto = c === String(ADMIN_CORREO || '').trim().toLowerCase()
   const negocioId = usuario.negocioId ?? null
+  const adminPorDefecto = String(usuario.correo || '').trim().toLowerCase() === String(ADMIN_CORREO || '').trim().toLowerCase()
   let modulos = []
   if (negocioId) {
     const activos = await obtenerModulosActivosNegocio(negocioId)
@@ -80,8 +70,18 @@ async function ingresar({ correo, password }) {
       modulos = asignados.length ? asignados : activos
     }
   }
-
   return { usuario, roles, permisos, negocioId, modulos, adminPorDefecto }
+}
+
+async function obtenerModulosActivosNegocio(negocioId) {
+  const negocioIdNum = Number(negocioId)
+  if (!Number.isFinite(negocioIdNum)) return []
+  const filas = await prisma.negocioModulo.findMany({
+    where: { negocioId: negocioIdNum, activo: true },
+    select: { moduloId: true },
+    orderBy: { moduloId: 'asc' }
+  })
+  return filas.map(f => f.moduloId)
 }
 
 module.exports = { crearAdministrador, crearUsuarioConRoles, ingresar, obtenerModulosActivosNegocio }
