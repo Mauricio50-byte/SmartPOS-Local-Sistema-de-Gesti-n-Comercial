@@ -204,6 +204,35 @@ export class PermissionsModalComponent implements OnInit {
     return this.selectedModules.includes(moduloId);
   }
 
+  get groupedPermissions(): { module: string, permissions: string[] }[] {
+    const groups: { [key: string]: string[] } = {};
+    const miscKey = 'Otros / General';
+
+    this.visiblePermissions.forEach(permKey => {
+      const permData = this.allPermissionsData.find(p => p.clave === permKey);
+      let modName = miscKey;
+      if (permData?.moduloId) {
+        const mod = this.availableModules.find(m => m.id === permData.moduloId);
+        modName = mod ? mod.nombre : (permData.moduloId.charAt(0).toUpperCase() + permData.moduloId.slice(1));
+      }
+      
+      if (!groups[modName]) {
+        groups[modName] = [];
+      }
+      groups[modName].push(permKey);
+    });
+
+    // Sort: put 'Otros' at the end, others alphabetically
+    return Object.keys(groups).sort((a, b) => {
+      if (a === miscKey) return 1;
+      if (b === miscKey) return -1;
+      return a.localeCompare(b);
+    }).map(key => ({
+      module: key,
+      permissions: groups[key]
+    }));
+  }
+
   private updateVisiblePermissions() {
     if (this.actorEsAdmin) {
       this.visiblePermissions = [...this.availablePermissions];

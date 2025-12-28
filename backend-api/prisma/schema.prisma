@@ -36,6 +36,7 @@ model Modulo {
   actualizadoEn DateTime @updatedAt
   negocios    NegocioModulo[]
   usuarios    UsuarioModulo[]
+  permisos    Permiso[]
 }
 
 model Negocio {
@@ -251,6 +252,8 @@ model Permiso {
   id          Int          @id @default(autoincrement())
   clave       String       @unique
   descripcion String?
+  moduloId    String?
+  modulo      Modulo?      @relation(fields: [moduloId], references: [id])
   roles       RolPermiso[]
   usuarios    UsuarioPermiso[]
 }
