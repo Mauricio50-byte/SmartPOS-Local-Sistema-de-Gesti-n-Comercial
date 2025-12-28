@@ -29,6 +29,8 @@ export class PermissionsModalComponent implements OnInit {
   directPermissions: string[] = [];
 
   availableModules: Modulo[] = [];
+  modulosSistema: Modulo[] = [];
+  modulosNegocio: Modulo[] = [];
   selectedModules: string[] = [];
 
   actorAdminPorDefecto = false;
@@ -180,11 +182,25 @@ export class PermissionsModalComponent implements OnInit {
     this.moduloService.listarModulos(negocioId).subscribe({
       next: (modulos) => {
         this.availableModules = modulos || [];
+        
+        // Separar módulos por tipo
+        this.modulosSistema = this.availableModules.filter(m => m.tipo === 'SISTEMA');
+        this.modulosNegocio = this.availableModules.filter(m => m.tipo === 'NEGOCIO' || !m.tipo);
+
         const activosSet = new Set(this.availableModules.filter(m => m.activo).map(m => m.id));
         this.selectedModules = (this.selectedModules || []).filter(m => activosSet.has(m));
+        
+        // Agregar módulos del sistema a selectedModules si no están
+        this.modulosSistema.forEach(m => {
+          if (!this.selectedModules.includes(m.id)) {
+            this.selectedModules.push(m.id);
+          }
+        });
       },
       error: () => {
         this.availableModules = [];
+        this.modulosSistema = [];
+        this.modulosNegocio = [];
         this.modulesLoadError = true;
         void this.presentError('No se pudieron cargar los módulos.');
       }
@@ -192,6 +208,12 @@ export class PermissionsModalComponent implements OnInit {
   }
 
   toggleModule(moduloId: string) {
+    // Evitar deseleccionar módulos del sistema
+    const modulo = this.availableModules.find(m => m.id === moduloId);
+    if (modulo?.tipo === 'SISTEMA') {
+      return;
+    }
+
     const index = this.selectedModules.indexOf(moduloId);
     if (index > -1) {
       this.selectedModules.splice(index, 1);

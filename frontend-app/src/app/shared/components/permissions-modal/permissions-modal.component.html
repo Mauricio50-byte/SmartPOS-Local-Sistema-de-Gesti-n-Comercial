@@ -125,14 +125,55 @@
     <h4>Módulos Activos</h4>
     <p class="helper-text">Habilite los módulos operativos a los que este usuario tendrá acceso.</p>
 
+    <!-- Módulos del Sistema -->
+    <div class="section-header">
+      <h5>Módulos del Sistema</h5>
+      <p>Módulos base del sistema. Pueden ser restringidos si es necesario.</p>
+    </div>
+    
     <div class="modules-grid">
-      <div *ngFor="let mod of availableModules" 
+      <div *ngFor="let mod of modulosSistema" 
+           class="module-card system-card"
+           [class.selected]="isModuleSelected(mod.id)"
+           (click)="toggleModule(mod.id)">
+           
+        <div class="card-header">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <ion-icon name="cube-outline"></ion-icon>
+            <h5>{{ mod.nombre }}</h5>
+          </div>
+          <ion-checkbox
+            [checked]="isModuleSelected(mod.id)"
+            (click)="$event.stopPropagation()">
+          </ion-checkbox>
+        </div>
+        
+        <div class="card-body">
+          <p>{{ mod.descripcion }}</p>
+          <ion-badge color="medium" mode="ios">SISTEMA</ion-badge>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Módulos de Negocio -->
+    <div class="section-header">
+      <h5>Módulos de Negocio</h5>
+      <p>Módulos específicos activados para este negocio.</p>
+    </div>
+
+    <div class="modules-grid">
+      <div *ngFor="let mod of modulosNegocio" 
            class="module-card"
            [class.selected]="isModuleSelected(mod.id)"
            (click)="toggleModule(mod.id)">
            
         <div class="card-header">
-          <h5>{{ mod.nombre }}</h5>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <ion-icon [name]="mod.id === 'ropa' ? 'shirt-outline' : mod.id === 'alimentos' ? 'restaurant-outline' : 'briefcase-outline'"></ion-icon>
+            <h5>{{ mod.nombre }}</h5>
+          </div>
           <ion-checkbox
             [checked]="isModuleSelected(mod.id)"
             (click)="$event.stopPropagation()">
