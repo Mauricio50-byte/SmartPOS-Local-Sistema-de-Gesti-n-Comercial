@@ -53,19 +53,25 @@ export class HomePage implements OnInit {
 
   checkCurrentViewAccess() {
     // If user loses access to current view, switch to a safe one or dashboard
-    if (this.currentView === 'users' && !this.hasPermission('GESTION_USUARIOS')) {
+    if (this.currentView === 'users' && !this.hasPermission('VER_USUARIOS')) {
       this.currentView = 'dashboard'; // Fallback
     }
-    if (this.currentView === 'ventas' && !this.hasPermission('VENDER')) {
+    if (this.currentView === 'ventas' && !this.hasPermission('VENDER') && !this.hasPermission('VER_VENTAS')) {
       this.currentView = 'dashboard';
     }
-    if (this.currentView === 'productos' && !this.hasPermission('GESTION_INVENTARIO')) {
+    if (this.currentView === 'productos' && !this.hasPermission('VER_INVENTARIO')) {
       this.currentView = 'dashboard';
     }
-    if (this.currentView === 'modulos' && !this.hasPermission('ADMIN')) {
+    if (this.currentView === 'modulos' && !this.hasPermission('GESTION_MODULOS') && !this.hasPermission('ADMIN')) {
       this.currentView = 'dashboard';
     }
-    if (this.currentView === 'clientes' && !this.hasPermission('GESTION_CLIENTES')) {
+    if (this.currentView === 'clientes' && !this.hasPermission('VER_CLIENTES')) {
+      this.currentView = 'dashboard';
+    }
+    if (this.currentView === 'finanzas' && !this.hasPermission('VER_FINANZAS')) {
+      this.currentView = 'dashboard';
+    }
+    if (this.currentView === 'reportes' && !this.hasPermission('VER_REPORTES')) {
       this.currentView = 'dashboard';
     }
     // Update title

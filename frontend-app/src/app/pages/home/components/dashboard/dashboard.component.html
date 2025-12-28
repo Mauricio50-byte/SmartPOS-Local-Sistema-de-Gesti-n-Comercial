@@ -2,7 +2,7 @@
   
   <!-- Panel de Métricas Rápidas -->
   <div class="panel metrics-panel">
-    <div class="metric-card">
+    <div class="metric-card" *ngIf="canAccess('VER_VENTAS') || canAccess('VENDER')">
       <div class="metric-icon">
         <ion-icon name="cash-outline"></ion-icon>
       </div>
@@ -14,7 +14,7 @@
         </div>
       </div>
     </div>
-    <div class="metric-card">
+    <div class="metric-card" *ngIf="canAccess('VER_VENTAS') || canAccess('VENDER')">
       <div class="metric-icon">
         <ion-icon name="cart-outline"></ion-icon>
       </div>
@@ -26,7 +26,7 @@
         </div>
       </div>
     </div>
-    <div class="metric-card">
+    <div class="metric-card" *ngIf="canAccess('VER_CLIENTES')">
       <div class="metric-icon">
         <ion-icon name="people-outline"></ion-icon>
       </div>
@@ -38,7 +38,7 @@
         </div>
       </div>
     </div>
-    <div class="metric-card">
+    <div class="metric-card" *ngIf="canAccess('VER_VENTAS') || canAccess('VENDER')">
       <div class="metric-icon">
         <ion-icon name="pricetags-outline"></ion-icon>
       </div>
@@ -53,7 +53,7 @@
   </div>
 
   <!-- Panel de Ventas Mensuales -->
-  <div class="panel sales-chart-panel">
+  <div class="panel sales-chart-panel" *ngIf="canAccess('VER_VENTAS') || canAccess('VENDER')">
     <div class="panel-header">
       <div>
         <h3 class="panel-title">Ventas Mensuales</h3>
@@ -84,19 +84,19 @@
       <h3 class="panel-title">Acciones Rápidas</h3>
     </div>
     <div class="panel-content actions-content">
-      <ion-button expand="block" color="primary" (click)="onNavigate('ventas')">
+      <ion-button expand="block" color="primary" (click)="onNavigate('ventas')" *ngIf="canAccess('CREAR_VENTA') || canAccess('VENDER')">
         <ion-icon slot="start" name="add-circle-outline"></ion-icon>
         Nueva Venta
       </ion-button>
-      <ion-button expand="block" color="secondary" (click)="onNavigate('productos')">
+      <ion-button expand="block" color="secondary" (click)="onNavigate('productos')" *ngIf="canAccess('VER_INVENTARIO')">
         <ion-icon slot="start" name="cube-outline"></ion-icon>
         Ver Productos
       </ion-button>
-      <ion-button expand="block" color="tertiary" (click)="onNavigate('clientes')">
+      <ion-button expand="block" color="tertiary" (click)="onNavigate('clientes')" *ngIf="canAccess('CREAR_CLIENTE')">
         <ion-icon slot="start" name="person-add-outline"></ion-icon>
         Nuevo Cliente
       </ion-button>
-      <ion-button expand="block" color="medium" (click)="onNavigate('reportes')">
+      <ion-button expand="block" color="medium" (click)="onNavigate('reportes')" *ngIf="canAccess('VER_REPORTES')">
         <ion-icon slot="start" name="document-text-outline"></ion-icon>
         Ver Reportes
       </ion-button>
@@ -104,7 +104,7 @@
   </div>
 
   <!-- Transacciones Recientes -->
-  <div class="panel recent-transactions-panel">
+  <div class="panel recent-transactions-panel" *ngIf="canAccess('VER_VENTAS') || canAccess('VENDER')">
     <div class="panel-header">
       <h3 class="panel-title">Transacciones Recientes</h3>
       <span class="panel-subtitle">Últimas 5 ventas registradas</span>
@@ -137,7 +137,7 @@
   </div>
 
   <!-- Alertas de Stock Bajo -->
-  <div class="panel low-stock-panel">
+  <div class="panel low-stock-panel" *ngIf="canAccess('VER_INVENTARIO')">
     <div class="panel-header">
       <h3 class="panel-title">Stock Bajo</h3>
       <span class="panel-subtitle">Productos por agotarse</span>
@@ -160,7 +160,7 @@
   </div>
 
   <!-- Panel de Productos Más Vendidos -->
-  <div class="panel top-products-panel">
+  <div class="panel top-products-panel" *ngIf="canAccess('VER_VENTAS') || canAccess('VENDER')">
     <div class="panel-header">
       <h3 class="panel-title">Top Productos</h3>
       <span class="panel-subtitle">Los 5 más vendidos</span>
@@ -177,7 +177,7 @@
   </div>
 
   <!-- Panel de Ventas por Categoría (Nuevo Componente) -->
-  <div class="panel category-panel">
+  <div class="panel category-panel" *ngIf="canAccess('VER_VENTAS') || canAccess('VENDER')">
     <app-category-distribution
       *ngIf="dataLoaded; else loading"
       [ventas]="allVentas" 
@@ -186,7 +186,7 @@
   </div>
 
   <!-- Panel de Métodos de Pago -->
-  <div class="panel payment-panel">
+  <div class="panel payment-panel" *ngIf="canAccess('VER_VENTAS') || canAccess('VENDER')">
     <app-payment-distribution
       *ngIf="dataLoaded; else loading"
       [ventas]="allVentas">
@@ -194,7 +194,7 @@
   </div>
 
   <!-- Panel de Mejores Clientes -->
-  <div class="top-customers-panel-wrapper">
+  <div class="top-customers-panel-wrapper" *ngIf="(canAccess('VER_VENTAS') || canAccess('VENDER')) && canAccess('VER_CLIENTES')">
     <app-top-customers
       *ngIf="dataLoaded; else loading"
       [ventas]="allVentas"

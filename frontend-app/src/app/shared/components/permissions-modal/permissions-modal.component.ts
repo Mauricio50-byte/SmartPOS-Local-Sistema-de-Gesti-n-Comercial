@@ -191,11 +191,10 @@ export class PermissionsModalComponent implements OnInit {
         this.selectedModules = (this.selectedModules || []).filter(m => activosSet.has(m));
         
         // Agregar módulos del sistema a selectedModules si no están
-        this.modulosSistema.forEach(m => {
-          if (!this.selectedModules.includes(m.id)) {
-            this.selectedModules.push(m.id);
-          }
-        });
+        // MODIFICADO: Solo asegurar 'dashboard' por defecto, no todos los módulos del sistema.
+        if (!this.selectedModules.includes('dashboard')) {
+           this.selectedModules.push('dashboard');
+        }
       },
       error: () => {
         this.availableModules = [];
@@ -208,11 +207,11 @@ export class PermissionsModalComponent implements OnInit {
   }
 
   toggleModule(moduloId: string) {
-    // Evitar deseleccionar módulos del sistema
-    const modulo = this.availableModules.find(m => m.id === moduloId);
-    if (modulo?.tipo === 'SISTEMA') {
-      return;
-    }
+    // Permitir editar todos los módulos, incluso los del sistema
+    // const modulo = this.availableModules.find(m => m.id === moduloId);
+    // if (modulo?.tipo === 'SISTEMA') {
+    //   return;
+    // }
 
     const index = this.selectedModules.indexOf(moduloId);
     if (index > -1) {

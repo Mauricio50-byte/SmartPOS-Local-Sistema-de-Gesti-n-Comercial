@@ -1,8 +1,9 @@
 import { Component, inject, OnInit, Output, EventEmitter } from '@angular/core';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
 import { VentaServices } from '../../../../core/services/venta.service';
 import { ProductosServices } from '../../../../core/services/producto.service';
 import { ClientesServices } from '../../../../core/services/cliente.service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 
 @Component({
@@ -17,6 +18,9 @@ export class DashboardComponent implements OnInit {
   private ventaServices = inject(VentaServices);
   private productosServices = inject(ProductosServices);
   private clientesServices = inject(ClientesServices);
+  private authService = inject(AuthService);
+
+  currentUser: any = null;
 
   // KPIs
   totalIngresos = 0;
@@ -73,17 +77,49 @@ export class DashboardComponent implements OnInit {
   };
 
   ngOnInit() {
-    this.loadDashboardData();
+    this.authService.getPerfil$().subscribe(user => {
+      this.currentUser = user;
+      if (user) {
+        this.loadDashboardData();
+      }
+    });
+  }
+
+  canAccess(permiso: string): boolean {
+    if (!this.currentUser) return false;
+    if (permiso === 'ADMIN') return this.currentUser.adminPorDefecto === true;
+    return this.currentUser.permisos ? this.currentUser.permisos.includes(permiso) : false;
   }
 
   loadDashboardData() {
     this.dataLoaded = false;
-    forkJoin({
-      ventas: this.ventaServices.listarVentas(),
-      productos: this.productosServices.listarProductos(),
-      clientes: this.clientesServices.listarClientes()
-    }).subscribe({
-      next: ({ ventas, productos, clientes }) => {
+    
+    const obs: any = {};
+
+    if (this.canAccess('VER_VENTAS') || this.canAccess('VENDER')) {
+      obs.ventas = this.ventaServices.listarVentas();
+    } else {
+      obs.ventas = of([]);
+    }
+
+    if (this.canAccess('VER_INVENTARIO')) {
+      obs.productos = this.productosServices.listarProductos();
+    } else {
+      obs.productos = of([]);
+    }
+
+    if (this.canAccess('VER_CLIENTES')) {
+      obs.clientes = this.clientesServices.listarClientes();
+    } else {
+      obs.clientes = of([]);
+    }
+
+    forkJoin(obs).subscribe({
+      next: (results: any) => {
+        const ventas = results.ventas || [];
+        const productos = results.productos || [];
+        const clientes = results.clientes || [];
+
         this.allVentas = ventas;
         this.allProductos = productos;
         this.allClientes = clientes;

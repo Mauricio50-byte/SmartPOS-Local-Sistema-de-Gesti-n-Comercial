@@ -12,6 +12,21 @@ CREATE TABLE "Usuario" (
 );
 
 -- CreateTable
+CREATE TABLE "Modulo" (
+    "id" TEXT NOT NULL,
+    "nombre" TEXT NOT NULL,
+    "descripcion" TEXT,
+    "tipo" TEXT NOT NULL DEFAULT 'SISTEMA',
+    "activo" BOOLEAN NOT NULL DEFAULT false,
+    "version" TEXT NOT NULL DEFAULT '1.0.0',
+    "config" JSONB,
+    "creadoEn" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "actualizadoEn" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Modulo_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Negocio" (
     "id" SERIAL NOT NULL,
     "nombre" TEXT NOT NULL,
@@ -36,20 +51,6 @@ CREATE TABLE "UsuarioModulo" (
     "moduloId" TEXT NOT NULL,
 
     CONSTRAINT "UsuarioModulo_pkey" PRIMARY KEY ("usuarioId","moduloId")
-);
-
--- CreateTable
-CREATE TABLE "Modulo" (
-    "id" TEXT NOT NULL,
-    "nombre" TEXT NOT NULL,
-    "descripcion" TEXT,
-    "activo" BOOLEAN NOT NULL DEFAULT false,
-    "version" TEXT NOT NULL DEFAULT '1.0.0',
-    "config" JSONB,
-    "creadoEn" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "actualizadoEn" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "Modulo_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -207,6 +208,7 @@ CREATE TABLE "Permiso" (
     "id" SERIAL NOT NULL,
     "clave" TEXT NOT NULL,
     "descripcion" TEXT,
+    "moduloId" TEXT,
 
     CONSTRAINT "Permiso_pkey" PRIMARY KEY ("id")
 );
@@ -391,6 +393,9 @@ ALTER TABLE "Venta" ADD CONSTRAINT "Venta_clienteId_fkey" FOREIGN KEY ("clienteI
 
 -- AddForeignKey
 ALTER TABLE "Venta" ADD CONSTRAINT "Venta_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Permiso" ADD CONSTRAINT "Permiso_moduloId_fkey" FOREIGN KEY ("moduloId") REFERENCES "Modulo"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UsuarioRol" ADD CONSTRAINT "UsuarioRol_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

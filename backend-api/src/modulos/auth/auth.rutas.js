@@ -46,7 +46,7 @@ async function registrarRutasAuth(app) {
     return { id: creado.id }
   })
 
-  app.post('/auth/registrar-usuario', { preHandler: [app.requierePermiso('GESTION_USUARIOS')] }, async (req, res) => {
+  app.post('/auth/registrar-usuario', { preHandler: [app.requierePermiso('CREAR_USUARIO')] }, async (req, res) => {
     const { nombre, correo, password, roles = [] } = req.body || {}
     const creado = await crearUsuarioConRoles({ nombre, correo, password, roles })
     res.code(201)

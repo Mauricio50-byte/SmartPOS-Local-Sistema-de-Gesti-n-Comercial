@@ -132,11 +132,25 @@ async function asegurarPermisosYAdmin() {
 
   // 6. Asignar permisos base al rol TRABAJADOR
   const permisosTrabajador = [
-    'VER_DASHBOARD',
-    'VER_VENTAS', 'CREAR_VENTA', 'REPORTES_VENTAS', 'VENDER',
-    'VER_INVENTARIO',
-    'VER_CLIENTES', 'CREAR_CLIENTE'
+    'VER_DASHBOARD'
   ]
+
+  // Limpiar permisos antiguos que no deban estar en TRABAJADOR
+  // Obtenemos todos los permisos actuales del rol
+  const permisosActualesRol = await prisma.rolPermiso.findMany({
+      where: { rolId: trabajadorRol.id },
+      include: { permiso: true }
+  })
+
+  // Identificar los que ya NO deben estar
+  for(const rp of permisosActualesRol) {
+      if (!permisosTrabajador.includes(rp.permiso.clave)) {
+          console.log(`Eliminando permiso ${rp.permiso.clave} del rol TRABAJADOR`)
+          await prisma.rolPermiso.delete({
+              where: { rolId_permisoId: { rolId: trabajadorRol.id, permisoId: rp.permisoId } }
+          })
+      }
+  }
 
   const permisosBaseDb = await prisma.permiso.findMany({
     where: { clave: { in: permisosTrabajador } }
