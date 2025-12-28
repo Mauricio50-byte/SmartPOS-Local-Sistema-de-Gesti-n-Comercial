@@ -206,6 +206,42 @@ export class UsersComponent implements OnInit {
     }
   }
 
+  async eliminarUsuario(usuario: Usuario) {
+    if (usuario.correo === 'admin@sistema-pos.local') {
+      this.mostrarAlerta('Acción no permitida', 'El usuario administrador principal no puede ser eliminado.');
+      return;
+    }
+
+    const alert = await this.alertController.create({
+      header: 'Confirmar eliminación',
+      message: `¿Está seguro que desea eliminar al usuario <strong>${usuario.nombre}</strong>? Esta acción no se puede deshacer.`,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          handler: () => {
+            this.usuarioService.deleteUsuario(usuario.id).subscribe({
+              next: () => {
+                this.mostrarAlerta('Éxito', 'Usuario eliminado correctamente');
+                this.getUsuarios();
+              },
+              error: (err) => {
+                console.error('Error eliminando usuario', err);
+                this.mostrarAlerta('Error', 'No se pudo eliminar el usuario. ' + (err.error?.message || err.message || ''));
+              }
+            });
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
   toggleEstadoUsuario(usuario: Usuario) {
     if (usuario.activo) {
       this.desactivarUsuario(usuario.id);

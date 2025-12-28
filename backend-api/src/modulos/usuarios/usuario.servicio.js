@@ -78,7 +78,22 @@ async function activarUsuario(id) {
 }
 
 async function desactivarUsuario(id) {
+  const usuario = await prisma.usuario.findUnique({ where: { id } })
+  if (usuario && usuario.correo === ADMIN_CORREO) {
+    throw new Error('No se puede desactivar el usuario administrador principal')
+  }
   return prisma.usuario.update({ where: { id }, data: { activo: false }, select: { id: true, activo: true } })
+}
+
+async function eliminarUsuario(id) {
+  const usuario = await prisma.usuario.findUnique({ where: { id } })
+  if (!usuario) {
+    throw new Error('Usuario no encontrado')
+  }
+  if (usuario.correo === ADMIN_CORREO) {
+    throw new Error('No se puede eliminar el usuario administrador principal')
+  }
+  return prisma.usuario.delete({ where: { id } })
 }
 
 async function asignarRolesAUsuario(id, roles = []) {
@@ -168,4 +183,4 @@ async function asignarModulosAUsuario(id, modulos = []) {
   return obtenerUsuarioPorId(id)
 }
 
-module.exports = { listarUsuarios, obtenerUsuarioPorId, actualizarUsuario, cambiarPassword, activarUsuario, desactivarUsuario, asignarRolesAUsuario, crearUsuario, asignarPermisosDirectos, asignarModulosAUsuario }
+module.exports = { listarUsuarios, obtenerUsuarioPorId, actualizarUsuario, cambiarPassword, activarUsuario, desactivarUsuario, eliminarUsuario, asignarRolesAUsuario, crearUsuario, asignarPermisosDirectos, asignarModulosAUsuario }

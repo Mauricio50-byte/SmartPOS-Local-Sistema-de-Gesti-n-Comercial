@@ -1,12 +1,8 @@
-const { listarUsuarios, obtenerUsuarioPorId, actualizarUsuario, cambiarPassword, activarUsuario, desactivarUsuario, asignarRolesAUsuario, crearUsuario, asignarPermisosDirectos, asignarModulosAUsuario } = require('./usuario.servicio')
+const { listarUsuarios, obtenerUsuarioPorId, actualizarUsuario, cambiarPassword, activarUsuario, desactivarUsuario, eliminarUsuario, asignarRolesAUsuario, crearUsuario, asignarPermisosDirectos, asignarModulosAUsuario } = require('./usuario.servicio')
 
 async function asegurarAdmin(req, res) {
   await req.jwtVerify()
-  // Recalcular permisos antes de verificar
-  // Nota: req.user viene del token. Si los permisos cambiaron, el token podría estar desactualizado.
-  // Idealmente deberíamos consultar la DB, pero por performance a veces se confía en el token.
-  // Sin embargo, como estamos gestionando permisos críticos, consultaremos DB o confiaremos en que el frontend refresca token si es necesario.
-  // Pero espera, req.user en fastify-jwt es el payload del token.
+
   
   // Vamos a verificar permisos extendidos
   const roles = req.user?.roles || []
@@ -81,6 +77,11 @@ async function registrarRutasUsuario(app) {
   app.put('/usuarios/:id/desactivar', { preHandler: [asegurarAdmin] }, async (req, res) => {
     const id = Number(req.params.id)
     return desactivarUsuario(id)
+  })
+
+  app.delete('/usuarios/:id', { preHandler: [asegurarAdmin] }, async (req, res) => {
+    const id = Number(req.params.id)
+    return eliminarUsuario(id)
   })
 
   app.put('/usuarios/:id/roles', { preHandler: [asegurarAdmin] }, async (req) => {

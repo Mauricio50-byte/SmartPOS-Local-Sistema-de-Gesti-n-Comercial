@@ -140,11 +140,9 @@ export class PermissionsModalComponent implements OnInit {
   }
 
   toggleRole(roleName: string) {
-    const index = this.selectedRoles.indexOf(roleName);
-    if (index > -1) {
-      this.selectedRoles.splice(index, 1);
-    } else {
-      this.selectedRoles.push(roleName);
+    // Radio button behavior: Only one role can be selected at a time
+    if (!this.selectedRoles.includes(roleName)) {
+      this.selectedRoles = [roleName];
     }
   }
 

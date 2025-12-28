@@ -84,6 +84,14 @@ export class UsuarioService {
   }
 
   /**
+   * Elimina un usuario.
+   * @param id El ID del usuario a eliminar.
+   */
+  deleteUsuario(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  /**
    * Asigna roles a un usuario.
    * @param id El ID del usuario.
    * @param roles Un arreglo con los nombres de los roles a asignar.

@@ -54,8 +54,19 @@
           size="small" 
           [color]="usuario.activo ? 'danger' : 'success'" 
           (click)="toggleEstadoUsuario(usuario)"
-          [title]="usuario.activo ? 'Desactivar usuario' : 'Activar usuario'">
+          [title]="usuario.activo ? 'Desactivar usuario' : 'Activar usuario'"
+          [disabled]="usuario.correo === 'admin@sistema-pos.local'">
           <ion-icon slot="icon-only" name="power-outline"></ion-icon>
+        </ion-button>
+
+        <ion-button 
+          fill="clear" 
+          size="small" 
+          color="danger" 
+          (click)="eliminarUsuario(usuario)"
+          title="Eliminar usuario"
+          [disabled]="usuario.correo === 'admin@sistema-pos.local'">
+          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
         </ion-button>
       </div>
     </div>
