@@ -8,6 +8,7 @@ export interface Modulo {
   nombre: string;
   descripcion: string;
   activo: boolean;
+  tipo?: 'SISTEMA' | 'NEGOCIO';
   config?: any;
 }
 

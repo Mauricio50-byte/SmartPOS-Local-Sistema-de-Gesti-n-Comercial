@@ -17,6 +17,29 @@
   }
 }
 
+.section-header {
+  padding: 20px 20px 10px;
+  
+  h2 {
+    margin: 0;
+    font-size: 20px;
+    color: #444;
+    font-weight: 600;
+  }
+  
+  p {
+    margin: 5px 0 0;
+    color: #888;
+    font-size: 14px;
+  }
+}
+
+.divider {
+  height: 1px;
+  background: #e0e0e0;
+  margin: 10px 20px 30px;
+}
+
 .modules-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -35,6 +58,21 @@
   &.active {
     border-color: var(--ion-color-success);
     background: #f8fff9;
+  }
+
+  &.system-card {
+    background: #f8f9fa;
+    border-color: #e9ecef;
+    
+    .icon-wrapper {
+      background: #e2e6ea;
+      color: #495057;
+    }
+
+    .status-badge {
+      background: #e2e6ea;
+      color: #495057;
+    }
   }
 
   .card-header {

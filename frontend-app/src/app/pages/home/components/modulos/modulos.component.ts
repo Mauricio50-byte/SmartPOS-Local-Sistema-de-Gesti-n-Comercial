@@ -10,6 +10,8 @@ import { AlertController, ToastController } from '@ionic/angular';
 })
 export class ModulosComponent implements OnInit {
   modulos: Modulo[] = [];
+  modulosSistema: Modulo[] = [];
+  modulosNegocio: Modulo[] = [];
   loading = false;
 
   constructor(
@@ -27,6 +29,9 @@ export class ModulosComponent implements OnInit {
     this.moduloService.listarModulos().subscribe({
       next: (data) => {
         this.modulos = data;
+        // Separar módulos por tipo
+        this.modulosSistema = data.filter(m => m.tipo === 'SISTEMA');
+        this.modulosNegocio = data.filter(m => m.tipo === 'NEGOCIO' || !m.tipo);
         this.loading = false;
       },
       error: (error) => {
@@ -38,6 +43,12 @@ export class ModulosComponent implements OnInit {
   }
 
   async toggleModulo(modulo: Modulo) {
+    // Evitar desactivar módulos de sistema
+    if (modulo.tipo === 'SISTEMA') {
+      this.mostrarToast('Los módulos del sistema no pueden desactivarse', 'warning');
+      return;
+    }
+
     // Optimistic update
     const estadoAnterior = modulo.activo;
     modulo.activo = !modulo.activo;

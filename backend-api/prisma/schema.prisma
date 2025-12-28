@@ -29,6 +29,7 @@ model Modulo {
   id          String   @id // e.g., "ropa", "alimentos", "servicios"
   nombre      String
   descripcion String?
+  tipo        String   @default("SISTEMA") // SISTEMA, NEGOCIO
   activo      Boolean  @default(false)
   version     String   @default("1.0.0")
   config      Json?    // Configuración específica del módulo

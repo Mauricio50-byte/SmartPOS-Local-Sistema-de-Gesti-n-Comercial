@@ -1,38 +1,43 @@
 const { prisma } = require('../../infraestructura/bd')
 
 const MODULOS_DISPONIBLES = [
-  { id: 'dashboard', nombre: 'Dashboard', descripcion: 'Métricas y resúmenes generales' },
-  { id: 'ventas', nombre: 'Ventas', descripcion: 'Facturación e historial de ventas' },
-  { id: 'inventario', nombre: 'Productos (Inventario)', descripcion: 'Gestión de productos, stock y categorías' },
-  { id: 'clientes', nombre: 'Clientes', descripcion: 'Gestión de clientes y su historial' },
-  { id: 'finanzas', nombre: 'Finanzas', descripcion: 'Ingresos, gastos, caja y balances' },
-  { id: 'usuarios', nombre: 'Usuarios', descripcion: 'Administración de cuentas y roles' },
-  { id: 'modulos', nombre: 'Módulos', descripcion: 'Control de módulos del sistema' },
-  { id: 'reportes', nombre: 'Reportes', descripcion: 'Visualización y exportación de reportes' },
-  { id: 'configuracion', nombre: 'Configuración', descripcion: 'Datos del negocio y preferencias' },
+  { id: 'dashboard', nombre: 'Dashboard', descripcion: 'Métricas y resúmenes generales', tipo: 'SISTEMA' },
+  { id: 'ventas', nombre: 'Ventas', descripcion: 'Facturación e historial de ventas', tipo: 'SISTEMA' },
+  { id: 'inventario', nombre: 'Productos (Inventario)', descripcion: 'Gestión de productos, stock y categorías', tipo: 'SISTEMA' },
+  { id: 'clientes', nombre: 'Clientes', descripcion: 'Gestión de clientes y su historial', tipo: 'SISTEMA' },
+  { id: 'finanzas', nombre: 'Finanzas', descripcion: 'Ingresos, gastos, caja y balances', tipo: 'SISTEMA' },
+  { id: 'usuarios', nombre: 'Usuarios', descripcion: 'Administración de cuentas y roles', tipo: 'SISTEMA' },
+  { id: 'modulos', nombre: 'Módulos', descripcion: 'Control de módulos del sistema', tipo: 'SISTEMA' },
+  { id: 'reportes', nombre: 'Reportes', descripcion: 'Visualización y exportación de reportes', tipo: 'SISTEMA' },
+  { id: 'configuracion', nombre: 'Configuración', descripcion: 'Datos del negocio y preferencias', tipo: 'SISTEMA' },
   // Plugins específicos de negocio (opcionales)
-  { id: 'ropa', nombre: 'Tienda de Ropa', descripcion: 'Gestión de tallas, colores y colecciones' },
-  { id: 'alimentos', nombre: 'Alimentos y Perecederos', descripcion: 'Control de vencimientos y lotes' },
-  { id: 'servicios', nombre: 'Servicios Profesionales', descripcion: 'Citas, responsables y duración' },
-  { id: 'farmacia', nombre: 'Farmacia y Droguería', descripcion: 'Control de medicamentos, laboratorios y recetas' },
-  { id: 'papeleria', nombre: 'Papelería y Miscelánea', descripcion: 'Gestión de útiles, tipos de papel y dimensiones' },
-  { id: 'restaurante', nombre: 'Restaurante y Bar', descripcion: 'Menú, ingredientes, preparación y dietas' }
+  { id: 'ropa', nombre: 'Tienda de Ropa', descripcion: 'Gestión de tallas, colores y colecciones', tipo: 'NEGOCIO' },
+  { id: 'alimentos', nombre: 'Alimentos y Perecederos', descripcion: 'Control de vencimientos y lotes', tipo: 'NEGOCIO' },
+  { id: 'servicios', nombre: 'Servicios Profesionales', descripcion: 'Citas, responsables y duración', tipo: 'NEGOCIO' },
+  { id: 'farmacia', nombre: 'Farmacia y Droguería', descripcion: 'Control de medicamentos, laboratorios y recetas', tipo: 'NEGOCIO' },
+  { id: 'papeleria', nombre: 'Papelería y Miscelánea', descripcion: 'Gestión de útiles, tipos de papel y dimensiones', tipo: 'NEGOCIO' },
+  { id: 'restaurante', nombre: 'Restaurante y Bar', descripcion: 'Menú, ingredientes, preparación y dietas', tipo: 'NEGOCIO' }
 ]
 
 async function inicializarModulos() {
-  // Asegurar que los módulos base existan en la BD
+  // Asegurar que los módulos base existan en la BD y tengan el tipo correcto
   for (const mod of MODULOS_DISPONIBLES) {
-    const existe = await prisma.modulo.findUnique({ where: { id: mod.id } })
-    if (!existe) {
-      await prisma.modulo.create({
-        data: {
-          id: mod.id,
-          nombre: mod.nombre,
-          descripcion: mod.descripcion,
-          activo: false
-        }
-      })
-    }
+    await prisma.modulo.upsert({
+      where: { id: mod.id },
+      update: {
+        nombre: mod.nombre,
+        descripcion: mod.descripcion,
+        tipo: mod.tipo,
+        ...(mod.tipo === 'SISTEMA' ? { activo: true } : {})
+      },
+      create: {
+        id: mod.id,
+        nombre: mod.nombre,
+        descripcion: mod.descripcion,
+        tipo: mod.tipo,
+        activo: mod.tipo === 'SISTEMA' // Módulos de sistema activos por defecto (para admin global)
+      }
+    })
   }
 }
 
