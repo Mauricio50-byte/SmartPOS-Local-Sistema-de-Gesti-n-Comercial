@@ -1,4 +1,5 @@
 const { prisma } = require('../../infraestructura/bd')
+const { ADMIN_CORREO } = require('../../configuracion/entorno')
 const bcrypt = require('bcryptjs')
 
 async function listarUsuarios(filtro = {}) {
@@ -93,7 +94,21 @@ async function eliminarUsuario(id) {
   if (usuario.correo === ADMIN_CORREO) {
     throw new Error('No se puede eliminar el usuario administrador principal')
   }
-  return prisma.usuario.delete({ where: { id } })
+
+  // Verificar si tiene ventas (Restricción de FK)
+  const ventas = await prisma.venta.count({ where: { usuarioId: id } })
+  if (ventas > 0) {
+    throw new Error('No se puede eliminar el usuario porque tiene ventas asociadas. Considere desactivarlo.')
+  }
+
+  // Eliminar dependencias antes de eliminar el usuario
+  const [_, __, usuarioEliminado] = await prisma.$transaction([
+    prisma.usuarioRol.deleteMany({ where: { usuarioId: id } }),
+    prisma.usuarioPermiso.deleteMany({ where: { usuarioId: id } }),
+    prisma.usuario.delete({ where: { id } })
+  ])
+  
+  return usuarioEliminado
 }
 
 async function asignarRolesAUsuario(id, roles = []) {
@@ -129,11 +144,7 @@ async function crearUsuario(datos) {
         }
       })
     } else if (datos.rol === 'trabajador') {
-        // Create 'trabajador' role if it doesn't exist? 
-        // Better to assume roles should exist. 
-        // But for safety let's try to find 'TRABAJADOR' (uppercase usually) or whatever the convention is.
-        // bootstrap.js created 'ADMIN'. Let's see if there are other roles.
-        // For now, let's just try to find by name.
+        
     }
   }
 

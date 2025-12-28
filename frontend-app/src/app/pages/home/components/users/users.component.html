@@ -136,7 +136,7 @@
           <div class="form-grid">
             <div class="form-group">
               <ion-label position="stacked">Rol Principal <ion-text color="danger">*</ion-text></ion-label>
-              <ion-select formControlName="rol" placeholder="Seleccionar rol" fill="outline" interface="popover">
+              <ion-select formControlName="rol" placeholder="Seleccionar rol" fill="outline" interface="action-sheet">
                 <ion-select-option value="ADMIN">Administrador</ion-select-option>
                 <ion-select-option value="TRABAJADOR">Trabajador</ion-select-option>
               </ion-select>
@@ -145,7 +145,7 @@
 
             <div class="form-group">
               <ion-label position="stacked">Estado de la Cuenta</ion-label>
-              <ion-select formControlName="activo" placeholder="Seleccionar estado" fill="outline" interface="popover">
+              <ion-select formControlName="activo" placeholder="Seleccionar estado" fill="outline" interface="action-sheet">
                 <ion-select-option [value]="true">Activo (Permitir acceso)</ion-select-option>
                 <ion-select-option [value]="false">Inactivo (Bloquear acceso)</ion-select-option>
               </ion-select>
