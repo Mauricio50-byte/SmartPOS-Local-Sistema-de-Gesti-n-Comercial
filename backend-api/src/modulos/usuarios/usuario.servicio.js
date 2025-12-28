@@ -136,16 +136,53 @@ async function crearUsuario(datos) {
 
   // Assign role if provided
   if (datos.rol) {
-    const rol = await prisma.rol.findUnique({ where: { nombre: datos.rol } })
+    const rol = await prisma.rol.findUnique({ 
+      where: { nombre: datos.rol },
+      include: { permisos: true }
+    })
     if (rol) {
+      // 1. Asignar Rol (Como estado inicial / referencia)
       await prisma.usuarioRol.create({
         data: {
           usuarioId: usuario.id,
           rolId: rol.id
         }
       })
+
+      // 2. Asignar Permisos del Rol directamente al Usuario
+      if (rol.permisos && rol.permisos.length > 0) {
+        const permsData = rol.permisos.map(rp => ({
+          usuarioId: usuario.id,
+          permisoId: rp.permisoId
+        }))
+        await prisma.usuarioPermiso.createMany({ data: permsData, skipDuplicates: true })
+      }
+
+      // 3. Asignar Módulos Iniciales según Rol
+      let modulosParaAsignar = []
+      if (datos.rol === 'ADMIN') {
+        // Admin obtiene acceso a todos los módulos activos del negocio
+        if (usuario.negocioId) {
+          const negocioModulos = await prisma.negocioModulo.findMany({
+            where: { negocioId: usuario.negocioId, activo: true },
+            select: { moduloId: true }
+          })
+          modulosParaAsignar = negocioModulos.map(nm => nm.moduloId)
+        }
+      } else if (['TRABAJADOR', 'CAJERO'].includes(datos.rol)) {
+        // Trabajador inicia solo con Dashboard
+        modulosParaAsignar = ['dashboard']
+      }
+
+      if (modulosParaAsignar.length > 0) {
+        await prisma.usuarioModulo.createMany({
+          data: modulosParaAsignar.map(m => ({ usuarioId: usuario.id, moduloId: m })),
+          skipDuplicates: true
+        })
+      }
+
     } else if (datos.rol === 'trabajador') {
-        
+        // Caso fallback si rol minúscula o no existe en DB pero se pasó string
     }
   }
 

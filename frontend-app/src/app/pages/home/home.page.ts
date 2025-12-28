@@ -47,7 +47,8 @@ export class HomePage implements OnInit {
 
   hasPermission(permiso: string): boolean {
     if (!this.currentUser) return false;
-    if (permiso === 'ADMIN') return this.currentUser.adminPorDefecto === true;
+    // Superuser has all permissions implicitly
+    if (this.currentUser.adminPorDefecto === true) return true;
     return this.currentUser.permisos ? this.currentUser.permisos.includes(permiso) : false;
   }
 

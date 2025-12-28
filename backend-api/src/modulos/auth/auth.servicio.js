@@ -51,16 +51,18 @@ async function ingresar({ correo, password }) {
   const ok = await bcrypt.compare(password, usuario.passwordHash)
   if (!ok) throw new Error('Credenciales inválidas')
   const roles = usuario.roles.map(ur => ur.rol.nombre)
-  // Combinar permisos del rol con permisos directos del usuario
-  const permisosRoles = usuario.roles.flatMap(ur => ur.rol.permisos.map(rp => rp.permiso.clave))
+  // YA NO combinar permisos del rol. Solo permisos directos.
+  // El rol es solo un estado inicial.
+  // const permisosRoles = usuario.roles.flatMap(ur => ur.rol.permisos.map(rp => rp.permiso.clave))
   const permisosDirectos = usuario.permisos.map(up => up.permiso.clave)
-  const permisos = Array.from(new Set([...permisosRoles, ...permisosDirectos]))
+  const permisos = Array.from(new Set([...permisosDirectos]))
   const negocioId = usuario.negocioId ?? null
   const adminPorDefecto = String(usuario.correo || '').trim().toLowerCase() === String(ADMIN_CORREO || '').trim().toLowerCase()
   let modulos = []
   if (negocioId) {
     const activos = await obtenerModulosActivosNegocio(negocioId)
-    if (roles.includes('ADMIN') && adminPorDefecto) {
+    // Si es admin por defecto, mantenemos acceso total como respaldo
+    if (adminPorDefecto) {
       modulos = activos
     } else {
       const asignados = Array.isArray(usuario.modulos) ? usuario.modulos.map(m => m.moduloId) : []

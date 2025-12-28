@@ -138,8 +138,30 @@ export class PermissionsModalComponent implements OnInit {
 
   toggleRole(roleName: string) {
     // Radio button behavior: Only one role can be selected at a time
-    if (!this.selectedRoles.includes(roleName)) {
-      this.selectedRoles = [roleName];
+    if (this.selectedRoles.includes(roleName)) return;
+
+    this.selectedRoles = [roleName];
+
+    // Apply Role Permissions Template (Role is Initial State)
+    const role = this.roles.find(r => r.nombre === roleName);
+    if (role && role.permisos) {
+      const rolePerms = role.permisos.map((p: any) => p.permiso.clave);
+      // We replace permissions with the new role's defaults to ensure the state matches the role
+      this.directPermissions = [...rolePerms];
+      
+      // Update Modules based on Role
+      if (roleName === 'ADMIN') {
+          // Admin gets all system modules
+          const sysMods = this.modulosSistema.map(m => m.id);
+          // Keep existing business modules
+          const currentBizMods = this.selectedModules.filter(m => !this.modulosSistema.find(sm => sm.id === m));
+          this.selectedModules = [...new Set([...sysMods, ...currentBizMods])];
+      } else if (['TRABAJADOR', 'CAJERO'].includes(roleName)) {
+          // Worker defaults (Ensure Dashboard)
+          if (!this.selectedModules.includes('dashboard')) {
+             this.selectedModules.push('dashboard');
+          }
+      }
     }
   }
 
@@ -161,15 +183,9 @@ export class PermissionsModalComponent implements OnInit {
   }
 
   isPermissionInherited(permiso: string): boolean {
-    // Check if permission is granted by any selected role
-    for (const roleName of this.selectedRoles) {
-      const role = this.roles.find(r => r.nombre === roleName);
-      if (role && role.permisos) {
-        if (role.permisos.some((p: any) => p.permiso.clave === permiso)) {
-          return true;
-        }
-      }
-    }
+    // Permissions are now fully decoupled from roles.
+    // Roles act as templates, but once applied, permissions are "Direct".
+    // Therefore, we never show permissions as "Inherited" (locked).
     return false;
   }
 
