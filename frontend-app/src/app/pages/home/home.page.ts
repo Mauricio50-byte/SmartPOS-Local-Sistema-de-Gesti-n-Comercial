@@ -52,6 +52,12 @@ export class HomePage implements OnInit {
     return this.currentUser.permisos ? this.currentUser.permisos.includes(permiso) : false;
   }
 
+  hasModule(modulo: string): boolean {
+    if (!this.currentUser) return false;
+    if (this.currentUser.adminPorDefecto === true) return true;
+    return this.currentUser.modulos ? this.currentUser.modulos.includes(modulo) : false;
+  }
+
   checkCurrentViewAccess() {
     // If user loses access to current view, switch to a safe one or dashboard
     if (this.currentView === 'users' && !this.hasPermission('VER_USUARIOS')) {
