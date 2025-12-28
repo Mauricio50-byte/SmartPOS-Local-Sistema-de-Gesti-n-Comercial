@@ -9,7 +9,7 @@ const {
 
 async function registrarRutasDeuda(app) {
     // Listar todas las deudas (con filtros opcionales)
-    app.get('/deudas', { preHandler: [app.autenticar, app.requiereModulo('finanzas')] }, async (req) => {
+    app.get('/deudas', { preHandler: [app.requiereModulo('finanzas'), app.requierePermiso('VER_FINANZAS')] }, async (req) => {
         const { estado, clienteId } = req.query
         const filtro = {}
 
@@ -20,13 +20,13 @@ async function registrarRutasDeuda(app) {
     })
 
     // Obtener deudas de un cliente específico
-    app.get('/deudas/cliente/:clienteId', { preHandler: [app.autenticar, app.requiereModulo('finanzas')] }, async (req) => {
+    app.get('/deudas/cliente/:clienteId', { preHandler: [app.requiereModulo('finanzas'), app.requierePermiso('VER_FINANZAS')] }, async (req) => {
         const clienteId = Number(req.params.clienteId)
         return obtenerDeudasPorCliente(clienteId)
     })
 
     // Obtener una deuda específica
-    app.get('/deudas/:id', { preHandler: [app.autenticar, app.requiereModulo('finanzas')] }, async (req) => {
+    app.get('/deudas/:id', { preHandler: [app.requiereModulo('finanzas'), app.requierePermiso('VER_FINANZAS')] }, async (req) => {
         const id = Number(req.params.id)
         const deuda = await obtenerDeudaPorId(id)
         if (!deuda) {
@@ -37,7 +37,7 @@ async function registrarRutasDeuda(app) {
     })
 
     // Registrar un abono a una deuda
-    app.post('/deudas/:id/abonos', { preHandler: [app.autenticar, app.requiereModulo('finanzas')] }, async (req, res) => {
+    app.post('/deudas/:id/abonos', { preHandler: [app.requiereModulo('finanzas'), app.requierePermiso('REGISTRAR_MOVIMIENTO')] }, async (req, res) => {
         const deudaId = Number(req.params.id)
         const { monto, metodoPago, nota } = req.body
         const usuarioId = req.user?.id
@@ -65,13 +65,13 @@ async function registrarRutasDeuda(app) {
     })
 
     // Obtener historial de abonos de un cliente
-    app.get('/abonos/cliente/:clienteId', { preHandler: [app.autenticar, app.requiereModulo('finanzas')] }, async (req) => {
+    app.get('/abonos/cliente/:clienteId', { preHandler: [app.requiereModulo('finanzas'), app.requierePermiso('VER_FINANZAS')] }, async (req) => {
         const clienteId = Number(req.params.clienteId)
         return obtenerAbonosPorCliente(clienteId)
     })
 
     // Marcar deudas vencidas (tarea programada o manual)
-    app.post('/deudas/marcar-vencidas', { preHandler: [app.autenticar, app.requiereModulo('finanzas')] }, async () => {
+    app.post('/deudas/marcar-vencidas', { preHandler: [app.requiereModulo('finanzas'), app.requierePermiso('REGISTRAR_MOVIMIENTO')] }, async () => {
         return marcarDeudasVencidas()
     })
 }

@@ -1,10 +1,16 @@
 const { prisma } = require('../../infraestructura/bd')
 
 const MODULOS_DISPONIBLES = [
-  { id: 'ventas', nombre: 'Punto de Venta', descripcion: 'Facturación y caja' },
-  { id: 'inventario', nombre: 'Inventario y Productos', descripcion: 'Gestión de productos y stock' },
-  { id: 'clientes', nombre: 'Clientes', descripcion: 'Directorio de clientes' },
-  { id: 'finanzas', nombre: 'Finanzas', descripcion: 'Gastos, deudas y reportes' },
+  { id: 'dashboard', nombre: 'Dashboard', descripcion: 'Métricas y resúmenes generales' },
+  { id: 'ventas', nombre: 'Ventas', descripcion: 'Facturación e historial de ventas' },
+  { id: 'inventario', nombre: 'Productos (Inventario)', descripcion: 'Gestión de productos, stock y categorías' },
+  { id: 'clientes', nombre: 'Clientes', descripcion: 'Gestión de clientes y su historial' },
+  { id: 'finanzas', nombre: 'Finanzas', descripcion: 'Ingresos, gastos, caja y balances' },
+  { id: 'usuarios', nombre: 'Usuarios', descripcion: 'Administración de cuentas y roles' },
+  { id: 'modulos', nombre: 'Módulos', descripcion: 'Control de módulos del sistema' },
+  { id: 'reportes', nombre: 'Reportes', descripcion: 'Visualización y exportación de reportes' },
+  { id: 'configuracion', nombre: 'Configuración', descripcion: 'Datos del negocio y preferencias' },
+  // Plugins específicos de negocio (opcionales)
   { id: 'ropa', nombre: 'Tienda de Ropa', descripcion: 'Gestión de tallas, colores y colecciones' },
   { id: 'alimentos', nombre: 'Alimentos y Perecederos', descripcion: 'Control de vencimientos y lotes' },
   { id: 'servicios', nombre: 'Servicios Profesionales', descripcion: 'Citas, responsables y duración' },

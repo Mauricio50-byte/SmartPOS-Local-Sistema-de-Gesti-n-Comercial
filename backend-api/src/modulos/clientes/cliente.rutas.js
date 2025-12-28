@@ -10,13 +10,13 @@ const {
 
 async function registrarRutasCliente(app) {
   // Listar todos los clientes
-  app.get('/clientes', { preHandler: [app.requiereModulo('clientes')] }, async (req, res) => {
+  app.get('/clientes', { preHandler: [app.requiereModulo('clientes'), app.requierePermiso('VER_CLIENTES')] }, async (req, res) => {
     const datos = await listarClientes()
     return res.send(datos)
   })
 
   // Obtener un cliente por ID
-  app.get('/clientes/:id', { preHandler: [app.requiereModulo('clientes')] }, async (req, res) => {
+  app.get('/clientes/:id', { preHandler: [app.requiereModulo('clientes'), app.requierePermiso('VER_CLIENTES')] }, async (req, res) => {
     const id = Number(req.params.id)
     const dato = await obtenerClientePorId(id)
     if (!dato) {
@@ -27,7 +27,7 @@ async function registrarRutasCliente(app) {
   })
 
   // Obtener estado de cuenta de un cliente (deudas, abonos, crédito disponible)
-  app.get('/clientes/:id/estado-cuenta', { preHandler: [app.autenticar, app.requiereModulo('clientes')] }, async (req, res) => {
+  app.get('/clientes/:id/estado-cuenta', { preHandler: [app.requiereModulo('clientes'), app.requierePermiso('VER_CLIENTES')] }, async (req, res) => {
     const id = Number(req.params.id)
     try {
       const estadoCuenta = await obtenerEstadoCuentaCliente(id)
@@ -39,7 +39,7 @@ async function registrarRutasCliente(app) {
   })
 
   // Validar crédito disponible de un cliente
-  app.post('/clientes/:id/validar-credito', { preHandler: [app.autenticar, app.requiereModulo('clientes')] }, async (req, res) => {
+  app.post('/clientes/:id/validar-credito', { preHandler: [app.requiereModulo('clientes'), app.requierePermiso('VER_CLIENTES')] }, async (req, res) => {
     const clienteId = Number(req.params.id)
     const { monto } = req.body
 
@@ -58,7 +58,7 @@ async function registrarRutasCliente(app) {
   })
 
   // Crear un nuevo cliente
-  app.post('/clientes', { preHandler: [app.requierePermiso('GESTION_CLIENTES'), app.requiereModulo('clientes')] }, async (req, res) => {
+  app.post('/clientes', { preHandler: [app.requiereModulo('clientes'), app.requierePermiso('CREAR_CLIENTE')] }, async (req, res) => {
     const cuerpo = req.body
     try {
       const creado = await crearCliente(cuerpo)
@@ -71,7 +71,7 @@ async function registrarRutasCliente(app) {
   })
 
   // Actualizar un cliente
-  app.put('/clientes/:id', { preHandler: [app.requierePermiso('GESTION_CLIENTES'), app.requiereModulo('clientes')] }, async (req, res) => {
+  app.put('/clientes/:id', { preHandler: [app.requiereModulo('clientes'), app.requierePermiso('EDITAR_CLIENTE')] }, async (req, res) => {
     const id = Number(req.params.id)
     const cuerpo = req.body
     const actualizado = await actualizarCliente(id, cuerpo)
@@ -79,7 +79,7 @@ async function registrarRutasCliente(app) {
   })
 
   // Eliminar un cliente
-  app.delete('/clientes/:id', { preHandler: [app.requierePermiso('GESTION_CLIENTES'), app.requiereModulo('clientes')] }, async (req, res) => {
+  app.delete('/clientes/:id', { preHandler: [app.requiereModulo('clientes'), app.requierePermiso('ELIMINAR_CLIENTE')] }, async (req, res) => {
     const id = Number(req.params.id)
     try {
       const eliminado = await eliminarCliente(id)

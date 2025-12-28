@@ -4,18 +4,66 @@ const bcrypt = require('bcryptjs')
 
 async function asegurarPermisosYAdmin() {
   const permisosDefinidos = [
-    { clave: 'GESTION_USUARIOS', descripcion: 'Gestión completa de usuarios (crear, editar, eliminar)' },
-    { clave: 'CREAR_ADMIN', descripcion: 'Capacidad para crear administradores' },
-    { clave: 'CREAR_ROL', descripcion: 'Capacidad para crear nuevos roles en el sistema' },
-    { clave: 'EDITAR_ROL', descripcion: 'Capacidad para modificar roles existentes y sus permisos' },
-    { clave: 'ASIGNAR_PERMISOS', descripcion: 'Capacidad para asignar permisos específicos a usuarios' },
-    { clave: 'VENDER', descripcion: 'Acceso al módulo de punto de venta para realizar ventas' },
-    { clave: 'GESTION_INVENTARIO', descripcion: 'Control de stock, productos y categorías' },
-    { clave: 'GESTION_CLIENTES', descripcion: 'Administración de la base de datos de clientes' },
-    { clave: 'VER_REPORTES', descripcion: 'Acceso a reportes de ventas y estadísticas' },
-    { clave: 'GESTION_FINANZAS', descripcion: 'Acceso a módulos financieros, gastos y deudas' },
-    { clave: 'GESTION_MODULOS', descripcion: 'Capacidad para activar/desactivar y configurar módulos del sistema' },
-    { clave: 'ADMIN', descripcion: 'Acceso total al sistema sin restricciones' }
+    // Ventas
+    { clave: 'VER_VENTAS', descripcion: 'Ver historial y lista de ventas' },
+    { clave: 'CREAR_VENTA', descripcion: 'Registrar nuevas ventas y facturar' },
+    { clave: 'EDITAR_VENTA', descripcion: 'Modificar ventas existentes' },
+    { clave: 'ANULAR_VENTA', descripcion: 'Anular ventas realizadas' },
+    { clave: 'REPORTES_VENTAS', descripcion: 'Ver reportes específicos de ventas' },
+    { clave: 'VENDER', descripcion: 'Acceso general al punto de venta' }, // Deprecado, mantener por compatibilidad o migrar
+
+    // Inventario (Productos)
+    { clave: 'VER_INVENTARIO', descripcion: 'Ver lista de productos y stock' },
+    { clave: 'CREAR_PRODUCTO', descripcion: 'Crear nuevos productos' },
+    { clave: 'EDITAR_PRODUCTO', descripcion: 'Editar información de productos' },
+    { clave: 'ELIMINAR_PRODUCTO', descripcion: 'Eliminar productos del sistema' },
+    { clave: 'AJUSTAR_STOCK', descripcion: 'Realizar ajustes manuales de inventario' },
+    { clave: 'GESTION_INVENTARIO', descripcion: 'Gestión completa de inventario' }, // Deprecado
+
+    // Clientes
+    { clave: 'VER_CLIENTES', descripcion: 'Ver lista de clientes' },
+    { clave: 'CREAR_CLIENTE', descripcion: 'Registrar nuevos clientes' },
+    { clave: 'EDITAR_CLIENTE', descripcion: 'Modificar datos de clientes' },
+    { clave: 'ELIMINAR_CLIENTE', descripcion: 'Eliminar clientes' },
+    { clave: 'GESTION_CLIENTES', descripcion: 'Gestión completa de clientes' }, // Deprecado
+
+    // Finanzas
+    { clave: 'VER_FINANZAS', descripcion: 'Ver información financiera general' },
+    { clave: 'REGISTRAR_MOVIMIENTO', descripcion: 'Registrar gastos o ingresos manuales' },
+    { clave: 'CERRAR_CAJA', descripcion: 'Realizar cierres de caja' },
+    { clave: 'GESTION_FINANZAS', descripcion: 'Gestión completa de finanzas' }, // Deprecado
+
+    // Usuarios
+    { clave: 'VER_USUARIOS', descripcion: 'Ver lista de usuarios' },
+    { clave: 'CREAR_USUARIO', descripcion: 'Crear nuevos usuarios' },
+    { clave: 'EDITAR_USUARIO', descripcion: 'Editar usuarios existentes' },
+    { clave: 'ELIMINAR_USUARIO', descripcion: 'Eliminar usuarios' },
+    { clave: 'ACTIVAR_USUARIO', descripcion: 'Activar o desactivar usuarios' },
+    { clave: 'ASIGNAR_ROLES', descripcion: 'Asignar roles a usuarios' },
+    
+    // Roles (Sub-módulo de Usuarios)
+    { clave: 'VER_ROLES', descripcion: 'Ver roles disponibles' },
+    { clave: 'CREAR_ROL', descripcion: 'Crear nuevos roles' },
+    { clave: 'EDITAR_ROL', descripcion: 'Editar roles y permisos' },
+    
+    { clave: 'GESTION_USUARIOS', descripcion: 'Gestión completa de usuarios' }, // Deprecado
+
+    // Módulos
+    { clave: 'GESTION_MODULOS', descripcion: 'Activar/desactivar módulos del sistema' },
+
+    // Reportes
+    { clave: 'VER_REPORTES', descripcion: 'Visualizar reportes del sistema' },
+    { clave: 'EXPORTAR_REPORTES', descripcion: 'Exportar datos y reportes' },
+
+    // Configuración
+    { clave: 'VER_CONFIGURACION', descripcion: 'Ver configuración del negocio' },
+    { clave: 'EDITAR_CONFIGURACION', descripcion: 'Modificar configuración del negocio' },
+
+    // Dashboard
+    { clave: 'VER_DASHBOARD', descripcion: 'Acceso al dashboard principal' },
+
+    // Admin Global (Legacy/System)
+    { clave: 'ADMIN', descripcion: 'Acceso total al sistema' }
   ]
 
   for (const p of permisosDefinidos) {

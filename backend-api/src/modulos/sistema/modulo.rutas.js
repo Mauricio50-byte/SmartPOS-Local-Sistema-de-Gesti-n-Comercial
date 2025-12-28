@@ -5,19 +5,19 @@ async function registrarRutasModulos(app) {
     return listarCatalogoModulos()
   })
 
-  app.get('/modulos', { preHandler: [app.requierePermiso('GESTION_MODULOS')] }, async (req) => {
+  app.get('/modulos', { preHandler: [app.requierePermiso('GESTION_MODULOS'), app.requiereModulo('modulos')] }, async (req) => {
     const negocioId = req.user?.negocioId || req.query?.negocioId
     return listarModulos(Number(negocioId))
   })
 
-  app.patch('/modulos/:id/toggle', { preHandler: [app.requierePermiso('GESTION_MODULOS')] }, async (req, res) => {
+  app.patch('/modulos/:id/toggle', { preHandler: [app.requierePermiso('GESTION_MODULOS'), app.requiereModulo('modulos')] }, async (req, res) => {
     const { id } = req.params
     const { activo } = req.body
     const negocioId = req.user?.negocioId || req.query?.negocioId
     return toggleModulo(Number(negocioId), id, activo)
   })
 
-  app.put('/modulos/:id/config', { preHandler: [app.requierePermiso('GESTION_MODULOS')] }, async (req, res) => {
+  app.put('/modulos/:id/config', { preHandler: [app.requierePermiso('GESTION_MODULOS'), app.requiereModulo('modulos')] }, async (req, res) => {
     const { id } = req.params
     const { config } = req.body
     return actualizarConfig(id, config)
