@@ -48,11 +48,13 @@ export class PermissionsModalComponent implements OnInit {
 
   ngOnInit() {
     this.authService.getPerfil$().subscribe(p => {
+      console.log('Perfil del actor actual:', p);
       this.actorAdminPorDefecto = p?.adminPorDefecto === true;
       this.actorEsAdmin = Array.isArray(p?.roles) ? p!.roles.includes('ADMIN') : false;
       this.updateVisiblePermissions();
-      if (!this.actorAdminPorDefecto && this.activeTab !== 'roles') {
-        this.activeTab = 'roles';
+      // Si no es admin, no debería estar aquí, pero por si acaso
+      if (!this.actorEsAdmin) {
+        this.dismiss();
       }
     });
     this.loadRoles();
@@ -100,14 +102,7 @@ export class PermissionsModalComponent implements OnInit {
         this.selectedModules = (fullUsuario as any).modulos ? [...(fullUsuario as any).modulos] : [];
         this.loadAvailableModules(fullUsuario.negocioId ?? null);
         this.loading = false;
-        if (!this.actorAdminPorDefecto && this.actorEsAdmin) {
-          const targetRoles = Array.isArray(this.usuario?.roles) ? this.usuario.roles : [];
-          if (!targetRoles.includes('TRABAJADOR')) {
-            this.dismiss();
-            return;
-          }
-          this.activeTab = 'permisos';
-        }
+        // Logic check for editing admins removed as per request to allow full admin control
       },
       error: (error) => {
         console.error('Error loading user details', error);
@@ -210,7 +205,7 @@ export class PermissionsModalComponent implements OnInit {
   }
 
   private updateVisiblePermissions() {
-    if (this.actorAdminPorDefecto) {
+    if (this.actorEsAdmin) {
       this.visiblePermissions = [...this.availablePermissions];
       return;
     }
@@ -229,8 +224,8 @@ export class PermissionsModalComponent implements OnInit {
   async save() {
     if (!this.usuario) return;
     const targetRoles = Array.isArray(this.usuario?.roles) ? this.usuario.roles : [];
-    const actorPuede = this.actorAdminPorDefecto || (this.actorEsAdmin && targetRoles.includes('TRABAJADOR'));
-    if (!actorPuede) { this.dismiss(); return; }
+    // Permitir guardar si es Admin
+    if (!this.actorEsAdmin) { this.dismiss(); return; }
 
     // Confirm critical changes if permissions are being removed or admin role removed
     const isRemovingAdmin = this.usuario.roles?.includes('ADMIN') && !this.selectedRoles.includes('ADMIN');

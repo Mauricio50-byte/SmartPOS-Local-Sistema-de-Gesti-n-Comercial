@@ -129,7 +129,8 @@ async function crearUsuario(datos) {
       nombre: datos.nombre,
       correo: datos.correo,
       passwordHash,
-      activo: datos.activo !== undefined ? datos.activo : true
+      activo: datos.activo !== undefined ? datos.activo : true,
+      negocioId: datos.negocioId ? Number(datos.negocioId) : null
     }
   })
 

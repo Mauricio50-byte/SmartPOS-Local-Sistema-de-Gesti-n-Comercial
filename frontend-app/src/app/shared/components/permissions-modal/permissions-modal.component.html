@@ -9,13 +9,13 @@
   </ion-toolbar>
   <ion-toolbar>
     <ion-segment [(ngModel)]="activeTab" value="roles">
-      <ion-segment-button value="roles" *ngIf="actorAdminPorDefecto">
+      <ion-segment-button value="roles" *ngIf="actorEsAdmin">
         <ion-label>Roles</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="permisos" *ngIf="actorAdminPorDefecto || actorEsAdmin">
+      <ion-segment-button value="permisos" *ngIf="actorEsAdmin">
         <ion-label>Permisos Extra</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="modulos" *ngIf="actorAdminPorDefecto && usuario && usuario.negocioId">
+      <ion-segment-button value="modulos" *ngIf="actorEsAdmin && usuario && usuario.negocioId">
         <ion-label>Módulos</ion-label>
       </ion-segment-button>
     </ion-segment>
@@ -39,7 +39,7 @@
   </div>
 
   <!-- Roles Tab -->
-  <div *ngIf="actorAdminPorDefecto" [hidden]="activeTab !== 'roles'" class="roles-section">
+  <div *ngIf="actorEsAdmin" [hidden]="activeTab !== 'roles'" class="roles-section">
     <h4>Asignar Roles</h4>
     <p class="helper-text">Seleccione los roles para definir el nivel de acceso principal del usuario. Los roles incluyen un conjunto predefinido de permisos.</p>
     
@@ -80,7 +80,7 @@
   </div>
 
   <!-- Permissions Tab -->
-  <div *ngIf="actorAdminPorDefecto || actorEsAdmin" [hidden]="activeTab !== 'permisos'" class="permisos-section">
+  <div *ngIf="actorEsAdmin" [hidden]="activeTab !== 'permisos'" class="permisos-section">
     <h4>Permisos Individuales (Excepciones)</h4>
     <p class="helper-text">Otorgue permisos específicos adicionales a los que ya proporciona el rol. Los permisos heredados del rol no se pueden desactivar aquí.</p>
 
@@ -116,7 +116,7 @@
   </div>
 
   <!-- Modules Tab -->
-  <div *ngIf="actorAdminPorDefecto && usuario && usuario.negocioId" [hidden]="activeTab !== 'modulos'" class="permisos-section">
+  <div *ngIf="(actorAdminPorDefecto || actorEsAdmin) && usuario" [hidden]="activeTab !== 'modulos'" class="permisos-section">
     <h4>Módulos Activos</h4>
     <p class="helper-text">Habilite los módulos operativos a los que este usuario tendrá acceso.</p>
 

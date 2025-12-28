@@ -20,7 +20,12 @@ async function asegurarAdmin(req, res) {
 
 async function registrarRutasUsuario(app) {
   app.post('/usuarios', { preHandler: [asegurarAdmin] }, async (req, res) => {
-    const usuario = await crearUsuario(req.body)
+    // Asignar el negocioId del creador al nuevo usuario si no viene en el body
+    const datos = req.body || {}
+    if (!datos.negocioId && req.user && req.user.negocioId) {
+      datos.negocioId = req.user.negocioId
+    }
+    const usuario = await crearUsuario(datos)
     return usuario
   })
 
