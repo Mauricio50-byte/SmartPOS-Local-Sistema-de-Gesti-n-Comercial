@@ -1,0 +1,85 @@
+{
+  "role": "system",
+  "objective": "Analizar integralmente el proyecto y eliminar todo el código basura o no utilizado sin afectar la funcionalidad existente.",
+  "scope": {
+    "layers": [
+      "frontend",
+      "backend"
+    ],
+    "include": [
+      "código fuente",
+      "estilos CSS/SCSS",
+      "componentes",
+      "servicios",
+      "controladores",
+      "modelos",
+      "rutas",
+      "helpers",
+      "configuraciones"
+    ]
+  },
+  "analysis_tasks": {
+    "static_analysis": true,
+    "dependency_analysis": true,
+    "reference_tracking": true
+  },
+  "cleanup_rules": {
+    "remove_if": [
+      "archivos no importados en ninguna parte del proyecto",
+      "funciones, métodos o clases que nunca se llaman",
+      "variables declaradas pero no utilizadas",
+      "componentes frontend que no se renderizan ni se referencian",
+      "servicios backend sin rutas ni consumidores",
+      "estilos CSS o SCSS que no estén aplicados a ningún componente o vista",
+      "comentarios obsoletos o código comentado que ya no tenga propósito",
+      "imports innecesarios"
+    ],
+    "do_not_remove_if": [
+      "código usado dinámicamente (lazy loading, reflection, dynamic imports)",
+      "código requerido por configuración externa",
+      "código utilizado por variables de entorno",
+      "código utilizado en tests, migraciones o seeds",
+      "código marcado explícitamente como necesario"
+    ]
+  },
+  "frontend_guidelines": {
+    "frameworks_supported": [
+      "Angular",
+      "React",
+      "Ionic",
+      "Vue"
+    ],
+    "style_cleanup": {
+      "remove_unused_selectors": true,
+      "remove_unused_files": true,
+      "preserve_global_styles": true
+    }
+  },
+  "backend_guidelines": {
+    "languages_supported": [
+      "Java",
+      "Node.js",
+      "PHP",
+      "Python"
+    ],
+    "safe_cleanup": true,
+    "preserve_api_contracts": true
+  },
+  "output_requirements": {
+    "generate_report": true,
+    "report_format": "markdown",
+    "report_contents": [
+      "archivos eliminados",
+      "código eliminado",
+      "razón de eliminación",
+      "posibles riesgos detectados",
+      "recomendaciones de optimización"
+    ]
+  },
+  "execution_constraints": {
+    "do_not_break_build": true,
+    "do_not_change_business_logic": true,
+    "do_not_modify_public_interfaces": true
+  },
+  "final_instruction": "Realiza los cambios de forma segura, documenta todo lo eliminado y asegúrate de que el proyecto compile y funcione correctamente después de la limpieza."
+}

@@ -65,6 +65,22 @@ async function iniciar() {
     res.code(403); 
     throw new Error('No autorizado') 
   })
+
+  app.decorate('requiereModulo', (moduloId) => async (req, res) => {
+    await req.jwtVerify();
+    const roles = req.user?.roles || [];
+    const adminPorDefecto = req.user?.adminPorDefecto === true
+    
+    // El administrador principal tiene acceso a todos los módulos activos del negocio
+    if (roles.includes('ADMIN') && adminPorDefecto) return;
+
+    const modulos = req.user?.modulos || [];
+    if (!modulos.includes(moduloId)) {
+        res.code(403);
+        throw new Error(`Acceso denegado al módulo: ${moduloId}`);
+    }
+  })
+
   app.decorate('prisma', prisma)
 
   app.get('/salud', async () => ({ ok: true }))

@@ -2,7 +2,7 @@ const gastoServicio = require('./gasto.servicio')
 
 async function registrarRutasGasto(app) {
     // Listar gastos
-    app.get('/gastos', { preHandler: [app.autenticar] }, async (request, reply) => {
+    app.get('/gastos', { preHandler: [app.autenticar, app.requiereModulo('finanzas')] }, async (request, reply) => {
         try {
             const gastos = await gastoServicio.listarGastos(request.query)
             return gastos
@@ -12,7 +12,7 @@ async function registrarRutasGasto(app) {
     })
 
     // Obtener resumen financiero
-    app.get('/gastos/resumen', { preHandler: [app.autenticar] }, async (request, reply) => {
+    app.get('/gastos/resumen', { preHandler: [app.autenticar, app.requiereModulo('finanzas')] }, async (request, reply) => {
         try {
             const resumen = await gastoServicio.obtenerResumenFinanzas()
             return resumen
@@ -22,7 +22,7 @@ async function registrarRutasGasto(app) {
     })
 
     // Obtener gasto por ID
-    app.get('/gastos/:id', { preHandler: [app.autenticar] }, async (request, reply) => {
+    app.get('/gastos/:id', { preHandler: [app.autenticar, app.requiereModulo('finanzas')] }, async (request, reply) => {
         try {
             const gasto = await gastoServicio.obtenerGastoPorId(request.params.id)
             if (!gasto) return reply.code(404).send({ error: 'Gasto no encontrado' })
@@ -33,7 +33,7 @@ async function registrarRutasGasto(app) {
     })
 
     // Crear nuevo gasto
-    app.post('/gastos', { preHandler: [app.autenticar] }, async (request, reply) => {
+    app.post('/gastos', { preHandler: [app.autenticar, app.requiereModulo('finanzas')] }, async (request, reply) => {
         try {
             const gasto = await gastoServicio.crearGasto(request.body)
             return gasto
@@ -43,7 +43,7 @@ async function registrarRutasGasto(app) {
     })
 
     // Registrar pago a gasto
-    app.post('/gastos/:id/pagos', { preHandler: [app.autenticar] }, async (request, reply) => {
+    app.post('/gastos/:id/pagos', { preHandler: [app.autenticar, app.requiereModulo('finanzas')] }, async (request, reply) => {
         try {
             const { id } = request.params
             const datos = { ...request.body, gastoId: id, usuarioId: request.user?.id }

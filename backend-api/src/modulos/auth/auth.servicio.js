@@ -62,12 +62,10 @@ async function ingresar({ correo, password }) {
     const activos = await obtenerModulosActivosNegocio(negocioId)
     if (roles.includes('ADMIN') && adminPorDefecto) {
       modulos = activos
-    } else if (roles.includes('ADMIN')) {
-      const asignados = Array.isArray(usuario.modulos) ? usuario.modulos.map(m => m.moduloId) : []
-      modulos = asignados.length ? asignados : activos.slice(0, 3)
     } else {
       const asignados = Array.isArray(usuario.modulos) ? usuario.modulos.map(m => m.moduloId) : []
-      modulos = asignados.length ? asignados : activos
+      // Solo permitir módulos asignados que también estén activos en el negocio
+      modulos = asignados.filter(m => activos.includes(m))
     }
   }
   return { usuario, roles, permisos, negocioId, modulos, adminPorDefecto }

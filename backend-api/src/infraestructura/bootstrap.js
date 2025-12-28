@@ -40,11 +40,11 @@ async function asegurarPermisosYAdmin() {
 
   const permisos = await prisma.permiso.findMany({})
   const existentes = await prisma.rolPermiso.findMany({ where: { rolId: adminRol.id } })
-  const ya = new Set(existentes.map(rp => `${rp.rolId}-${rp.permisoId}`))
-  for (const p of permisos) {
-    const k = `${adminRol.id}-${p.id}`
-    if (!ya.has(k)) {
-      await prisma.rolPermiso.create({ data: { rolId: adminRol.id, permisoId: p.id } })
+  
+  // Solo asignar permisos por defecto si el rol no tiene ninguno (primera vez)
+  if (existentes.length === 0) {
+    for (const p of permisos) {
+        await prisma.rolPermiso.create({ data: { rolId: adminRol.id, permisoId: p.id } })
     }
   }
 

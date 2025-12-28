@@ -7,11 +7,12 @@ async function asegurarAdmin(req, res) {
   // Vamos a verificar permisos extendidos
   const roles = req.user?.roles || []
   const permisos = req.user?.permisos || []
+  const adminPorDefecto = req.user?.adminPorDefecto === true
   
-  // ADMIN tiene acceso total
-  if (roles.includes('ADMIN')) return
+  // ADMIN principal tiene acceso total
+  if (roles.includes('ADMIN') && adminPorDefecto) return
 
-  // Si no es ADMIN, debe tener permiso explicito
+  // Si no es ADMIN principal, debe tener permiso explicito
   if (!permisos.includes('GESTION_USUARIOS')) { 
       res.code(403)
       throw new Error('No autorizado') 

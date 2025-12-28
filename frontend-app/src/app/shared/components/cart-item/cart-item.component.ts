@@ -26,11 +26,4 @@ export class CartItemComponent {
             this.updateQuantity.emit({ item: this.item, quantity: this.item.quantity - 1 });
         }
     }
-
-    onQuantityChange(event: any) {
-        const qty = parseInt(event.target.value, 10);
-        if (!isNaN(qty) && qty > 0) {
-            this.updateQuantity.emit({ item: this.item, quantity: qty });
-        }
-    }
 }

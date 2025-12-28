@@ -1,6 +1,10 @@
 const { prisma } = require('../../infraestructura/bd')
 
 const MODULOS_DISPONIBLES = [
+  { id: 'ventas', nombre: 'Punto de Venta', descripcion: 'Facturación y caja' },
+  { id: 'inventario', nombre: 'Inventario y Productos', descripcion: 'Gestión de productos y stock' },
+  { id: 'clientes', nombre: 'Clientes', descripcion: 'Directorio de clientes' },
+  { id: 'finanzas', nombre: 'Finanzas', descripcion: 'Gastos, deudas y reportes' },
   { id: 'ropa', nombre: 'Tienda de Ropa', descripcion: 'Gestión de tallas, colores y colecciones' },
   { id: 'alimentos', nombre: 'Alimentos y Perecederos', descripcion: 'Control de vencimientos y lotes' },
   { id: 'servicios', nombre: 'Servicios Profesionales', descripcion: 'Citas, responsables y duración' },
