@@ -85,11 +85,28 @@ export class UsersComponent implements OnInit {
         delete nuevoUsuario.passwordHash; // Remove the field name used in form
 
         this.usuarioService.createUsuario(nuevoUsuario).subscribe({
-          next: (usuario: Usuario) => {
+          next: async (usuario: Usuario) => {
             console.log('Usuario creado', usuario);
             this.getUsuarios();
             this.cerrarFormulario();
-            this.mostrarAlerta('Éxito', 'Usuario creado correctamente');
+            
+            const alert = await this.alertController.create({
+              header: 'Usuario Creado',
+              message: 'El usuario ha sido registrado exitosamente. ¿Desea configurar sus permisos y módulos ahora?',
+              buttons: [
+                {
+                  text: 'Más tarde',
+                  role: 'cancel'
+                },
+                {
+                  text: 'Configurar Ahora',
+                  handler: () => {
+                    this.gestionarPermisos(usuario);
+                  }
+                }
+              ]
+            });
+            await alert.present();
           },
           error: (error: any) => {
             console.error('Error creando usuario', error);
@@ -174,6 +191,7 @@ export class UsersComponent implements OnInit {
   async gestionarPermisos(usuario: Usuario) {
     const modal = await this.modalController.create({
       component: PermissionsModalComponent,
+      cssClass: 'permissions-modal-large',
       componentProps: {
         usuario: usuario
       }
