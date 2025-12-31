@@ -1,9 +1,9 @@
 const hostname = window.location.hostname;
-const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
-const apiUrl = isLocalhost ? 'http://localhost:3000' : `http://${hostname}:3000`;
 
 export const environment = {
   production: true,
-  apiUrl: apiUrl,
+  // Usar ruta relativa para que funcione tanto en localhost:3000 como en Cloudflare (https)
+  // Al estar vacío, las peticiones irán a /auth, /ventas, etc. del mismo origen.
+  apiUrl: '', 
   VAPID_PUBLIC_KEY: ''
 };

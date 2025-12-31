@@ -73,7 +73,7 @@ echo ========================================================
 echo.
 
 REM Ejecutar el tunel
-cloudflared.exe tunnel --url http://localhost:3000
+cloudflared.exe tunnel --protocol http2 --url http://localhost:3000
 
 REM Si cloudflared se cierra, pausamos para ver el error
 echo.
