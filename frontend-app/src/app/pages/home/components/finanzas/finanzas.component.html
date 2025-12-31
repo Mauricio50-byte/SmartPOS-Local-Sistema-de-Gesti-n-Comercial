@@ -6,6 +6,12 @@
 
   <div class="segments-container">
     <ion-segment [value]="segment" (ionChange)="segmentChanged($event)" color="tertiary">
+      <ion-segment-button value="caja">
+        <ion-label>
+          <ion-icon name="file-tray-full-outline"></ion-icon>
+          Caja Diaria
+        </ion-label>
+      </ion-segment-button>
       <ion-segment-button value="por-cobrar">
         <ion-label>
           <ion-icon name="wallet-outline"></ion-icon>
@@ -22,6 +28,10 @@
   </div>
 
   <div class="finanzas-content">
+    <div *ngIf="segment === 'caja'" class="fade-in">
+      <app-caja></app-caja>
+    </div>
+
     <div *ngIf="segment === 'por-cobrar'" class="fade-in">
       <app-cuentas-por-cobrar></app-cuentas-por-cobrar>
     </div>

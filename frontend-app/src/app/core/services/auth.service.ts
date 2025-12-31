@@ -67,6 +67,17 @@ export class AuthService implements OnDestroy {
 
   getPerfil$(): Observable<UsuarioPerfil | null> { return this.perfil$.asObservable(); }
 
+  hasPermission(clave: string): boolean {
+    const perfil = this.perfil$.value;
+    if (!perfil) return false;
+    
+    // Admin global
+    if (perfil.adminPorDefecto && perfil.roles?.includes('ADMIN')) return true;
+    
+    // Permiso explícito
+    return perfil.permisos?.includes(clave) || false;
+  }
+
   getRememberedEmail(): string { return localStorage.getItem(this.rememberKey) || ''; }
 
   setToken(token: string): void {

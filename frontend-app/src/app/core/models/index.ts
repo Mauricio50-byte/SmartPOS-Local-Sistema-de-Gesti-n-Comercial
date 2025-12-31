@@ -4,6 +4,7 @@ export * from './producto';
 export * from './cliente';
 export * from './detalle-venta';
 export * from './venta';
+export * from './caja';
 export * from './rol';
 export * from './permiso';
 export * from './deuda';

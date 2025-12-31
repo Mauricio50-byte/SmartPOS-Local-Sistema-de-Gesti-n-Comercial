@@ -82,6 +82,28 @@ async function registrarPagoGasto(datos) {
         const nuevoSaldo = gasto.saldoPendiente - monto
         const nuevoEstado = nuevoSaldo <= 0 ? 'PAGADO' : gasto.estado
 
+        // --- INTEGRACIÓN CAJA ---
+        if (usuarioId) {
+             const cajaAbierta = await tx.caja.findFirst({
+                 where: { usuarioId: Number(usuarioId), estado: 'ABIERTA' }
+             })
+             if (cajaAbierta) {
+                 await tx.movimientoCaja.create({
+                     data: {
+                         cajaId: cajaAbierta.id,
+                         usuarioId: Number(usuarioId),
+                         tipo: 'PAGO_GASTO',
+                         metodoPago: metodoPago, // 'EFECTIVO', 'TRANSFERENCIA', etc.
+                         monto: monto,
+                         descripcion: `Pago a gasto: ${gasto.concepto} (${metodoPago})`,
+                         gastoId: gasto.id,
+                         fecha: new Date()
+                     }
+                 })
+             }
+        }
+        // ------------------------
+
         // Actualizar el gasto
         const gastoActualizado = await tx.gasto.update({
             where: { id: parseInt(gastoId) },

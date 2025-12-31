@@ -52,7 +52,10 @@ async function asegurarPermisosYAdmin() {
     finanzas: [
       { clave: 'VER_FINANZAS', descripcion: 'Ver información financiera general' },
       { clave: 'REGISTRAR_MOVIMIENTO', descripcion: 'Registrar gastos o ingresos manuales' },
-      { clave: 'CERRAR_CAJA', descripcion: 'Realizar cierres de caja' }
+      { clave: 'ABRIR_CAJA', descripcion: 'Abrir caja diaria' },
+      { clave: 'CERRAR_CAJA', descripcion: 'Realizar cierres de caja' },
+      { clave: 'VER_HISTORIAL_CAJA', descripcion: 'Ver historial de aperturas y cierres' },
+      { clave: 'VER_ESTADISTICAS_CAJA', descripcion: 'Ver estadísticas de flujo de caja' }
     ],
     usuarios: [
       { clave: 'VER_USUARIOS', descripcion: 'Ver lista de usuarios' },

@@ -238,6 +238,30 @@ async function crearVenta(payload) {
       }
     }
 
+    // --- INTEGRACIÓN CAJA ---
+    // Registrar cualquier venta en la caja abierta del usuario, independientemente del método de pago
+    if (montoPagadoValidado > 0) {
+      const cajaAbierta = await tx.caja.findFirst({
+        where: { usuarioId: Number(usuarioId), estado: 'ABIERTA' }
+      })
+
+      if (cajaAbierta) {
+        await tx.movimientoCaja.create({
+          data: {
+            cajaId: cajaAbierta.id,
+            usuarioId: Number(usuarioId),
+            tipo: 'VENTA',
+            metodoPago: metodoPago, // 'EFECTIVO', 'TRANSFERENCIA', etc.
+            monto: montoPagadoValidado,
+            descripcion: `Venta #${venta.id} (${metodoPago})`,
+            ventaId: venta.id,
+            fecha: new Date()
+          }
+        })
+      }
+    }
+    // ------------------------
+
     // Retornar solo el ID de la venta creada para salir de la transacción
     return venta.id
   })
