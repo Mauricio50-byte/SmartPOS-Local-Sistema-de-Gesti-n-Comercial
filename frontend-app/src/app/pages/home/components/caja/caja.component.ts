@@ -17,6 +17,7 @@ export class CajaComponent implements OnInit {
   caja: Caja | null = null;
   loading = false;
   movimientos: MovimientoCaja[] = [];
+  saldoTransferencia = 0;
 
   constructor(
     private cajaService: CajaService,
@@ -50,6 +51,7 @@ export class CajaComponent implements OnInit {
         this.caja = data;
         if (this.caja && this.caja.movimientos) {
             this.movimientos = this.caja.movimientos;
+            this.calcularSaldoTransferencia();
         }
         this.loading = false;
       },
@@ -57,9 +59,19 @@ export class CajaComponent implements OnInit {
         // 404 significa no hay caja abierta, lo cual es normal
         this.caja = null;
         this.movimientos = [];
+        this.saldoTransferencia = 0;
         this.loading = false;
       }
     });
+  }
+
+  calcularSaldoTransferencia() {
+    this.saldoTransferencia = this.movimientos
+      .filter(m => m.metodoPago === 'TRANSFERENCIA')
+      .reduce((acc, m) => {
+        const isIngreso = m.tipo.includes('INGRESO') || m.tipo.includes('VENTA') || m.tipo.includes('ABONO');
+        return isIngreso ? acc + Number(m.monto) : acc - Number(m.monto);
+      }, 0);
   }
 
   async abrirCaja() {

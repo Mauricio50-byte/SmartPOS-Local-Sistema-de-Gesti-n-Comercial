@@ -77,7 +77,8 @@ export class ReportesService {
 
         const cat = product.categoria || product.tipo || 'General';
         const qty = item.cantidad || 1;
-        const itemRevenue = Number(item.total) || 0;
+        // Prioritize subtotal, then calculated total, then explicit total
+        const itemRevenue = Number(item.subtotal) || (Number(item.precioUnitario) * qty) || Number(item.total) || 0;
         const unitCost = product.precioCosto || 0;
         const itemCost = unitCost * qty;
 

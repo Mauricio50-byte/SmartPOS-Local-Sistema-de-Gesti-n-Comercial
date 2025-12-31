@@ -42,6 +42,7 @@
               <ion-card-subtitle>Saldo Total</ion-card-subtitle>
               <ion-card-title>{{ caja.resumen?.saldoActual | currency }}</ion-card-title>
               <p class="small-text">Efectivo: {{ caja.resumen?.saldoEfectivo | currency }}</p>
+              <p class="small-text">Transferencias: {{ saldoTransferencia | currency }}</p>
             </ion-card-header>
           </ion-card>
         </ion-col>
