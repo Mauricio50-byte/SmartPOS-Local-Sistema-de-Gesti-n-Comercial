@@ -58,7 +58,8 @@
           <ion-label>Reportes</ion-label>
         </ion-item>
 
-        <ion-item *ngIf="hasModule('configuracion') || hasPermission('VER_CONFIGURACION')" button title="Configuración" aria-label="Configuración">
+        <ion-item *ngIf="hasModule('configuracion') || hasPermission('VER_CONFIGURACION')" button [class.active]="currentView === 'configuracion'"
+          (click)="setView('configuracion')" title="Configuración" aria-label="Configuración">
           <ion-icon slot="start" name="settings-outline"></ion-icon>
           <ion-label>Configuración</ion-label>
         </ion-item>
@@ -126,6 +127,7 @@
       <app-modulos *ngIf="currentView === 'modulos'"></app-modulos>
       <app-finanzas *ngIf="currentView === 'finanzas'"></app-finanzas>
       <app-reportes *ngIf="currentView === 'reportes'"></app-reportes>
+      <app-configuracion *ngIf="currentView === 'configuracion'"></app-configuracion>
     </div>
 
     <div class="mobile-tabbar" role="tablist" aria-label="Navegación inferior">
@@ -172,7 +174,8 @@
         <span>Finanzas</span>
       </button>
 
-      <button class="item" *ngIf="hasModule('configuracion') || hasPermission('ADMIN')" role="tab">
+      <button class="item" *ngIf="hasModule('configuracion') || hasPermission('ADMIN')" role="tab"
+        [class.active]="currentView === 'configuracion'" (click)="setView('configuracion')" [attr.aria-selected]="currentView === 'configuracion'">
         <ion-icon name="settings-outline"></ion-icon>
         <span>Config.</span>
       </button>

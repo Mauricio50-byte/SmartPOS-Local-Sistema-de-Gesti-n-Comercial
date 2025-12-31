@@ -23,6 +23,7 @@ import { BaseChartDirective } from 'ng2-charts';
 import { CategoryDistributionComponent } from './components/dashboard/components/category-distribution/category-distribution.component';
 import { TopCustomersComponent } from './components/dashboard/components/top-customers/top-customers.component';
 import { PaymentDistributionComponent } from './components/dashboard/components/payment-distribution/payment-distribution.component';
+import { ConfiguracionComponent } from './components/configuracion/configuracion.component';
 
 @NgModule({
   imports: [
@@ -51,7 +52,8 @@ import { PaymentDistributionComponent } from './components/dashboard/components/
     ModulosComponent,
     CategoryDistributionComponent,
     TopCustomersComponent,
-    PaymentDistributionComponent
+    PaymentDistributionComponent,
+    ConfiguracionComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

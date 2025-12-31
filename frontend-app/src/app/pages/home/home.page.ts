@@ -6,7 +6,7 @@ import { UsuarioPerfil } from '../../core/models';
 import { ModalController } from '@ionic/angular';
 import { ConexionQrComponent } from '../../shared/components/conexion-qr/conexion-qr.component';
 
-export type HomeView = 'dashboard' | 'users' | 'ventas' | 'productos' | 'modulos' | 'finanzas' | 'clientes' | 'reportes';
+export type HomeView = 'dashboard' | 'users' | 'ventas' | 'productos' | 'modulos' | 'finanzas' | 'clientes' | 'reportes' | 'configuracion';
 
 @Component({
   selector: 'app-home',
@@ -81,6 +81,9 @@ export class HomePage implements OnInit {
     if (this.currentView === 'reportes' && !this.hasPermission('VER_REPORTES')) {
       this.currentView = 'dashboard';
     }
+    if (this.currentView === 'configuracion' && !this.hasPermission('VER_CONFIGURACION') && !this.hasPermission('ADMIN')) {
+      this.currentView = 'dashboard';
+    }
     // Update title
     this.setView(this.currentView);
   }
@@ -103,6 +106,8 @@ export class HomePage implements OnInit {
       this.pageTitle = 'Gestión Financiera';
     } else if (view === 'reportes') {
       this.pageTitle = 'Informes y Análisis';
+    } else if (view === 'configuracion') {
+      this.pageTitle = 'Configuración del Sistema';
     }
   }
 

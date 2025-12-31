@@ -1,0 +1,32 @@
+.configuracion-container {
+  padding: 16px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.tabs-header {
+  margin-bottom: 20px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+ion-card {
+  margin-top: 0;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+}
+
+.manual-section {
+  h3 {
+    color: var(--ion-color-dark);
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+}
+
+code {
+  background: #f4f5f8;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: monospace;
+}

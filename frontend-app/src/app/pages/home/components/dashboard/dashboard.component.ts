@@ -87,6 +87,9 @@ export class DashboardComponent implements OnInit {
 
   canAccess(permiso: string): boolean {
     if (!this.currentUser) return false;
+    // Admin global tiene acceso a todo
+    if (this.currentUser.adminPorDefecto === true) return true;
+    
     if (permiso === 'ADMIN') return this.currentUser.adminPorDefecto === true;
     return this.currentUser.permisos ? this.currentUser.permisos.includes(permiso) : false;
   }
