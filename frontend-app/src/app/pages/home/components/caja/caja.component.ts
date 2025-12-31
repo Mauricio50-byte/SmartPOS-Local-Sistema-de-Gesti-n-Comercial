@@ -15,6 +15,7 @@ import { Caja, MovimientoCaja } from 'src/app/core/models/caja';
 })
 export class CajaComponent implements OnInit {
   caja: Caja | null = null;
+  //hola moundo
   loading = false;
   movimientos: MovimientoCaja[] = [];
   saldoTransferencia = 0;
