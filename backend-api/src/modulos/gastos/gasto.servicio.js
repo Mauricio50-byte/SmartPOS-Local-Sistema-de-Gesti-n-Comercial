@@ -88,14 +88,15 @@ async function registrarPagoGasto(datos) {
                  where: { usuarioId: Number(usuarioId), estado: 'ABIERTA' }
              })
              if (cajaAbierta) {
+                 const metodoPagoNorm = String(metodoPago).toUpperCase();
                  await tx.movimientoCaja.create({
                      data: {
                          cajaId: cajaAbierta.id,
                          usuarioId: Number(usuarioId),
                          tipo: 'PAGO_GASTO',
-                         metodoPago: metodoPago, // 'EFECTIVO', 'TRANSFERENCIA', etc.
+                         metodoPago: metodoPagoNorm,
                          monto: monto,
-                         descripcion: `Pago a gasto: ${gasto.concepto} (${metodoPago})`,
+                         descripcion: `Pago a gasto: ${gasto.concepto} (${metodoPagoNorm})`,
                          gastoId: gasto.id,
                          fecha: new Date()
                      }

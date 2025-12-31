@@ -30,6 +30,10 @@ export class CajaComponent implements OnInit {
     this.cargarEstadoCaja();
   }
 
+  ionViewWillEnter() {
+    this.cargarEstadoCaja();
+  }
+
   hasPermission(permiso: string): boolean {
     return this.authService.hasPermission(permiso);
   }

@@ -239,26 +239,36 @@ async function crearVenta(payload) {
     }
 
     // --- INTEGRACIÓN CAJA ---
+    console.log(`[Caja Integration] Iniciando verificación. UsuarioId: ${usuarioId}, MontoPagado: ${montoPagadoValidado}`);
+    
     // Registrar cualquier venta en la caja abierta del usuario, independientemente del método de pago
     if (montoPagadoValidado > 0) {
       const cajaAbierta = await tx.caja.findFirst({
         where: { usuarioId: Number(usuarioId), estado: 'ABIERTA' }
       })
 
+      console.log(`[Caja Integration] Caja abierta encontrada:`, cajaAbierta ? cajaAbierta.id : 'NO');
+
       if (cajaAbierta) {
-        await tx.movimientoCaja.create({
+        const metodoPagoNorm = String(metodoPago).toUpperCase(); // Normalizar a mayúsculas (EFECTIVO, TRANSFERENCIA)
+        const mov = await tx.movimientoCaja.create({
           data: {
             cajaId: cajaAbierta.id,
             usuarioId: Number(usuarioId),
             tipo: 'VENTA',
-            metodoPago: metodoPago, // 'EFECTIVO', 'TRANSFERENCIA', etc.
+            metodoPago: metodoPagoNorm,
             monto: montoPagadoValidado,
-            descripcion: `Venta #${venta.id} (${metodoPago})`,
+            descripcion: `Venta #${venta.id} (${metodoPagoNorm})`,
             ventaId: venta.id,
             fecha: new Date()
           }
         })
+        console.log(`[Caja Integration] Movimiento creado:`, mov.id);
+      } else {
+        console.warn(`[Caja Integration] ADVERTENCIA: Se realizó una venta pero el usuario ${usuarioId} no tiene caja abierta.`);
       }
+    } else {
+        console.log(`[Caja Integration] Omitido: Monto pagado es 0 o menor.`);
     }
     // ------------------------
 

@@ -1,7 +1,14 @@
 <div class="caja-content-wrapper">
   <div class="header-section">
-    <h1>Gestión de Caja</h1>
-    <p class="subtitle">Control diario de flujo de efectivo</p>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <h1>Gestión de Caja</h1>
+        <p class="subtitle">Control diario de flujo de efectivo</p>
+      </div>
+      <ion-button fill="clear" (click)="cargarEstadoCaja()">
+        <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
   </div>
 
   <div *ngIf="loading" class="ion-text-center ion-padding">
