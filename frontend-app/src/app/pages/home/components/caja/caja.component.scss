@@ -41,6 +41,11 @@
     font-size: 1.8rem;
     font-weight: 700;
     margin-top: 8px;
+    word-break: break-word; /* Prevent overflow */
+
+    @media (max-width: 400px) {
+      font-size: 1.4rem;
+    }
   }
 }
 

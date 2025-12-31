@@ -27,7 +27,7 @@
     overflow: hidden;
     background: #f4f5f8;
     position: relative;
-    padding-bottom: 70px; // Space for bottom bar on mobile
+    // padding-bottom: 70px; // Removed: using flex layout now
 
     @media (min-width: 992px) {
         padding-bottom: 0;
@@ -247,15 +247,17 @@
 
 // === Mobile Bottom Bar ===
 .mobile-bottom-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    // position: fixed; // Changed to relative flow
+    // bottom: 0;
+    // left: 0;
+    // right: 0;
+    width: 100%;
     background: var(--ion-color-primary);
     color: white;
     padding: 0;
     z-index: 90;
     box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+    flex-shrink: 0; // Prevent shrinking in flex container
     
     @media (min-width: 992px) {
         display: none;
