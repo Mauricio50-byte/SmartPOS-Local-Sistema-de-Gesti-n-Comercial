@@ -454,3 +454,81 @@ $gap-lg: 20px;
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+// Top Products List
+.top-product-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.top-product-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px; // Consistent padding
+  border-bottom: 1px solid #f3f4f6;
+  gap: 12px;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .rank-badge {
+    width: 24px;
+    height: 24px;
+    background: #f3f4f6;
+    color: #6b7280;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .product-details {
+    flex: 1;
+    min-width: 0;
+
+    .product-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .product-bar-bg {
+      height: 6px;
+      background: #f3f4f6;
+      border-radius: 3px;
+      width: 100%;
+      overflow: hidden;
+
+      .product-bar-fill {
+        height: 100%;
+        background: var(--ion-color-primary);
+        border-radius: 3px;
+        transition: width 0.5s ease-out;
+      }
+    }
+  }
+
+  .product-stats {
+    text-align: right;
+    min-width: 60px;
+
+    .stat-qty {
+      font-weight: 700;
+      color: #111827;
+      font-size: 0.95rem;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      color: #9ca3af;
+    }
+  }
+}

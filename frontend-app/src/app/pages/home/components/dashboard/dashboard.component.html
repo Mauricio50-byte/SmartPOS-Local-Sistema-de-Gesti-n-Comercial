@@ -154,21 +154,26 @@
     <div class="panel-card low-stock-area" *ngIf="canAccess('VER_INVENTARIO')">
       <div class="panel-header">
         <h3 class="panel-title">Stock Bajo</h3>
+        <span class="panel-subtitle" *ngIf="lowStockProducts.length > 0">Atención requerida</span>
       </div>
       <div class="panel-content list-container">
-        <div class="stock-item" *ngFor="let prod of lowStockProducts">
-          <div class="stock-info">
-            <div class="stock-name">{{ prod.nombre }}</div>
-            <div class="stock-meta">{{ prod.categoria || 'General' }}</div>
-          </div>
-          <div class="stock-badge warning">
-            {{ prod.stock }} un.
+        <div class="stock-list" *ngIf="lowStockProducts.length > 0; else emptyStock">
+          <div class="stock-item" *ngFor="let p of lowStockProducts">
+            <div class="stock-info">
+              <div class="stock-name">{{ p.nombre }}</div>
+              <div class="stock-meta">Min: {{ p.stockMinimo || 5 }}</div>
+            </div>
+            <div class="stock-badge warning">
+              {{ p.stock }} unids.
+            </div>
           </div>
         </div>
-        <div *ngIf="lowStockProducts.length === 0" class="empty-state">
-          <ion-icon name="checkmark-circle-outline"></ion-icon>
-          <span>Inventario OK</span>
-        </div>
+        <ng-template #emptyStock>
+          <div class="empty-state">
+            <ion-icon name="checkmark-circle-outline" color="success"></ion-icon>
+            <span>Inventario Saludable</span>
+          </div>
+        </ng-template>
       </div>
     </div>
 
@@ -177,14 +182,28 @@
       <div class="panel-header">
         <h3 class="panel-title">Top Productos</h3>
       </div>
-      <div class="panel-content chart-wrapper">
-        <div class="chart-container" *ngIf="productosChartData && dataLoaded; else loading">
-          <canvas baseChart
-            [data]="productosChartData"
-            [options]="barChartOptions"
-            [type]="barChartType">
-          </canvas>
+      <div class="panel-content list-container">
+        <div class="top-product-list" *ngIf="topProducts.length > 0; else noProducts">
+          <div class="top-product-item" *ngFor="let p of topProducts; let i = index">
+            <div class="rank-badge">{{ i + 1 }}</div>
+            <div class="product-details">
+              <div class="product-name">{{ p.name }}</div>
+              <div class="product-bar-bg">
+                <div class="product-bar-fill" [style.width.%]="p.percentage"></div>
+              </div>
+            </div>
+            <div class="product-stats">
+              <div class="stat-qty">{{ p.qty }}</div>
+              <div class="stat-label">vendidos</div>
+            </div>
+          </div>
         </div>
+        <ng-template #noProducts>
+          <div class="empty-state">
+            <ion-icon name="stats-chart-outline"></ion-icon>
+            <span>Sin datos de ventas</span>
+          </div>
+        </ng-template>
       </div>
     </div>
 

@@ -193,4 +193,10 @@ export class ProductosListaComponent implements OnChanges, OnInit {
   onDelete(product: Producto) {
     this.delete.emit(product);
   }
+
+  isLowStock(product: any): boolean {
+    if (!product || product.stock === undefined) return false;
+    const minStock = product.stockMinimo || 5; // Default to 5 if not set
+    return product.stock <= minStock;
+  }
 }

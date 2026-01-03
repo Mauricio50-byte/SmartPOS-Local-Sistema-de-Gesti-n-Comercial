@@ -31,6 +31,7 @@ export class DashboardComponent implements OnInit {
   // Lists
   recentTransactions: any[] = [];
   lowStockProducts: any[] = [];
+  topProducts: any[] = [];
   
   // Full Data
   allVentas: any[] = [];
@@ -39,7 +40,6 @@ export class DashboardComponent implements OnInit {
 
   // Charts Data
   public ventasChartData: ChartData<'bar'> | undefined;
-  public productosChartData: ChartData<'bar'> | undefined;
 
   public barChartType: ChartType = 'bar';
 
@@ -129,7 +129,7 @@ export class DashboardComponent implements OnInit {
 
         this.processMetrics(ventas, clientes);
         this.processSalesChart(ventas);
-        this.processTopProductsChart(ventas, productos);
+        this.processTopProducts(ventas, productos);
         this.processRecentTransactions(ventas);
         this.processLowStock(productos);
         this.dataLoaded = true;
@@ -168,11 +168,11 @@ export class DashboardComponent implements OnInit {
   }
 
   private processLowStock(productos: any[]) {
-    // Filter products with stock <= stockMinimo or default 10
+    // Filter products with stock <= stockMinimo or default 5
     this.lowStockProducts = productos
-      .filter(p => p.stock <= (p.stockMinimo || 10))
-      .sort((a, b) => a.stock - b.stock)
-      .slice(0, 5);
+      .filter(p => p.stock <= (p.stockMinimo || 5))
+      .sort((a, b) => a.stock - b.stock) // Ascending (lowest first)
+      .slice(0, 5); // Show up to 5 critical items
   }
 
   private processSalesChart(ventas: any[]) {
@@ -204,14 +204,12 @@ export class DashboardComponent implements OnInit {
     };
   }
 
-  private processTopProductsChart(ventas: any[], productos: any[]) {
+  private processTopProducts(ventas: any[], productos: any[]) {
     const productSales: Record<number, number> = {};
 
     ventas.forEach(v => {
       if (v.items && Array.isArray(v.items)) {
         v.items.forEach((item: any) => {
-          // Assuming item has productoId and cantidad (or derived from structure)
-          // Adjust based on actual data structure from VentaService
           const pId = item.producto?.id || item.productoId; 
           const qty = item.cantidad || 1;
           if (pId) {
@@ -219,7 +217,6 @@ export class DashboardComponent implements OnInit {
           }
         });
       } else if (v.detalles && Array.isArray(v.detalles)) {
-         // Fallback for different structure
          v.detalles.forEach((d: any) => {
             const pId = d.producto?.id || d.productoId;
             const qty = d.cantidad || 1;
@@ -233,25 +230,17 @@ export class DashboardComponent implements OnInit {
       .sort(([, a], [, b]) => b - a)
       .slice(0, 5);
 
-    const labels = sortedProducts.map(([id]) => {
+    const maxQty = sortedProducts.length > 0 ? sortedProducts[0][1] : 0;
+
+    this.topProducts = sortedProducts.map(([id, qty]) => {
       const p = productos.find(prod => prod.id === Number(id));
-      return p ? p.nombre : `Producto #${id}`;
+      return {
+        id: Number(id),
+        name: p ? p.nombre : `Producto #${id}`,
+        qty: qty,
+        percentage: maxQty > 0 ? (qty / maxQty) * 100 : 0
+      };
     });
-
-    const data = sortedProducts.map(([, qty]) => qty);
-
-    this.productosChartData = {
-      labels,
-      datasets: [
-        {
-          data,
-          label: 'Unidades Vendidas',
-          backgroundColor: '#2dd36f',
-          borderRadius: 4,
-          indexAxis: 'y'
-        }
-      ]
-    };
   }
 
   onFilterChange(event: any) {

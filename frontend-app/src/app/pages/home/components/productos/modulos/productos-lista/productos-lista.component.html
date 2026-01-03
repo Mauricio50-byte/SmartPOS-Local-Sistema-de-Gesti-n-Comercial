@@ -47,12 +47,21 @@
             <!-- Default Text -->
             <span *ngSwitchDefault>
               <!-- Special case for Name to show SKU -->
-              <ng-container *ngIf="col.key === 'nombre'; else simpleText">
+              <ng-container *ngIf="col.key === 'nombre'">
                 <strong>{{ product.nombre }}</strong>
               </ng-container>
-              <ng-template #simpleText>
+
+              <!-- Special case for Stock -->
+              <ng-container *ngIf="col.key === 'stock'">
+                <span [class.low-stock-text]="isLowStock(product)">
+                  {{ getValue(product, col) || '0' }}
+                </span>
+              </ng-container>
+
+              <!-- Standard Text for other columns -->
+              <ng-container *ngIf="col.key !== 'nombre' && col.key !== 'stock'">
                 {{ getValue(product, col) || '-' }}
-              </ng-template>
+              </ng-container>
             </span>
           </ng-container>
         </td>
