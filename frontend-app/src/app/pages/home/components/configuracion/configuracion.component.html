@@ -13,43 +13,7 @@
   </div>
 
   <div class="tab-content" *ngIf="activeTab === 'usuario'">
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Manual de Usuario</ion-card-title>
-        <ion-card-subtitle>Guía de operación del sistema</ion-card-subtitle>
-      </ion-card-header>
-      <ion-card-content>
-        <div class="manual-section">
-          <h3>Introducción</h3>
-          <p>Bienvenido al sistema SmartPOS. Este manual le guiará a través de las funciones principales.</p>
-          
-          <ion-accordion-group>
-            <ion-accordion value="ventas">
-              <ion-item slot="header" color="light">
-                <ion-label>Cómo realizar una venta</ion-label>
-              </ion-item>
-              <div class="ion-padding" slot="content">
-                <ol>
-                  <li>Diríjase al módulo de Ventas.</li>
-                  <li>Seleccione los productos o escanee el código de barras.</li>
-                  <li>Seleccione el cliente (opcional).</li>
-                  <li>Haga clic en "Cobrar" y seleccione el método de pago.</li>
-                </ol>
-              </div>
-            </ion-accordion>
-
-            <ion-accordion value="productos">
-              <ion-item slot="header" color="light">
-                <ion-label>Gestión de Productos</ion-label>
-              </ion-item>
-              <div class="ion-padding" slot="content">
-                <p>En el módulo de Productos puede crear, editar y eliminar items de su inventario.</p>
-              </div>
-            </ion-accordion>
-          </ion-accordion-group>
-        </div>
-      </ion-card-content>
-    </ion-card>
+    <app-manual-usuario></app-manual-usuario>
   </div>
 
   <div class="tab-content help-content" *ngIf="activeTab === 'ayuda'">

@@ -24,6 +24,7 @@ import { CategoryDistributionComponent } from './components/dashboard/components
 import { TopCustomersComponent } from './components/dashboard/components/top-customers/top-customers.component';
 import { PaymentDistributionComponent } from './components/dashboard/components/payment-distribution/payment-distribution.component';
 import { ConfiguracionComponent } from './components/configuracion/configuracion.component';
+import { ManualUsuarioComponent } from './components/configuracion/components/manual-usuario/manual-usuario.component';
 
 @NgModule({
   imports: [
@@ -53,7 +54,8 @@ import { ConfiguracionComponent } from './components/configuracion/configuracion
     CategoryDistributionComponent,
     TopCustomersComponent,
     PaymentDistributionComponent,
-    ConfiguracionComponent
+    ConfiguracionComponent,
+    ManualUsuarioComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
