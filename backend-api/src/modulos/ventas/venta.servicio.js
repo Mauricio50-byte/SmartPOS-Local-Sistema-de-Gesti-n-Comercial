@@ -68,7 +68,8 @@ async function crearVenta(payload) {
           cedula: datosCliente.cedula || null, // Convertir '' a null
           correo: datosCliente.correo || null, // Convertir '' a null
           direccion: datosCliente.direccion,
-          creditoMaximo: datosCliente.creditoMaximo || 0
+          creditoMaximo: datosCliente.creditoMaximo || 0,
+          diasCredito: datosCliente.diasCredito || 30
         }
       })
       clienteIdFinal = nuevoCliente.id
@@ -207,12 +208,19 @@ async function crearVenta(payload) {
 
     // Si es venta fiada, crear la deuda
     if (estadoPago === 'FIADO' && clienteIdFinal) {
+      // Calcular fecha de vencimiento
+      const clienteDeuda = await tx.cliente.findUnique({ where: { id: clienteIdFinal } })
+      const dias = clienteDeuda.diasCredito || 30
+      const fechaVencimiento = new Date()
+      fechaVencimiento.setDate(fechaVencimiento.getDate() + dias)
+
       await tx.deuda.create({
         data: {
           clienteId: clienteIdFinal,
           ventaId: venta.id,
           montoTotal: saldoPendiente,
-          saldoPendiente: saldoPendiente
+          saldoPendiente: saldoPendiente,
+          fechaVencimiento
         }
       })
 

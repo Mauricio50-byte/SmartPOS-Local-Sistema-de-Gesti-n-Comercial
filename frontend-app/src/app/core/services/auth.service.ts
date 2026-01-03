@@ -13,13 +13,11 @@ export class AuthService implements OnDestroy {
   private http = inject(HttpClient);
   private perfilSubscription: Subscription | undefined;
 
+  // Token management - In-memory only for security on refresh/close
+  private token: string | null = null;
+
   constructor() {
-    // Si hay token guardado, intentamos cargar el perfil
-    // NOTA: Si acabamos de guardar el token en AppComponent, esto se ejecutará después o concurrentemente.
-    const token = this.getToken();
-    if (token) {
-      this.validarYRefrescarPerfil();
-    }
+    // No persistence on refresh/close as requested
   }
 
   validarYRefrescarPerfil() {
@@ -81,10 +79,11 @@ export class AuthService implements OnDestroy {
   getRememberedEmail(): string { return localStorage.getItem(this.rememberKey) || ''; }
 
   setToken(token: string): void {
-    localStorage.setItem(this.tokenKey, token);
+    this.token = token;
   }
-  getToken(): string | null { return localStorage.getItem(this.tokenKey); }
+  getToken(): string | null { return this.token; }
   logout(): void {
-    localStorage.removeItem(this.tokenKey); this.perfil$.next(null);
+    this.token = null;
+    this.perfil$.next(null);
   }
 }

@@ -64,11 +64,12 @@ export class VentasComponent implements OnInit {
       montoPagado: [0],
       registrarCliente: [false],
       datosCliente: this.fb.group({
-        nombre: [''],
-        telefono: [''],
+        nombre: ['', Validators.required],
+        telefono: ['', Validators.required],
         cedula: [''],
-        correo: [''],
-        creditoMaximo: [0]
+        correo: ['', [Validators.email]],
+        creditoMaximo: [0],
+        diasCredito: [30]
       }),
       detalles: this.fb.array([], Validators.required)
     });

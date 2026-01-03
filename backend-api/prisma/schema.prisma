@@ -215,6 +215,7 @@ model Cliente {
   direccion     String?
   activo        Boolean  @default(true)
   creditoMaximo Float    @default(0)
+  diasCredito   Int      @default(30)
   saldoDeuda    Float    @default(0)
   puntos        Int      @default(0)
   creadoEn      DateTime @default(now())
@@ -356,3 +357,6 @@ model PagoGasto {
   gasto      Gasto    @relation(fields: [gastoId], references: [id])
   usuario    Usuario? @relation(fields: [usuarioId], references: [id])
 }
+
+// Update: Added manually to append to file, but I need to edit the file content properly.
+
