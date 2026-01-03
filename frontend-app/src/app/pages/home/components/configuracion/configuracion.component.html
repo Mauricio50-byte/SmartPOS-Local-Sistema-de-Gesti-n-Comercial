@@ -5,9 +5,9 @@
         <ion-label>Manual de Usuario</ion-label>
         <ion-icon name="book-outline"></ion-icon>
       </ion-segment-button>
-      <ion-segment-button value="tecnico">
-        <ion-label>Manual Técnico</ion-label>
-        <ion-icon name="code-slash-outline"></ion-icon>
+      <ion-segment-button value="ayuda">
+        <ion-label>Ayuda & Soporte</ion-label>
+        <ion-icon name="help-buoy-outline"></ion-icon>
       </ion-segment-button>
     </ion-segment>
   </div>
@@ -52,54 +52,29 @@
     </ion-card>
   </div>
 
-  <div class="tab-content" *ngIf="activeTab === 'tecnico'">
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Manual Técnico</ion-card-title>
-        <ion-card-subtitle>Información para administradores y soporte</ion-card-subtitle>
-      </ion-card-header>
-      <ion-card-content>
-        <div class="manual-section">
-          <h3>Arquitectura del Sistema</h3>
-          <p>El sistema utiliza una arquitectura cliente-servidor con Docker.</p>
-          
-          <div class="tech-specs">
-            <ion-list>
-              <ion-item>
-                <ion-label>
-                  <h2>Backend</h2>
-                  <p>Node.js, Fastify, Prisma</p>
-                </ion-label>
-              </ion-item>
-              <ion-item>
-                <ion-label>
-                  <h2>Frontend</h2>
-                  <p>Angular, Ionic</p>
-                </ion-label>
-              </ion-item>
-              <ion-item>
-                <ion-label>
-                  <h2>Base de Datos</h2>
-                  <p>PostgreSQL</p>
-                </ion-label>
-              </ion-item>
-            </ion-list>
+  <div class="tab-content help-content" *ngIf="activeTab === 'ayuda'">
+    <div class="contact-cards">
+      <div class="contact-card" *ngFor="let contacto of contactos">
+        <div class="avatar-container">
+          <!-- Using a generic avatar if no specific avatar image is provided, or we could use the QR as avatar placeholder if needed, but icon is better -->
+          <div class="avatar-circle">
+            <ion-icon name="person"></ion-icon>
           </div>
-
-          <h3>Solución de Problemas Comunes</h3>
-          <ion-accordion-group>
-            <ion-accordion value="conexion">
-              <ion-item slot="header" color="light">
-                <ion-label>Error de Conexión a Base de Datos</ion-label>
-              </ion-item>
-              <div class="ion-padding" slot="content">
-                <p>Verifique que los contenedores de Docker estén corriendo:</p>
-                <code>docker-compose ps</code>
-              </div>
-            </ion-accordion>
-          </ion-accordion-group>
         </div>
-      </ion-card-content>
-    </ion-card>
+        
+        <div class="card-body">
+          <h2 class="contact-name">{{ contacto.nombre }}</h2>
+          <p class="contact-subtitle">Contacto de WhatsApp</p>
+          
+          <div class="qr-container">
+            <img [src]="contacto.qrImage" alt="Código QR de WhatsApp">
+          </div>
+          
+          <p class="info-text">
+            Tu código QR es privado. Si lo compartes con alguien, esa persona podrá escanearlo con la cámara de WhatsApp para añadirte como contacto.
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
