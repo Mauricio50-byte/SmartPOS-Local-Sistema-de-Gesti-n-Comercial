@@ -2,8 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
 import { Router } from '@angular/router';
 import { UsuarioPerfil } from '../../core/models';
+import { NotificationService, AppNotification } from '../../core/services/notification.service';
+import { Observable } from 'rxjs';
 
-import { ModalController } from '@ionic/angular';
+import { ModalController, PopoverController } from '@ionic/angular';
 import { ConexionQrComponent } from '../../shared/components/conexion-qr/conexion-qr.component';
 
 export type HomeView = 'dashboard' | 'users' | 'ventas' | 'productos' | 'modulos' | 'finanzas' | 'clientes' | 'reportes' | 'configuracion';
@@ -18,17 +20,25 @@ export class HomePage implements OnInit {
   currentView: HomeView = 'dashboard';
   pageTitle: string = 'Dashboard';
   currentUser: UsuarioPerfil | null = null;
+  
+  notifications$: Observable<AppNotification[]>;
+  unreadCount$: Observable<number>;
+  isNotificationsOpen = false;
 
   constructor(
     private authService: AuthService,
     private router: Router,
-    private modalCtrl: ModalController
-  ) { }
+    private modalCtrl: ModalController,
+    private notificationService: NotificationService
+  ) { 
+    this.notifications$ = this.notificationService.notifications$;
+    this.unreadCount$ = this.notificationService.unreadCount$;
+  }
 
   async conectarDispositivo() {
     const modal = await this.modalCtrl.create({
       component: ConexionQrComponent,
-      cssClass: 'qr-modal' // You might want to define this class in global CSS or component styles
+      cssClass: 'qr-modal'
     });
     return await modal.present();
   }
@@ -111,5 +121,42 @@ export class HomePage implements OnInit {
     }
   }
 
+  // Notification Methods
+  markAsRead(notification: AppNotification) {
+    if (!notification.read) {
+      this.notificationService.markAsRead(notification.id);
+    }
+    // Handle navigation if link exists
+    if (notification.link) {
+      this.setView(notification.link);
+      // You might need to close popover here if it doesn't close automatically
+    }
+  }
 
+  markAllRead() {
+    this.notificationService.markAllAsRead();
+  }
+
+  removeNotification(event: Event, id: string) {
+    event.stopPropagation();
+    this.notificationService.deleteNotification(id);
+  }
+
+  getIconForType(type: string): string {
+    switch (type) {
+      case 'urgent': return 'alert-circle';
+      case 'warning': return 'warning';
+      case 'success': return 'checkmark-circle';
+      case 'info': default: return 'information-circle';
+    }
+  }
+
+  getColorForType(type: string): string {
+    switch (type) {
+      case 'urgent': return 'danger';
+      case 'warning': return 'warning';
+      case 'success': return 'success';
+      case 'info': default: return 'primary';
+    }
+  }
 }

@@ -81,11 +81,54 @@
             <ion-icon name="qr-code-outline"></ion-icon>
           </ion-button>
 
-
-
-          <ion-button aria-label="Notificaciones">
+          <ion-button id="notifications-trigger" aria-label="Notificaciones" class="notification-btn">
             <ion-icon name="notifications-outline"></ion-icon>
+            <ion-badge *ngIf="(unreadCount$ | async) as count" color="danger" class="notification-badge">
+              {{ count > 9 ? '9+' : count }}
+            </ion-badge>
           </ion-button>
+
+          <ion-popover trigger="notifications-trigger" dismissOnSelect="true" class="notification-popover" side="bottom" alignment="end" [showBackdrop]="false">
+            <ng-template>
+              <div class="notification-container">
+                <div class="notification-header">
+                  <h3>Notificaciones</h3>
+                  <ion-button fill="clear" size="small" (click)="markAllRead()" [disabled]="(unreadCount$ | async) === 0">
+                    Marcar leídas
+                  </ion-button>
+                </div>
+                
+                <div class="notification-list-wrapper">
+                  <ion-list lines="full" class="ion-no-padding">
+                    <ion-item button *ngFor="let n of notifications$ | async" 
+                              [class.unread]="!n.read" 
+                              (click)="markAsRead(n)"
+                              detail="false"
+                              class="notification-item">
+                      <div class="notif-icon-wrapper" slot="start" [class]="n.type">
+                        <ion-icon [name]="getIconForType(n.type)"></ion-icon>
+                      </div>
+                      <ion-label class="ion-text-wrap">
+                        <div class="notif-top">
+                          <span class="notif-title">{{ n.title }}</span>
+                          <span class="notif-time">{{ n.timestamp | date:'shortTime' }}</span>
+                        </div>
+                        <p class="notif-msg">{{ n.message }}</p>
+                      </ion-label>
+                      <ion-button slot="end" fill="clear" color="medium" size="small" (click)="removeNotification($event, n.id)">
+                        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+                      </ion-button>
+                    </ion-item>
+
+                    <div class="empty-notifications" *ngIf="(notifications$ | async)?.length === 0">
+                      <ion-icon name="notifications-off-outline"></ion-icon>
+                      <p>No tienes notificaciones</p>
+                    </div>
+                  </ion-list>
+                </div>
+              </div>
+            </ng-template>
+          </ion-popover>
 
           <div class="user-profile-widget">
             <ng-container *ngIf="currentUser; else loadingTemplate">
