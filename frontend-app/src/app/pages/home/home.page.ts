@@ -111,7 +111,5 @@ export class HomePage implements OnInit {
     }
   }
 
-  enablePush() {
-    console.log('Habilitando notificaciones push...');
-  }
+
 }
