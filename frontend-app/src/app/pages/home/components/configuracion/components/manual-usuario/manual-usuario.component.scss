@@ -103,3 +103,26 @@ ion-accordion {
     }
   }
 }
+
+/* Estilos para las imágenes reales del manual */
+.manual-image-container {
+  margin-top: 20px;
+  text-align: center;
+  
+  img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border: 1px solid var(--ion-color-light);
+    display: block;
+    margin: 0 auto;
+  }
+  
+  .image-caption {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: var(--ion-color-medium);
+    font-style: italic;
+  }
+}

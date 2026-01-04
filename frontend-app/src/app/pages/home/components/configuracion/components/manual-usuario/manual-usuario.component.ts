@@ -8,6 +8,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ManualUsuarioComponent implements OnInit {
 
+  dashboardImageError = false;
+  productsImageError = false;
+  createProductImageError = false;
+  clientsImageError = false;
+  financeImageError = false;
+  reportsImageError = false;
+  modulesImageError = false;
+  usersImageError = false;
+  
   constructor() { }
 
   ngOnInit() {}

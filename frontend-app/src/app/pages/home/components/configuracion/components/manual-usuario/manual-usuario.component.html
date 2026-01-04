@@ -28,9 +28,18 @@
               <li><strong>Métodos de Pago:</strong> Desglose de ingresos por efectivo, tarjeta o transferencia.</li>
               <li><strong>Top Clientes:</strong> Lista de los clientes más frecuentes.</li>
             </ul>
-            <div class="image-placeholder">
-              <ion-icon name="image-outline"></ion-icon>
-              <span>Imagen: Vista general del Dashboard</span>
+            <div class="manual-image-container">
+              <img src="assets/images/dashboard-manual.png" alt="Vista general del Dashboard" 
+                   (error)="dashboardImageError = true" [hidden]="dashboardImageError">
+              
+              <div class="image-placeholder" *ngIf="dashboardImageError">
+                <ion-icon name="image-outline"></ion-icon>
+                <span>Imagen no encontrada</span>
+                <small style="color: var(--ion-color-medium); margin-top: 5px;">
+                </small>
+              </div>
+
+              <p class="image-caption">Imagen: Vista general del Dashboard</p>
             </div>
           </div>
         </ion-accordion>
@@ -52,7 +61,8 @@
             </ol>
             <div class="image-placeholder">
               <ion-icon name="image-outline"></ion-icon>
-              <span>Imagen: Pantalla de Ventas y Proceso de Cobro</span>
+              <img src ="assets/images/ventas-manual.png" alt="Pantalla de Ventas y Proceso de Cobro" 
+                  >
             </div>
           </div>
         </ion-accordion>
@@ -72,7 +82,8 @@
             </ul>
             <div class="image-placeholder">
               <ion-icon name="image-outline"></ion-icon>
-              <span>Imagen: Panel de Control de Caja</span>
+              <img src ="assets/images/caja-manual.png" alt="Panel de Control de Caja" 
+                  >
             </div>
           </div>
         </ion-accordion>
@@ -91,9 +102,21 @@
               <li><strong>Editar/Eliminar:</strong> Modifique precios, stock o descripciones de productos existentes.</li>
               <li><strong>Control de Stock:</strong> El sistema descuenta automáticamente el inventario al realizar ventas.</li>
             </ul>
-            <div class="image-placeholder">
-              <ion-icon name="image-outline"></ion-icon>
-              <span>Imagen: Lista de Productos y Formulario de Creación</span>
+            <div class="manual-image-container">
+              <img src="assets/images/Productos-manual.png" alt="Lista de Productos" 
+                   (error)="productsImageError = true" [hidden]="productsImageError">
+              
+              <div class="image-placeholder" *ngIf="productsImageError">
+                 <!-- Fallback to SVG if PNG fails -->
+                 <img src="assets/images/Productos-manual.svg" alt="Esquema de Lista de Productos">
+              </div>
+
+              <img src="assets/images/crear-producto-manual.png" alt="Formulario de Creación de Producto" style="margin-top: 20px;"
+                   (error)="createProductImageError = true" [hidden]="createProductImageError">
+              
+              <div class="image-placeholder" *ngIf="createProductImageError" style="margin-top: 20px;">
+                 <img src="assets/images/crear-producto-manual.svg" alt="Esquema de Formulario de Producto">
+              </div>
             </div>
           </div>
         </ion-accordion>
@@ -111,9 +134,15 @@
               <li><strong>Historial:</strong> Vea las compras pasadas de cada cliente.</li>
               <li><strong>Créditos:</strong> Gestione los límites de crédito si su negocio ofrece fiado.</li>
             </ul>
-            <div class="image-placeholder">
-              <ion-icon name="image-outline"></ion-icon>
-              <span>Imagen: Directorio de Clientes</span>
+            <div class="manual-image-container">
+              <img src="assets/images/clientes-manual.png" alt="Directorio de Clientes" 
+                   (error)="clientsImageError = true" [hidden]="clientsImageError">
+              
+              <div class="image-placeholder" *ngIf="clientsImageError">
+                <img src="assets/images/clientes-manual.svg" alt="Esquema de Clientes">
+              </div>
+              
+              <p class="image-caption">Imagen: Directorio de Clientes</p>
             </div>
           </div>
         </ion-accordion>
@@ -130,9 +159,15 @@
               <li><strong>Cuentas por Cobrar:</strong> Lista de ventas a crédito pendientes de pago por parte de clientes. Permite registrar abonos.</li>
               <li><strong>Cuentas por Pagar:</strong> Registro de deudas con proveedores o gastos pendientes.</li>
             </ul>
-            <div class="image-placeholder">
-              <ion-icon name="image-outline"></ion-icon>
-              <span>Imagen: Resumen Financiero</span>
+            <div class="manual-image-container">
+              <img src="assets/images/finanzas-manual.png" alt="Resumen Financiero"
+                   (error)="financeImageError = true" [hidden]="financeImageError">
+              
+              <div class="image-placeholder" *ngIf="financeImageError">
+                <img src="assets/images/finanzas-manual.svg" alt="Esquema de Finanzas">
+              </div>
+
+              <p class="image-caption">Imagen: Resumen Financiero</p>
             </div>
           </div>
         </ion-accordion>
@@ -150,9 +185,15 @@
               <li>Visualice ventas totales, ganancias netas y productos más vendidos.</li>
               <li>Exportación de datos (si está disponible).</li>
             </ul>
-            <div class="image-placeholder">
-              <ion-icon name="image-outline"></ion-icon>
-              <span>Imagen: Generación de Reportes</span>
+            <div class="manual-image-container">
+              <img src="assets/images/reportes-manual.png" alt="Generación de Reportes"
+                   (error)="reportsImageError = true" [hidden]="reportsImageError">
+              
+              <div class="image-placeholder" *ngIf="reportsImageError">
+                <img src="assets/images/reportes-manual.svg" alt="Esquema de Reportes">
+              </div>
+
+              <p class="image-caption">Imagen: Generación de Reportes</p>
             </div>
           </div>
         </ion-accordion>
@@ -171,9 +212,15 @@
               <li><strong>Farmacia:</strong> Habilita campos de Lote y Vencimiento.</li>
               <li><strong>Restaurante:</strong> (Si disponible) Funciones para mesas o pedidos.</li>
             </ul>
-            <div class="image-placeholder">
-              <ion-icon name="image-outline"></ion-icon>
-              <span>Imagen: Selector de Módulos Activos</span>
+            <div class="manual-image-container">
+              <img src="assets/images/Modulos-manual.png" alt="Selector de Módulos Activos"
+                   (error)="modulesImageError = true" [hidden]="modulesImageError">
+              
+              <div class="image-placeholder" *ngIf="modulesImageError">
+                <img src="assets/images/Modulos-manual.svg" alt="Esquema de Módulos">
+              </div>
+
+              <p class="image-caption">Imagen: Selector de Módulos Activos</p>
             </div>
           </div>
         </ion-accordion>
@@ -190,9 +237,15 @@
               <li>Cree cuentas para sus empleados (Cajeros, Administradores).</li>
               <li>Asigne roles para limitar el acceso a funciones sensibles (como Reportes o Configuración).</li>
             </ul>
-            <div class="image-placeholder">
-              <ion-icon name="image-outline"></ion-icon>
-              <span>Imagen: Lista de Usuarios</span>
+            <div class="manual-image-container">
+              <img src="assets/images/usuarios-manual.png" alt="Lista de Usuarios"
+                   (error)="usersImageError = true" [hidden]="usersImageError">
+              
+              <div class="image-placeholder" *ngIf="usersImageError">
+                <img src="assets/images/usuarios-manual.svg" alt="Esquema de Usuarios">
+              </div>
+
+              <p class="image-caption">Imagen: Lista de Usuarios</p>
             </div>
           </div>
         </ion-accordion>
