@@ -58,8 +58,9 @@ async function registrarRutasCaja(app) {
     const usuarioId = req.user.id
     const estado = await cajaServicio.obtenerEstadoCaja(usuarioId)
     if (!estado) {
-      res.code(404).send({ mensaje: 'No hay caja abierta' })
-      return
+      // Retornar null en lugar de 404 para evitar errores en consola,
+      // ya que "sin caja" es un estado válido.
+      return null
     }
     return estado
   })

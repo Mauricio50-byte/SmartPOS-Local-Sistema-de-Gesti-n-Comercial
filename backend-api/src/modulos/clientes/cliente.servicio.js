@@ -70,6 +70,12 @@ async function crearCliente(datos) {
     if (existe) throw new Error('Ya existe un cliente con esta cédula')
   }
 
+  // Validar que no exista cliente con el mismo correo si se proporciona
+  if (correo) {
+    const existeCorreo = await prisma.cliente.findUnique({ where: { correo } })
+    if (existeCorreo) throw new Error('Ya existe un cliente con este correo')
+  }
+
   return prisma.cliente.create({
     data: {
       nombre,

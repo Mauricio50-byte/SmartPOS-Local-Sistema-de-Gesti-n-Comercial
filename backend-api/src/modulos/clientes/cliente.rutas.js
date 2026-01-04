@@ -65,6 +65,7 @@ async function registrarRutasCliente(app) {
       res.code(201)
       return creado
     } catch (error) {
+      console.error('Error al crear cliente:', error)
       res.code(400)
       return { mensaje: error.message }
     }
