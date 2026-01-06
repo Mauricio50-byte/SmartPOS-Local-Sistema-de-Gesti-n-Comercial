@@ -89,6 +89,14 @@ export class VentasComponent implements OnInit {
         this.onClienteSeleccionado(cliente);
       }
     });
+
+    // Suscribirse a cambios en productos (creación, edición, eliminación)
+    this.productoService.productoChanged$.subscribe(() => {
+      this.loadProducts();
+    });
+
+    // Inicializar el grupo de datos de cliente como deshabilitado
+    this.datosClienteGroup.disable();
   }
 
   loadCurrentUser() {
@@ -254,6 +262,8 @@ export class VentasComponent implements OnInit {
       });
       // No limpiamos el cliente aquí para permitir que sea opcional en contado
       this.mostrarRegistroCliente = false;
+      this.ventaForm.patchValue({ registrarCliente: false });
+      this.datosClienteGroup.disable();
     } else {
       this.ventaForm.patchValue({
         estadoPago: 'FIADO'
@@ -268,17 +278,22 @@ export class VentasComponent implements OnInit {
         clienteId: cliente.id,
         registrarCliente: false
       });
+      this.datosClienteGroup.disable();
     } else {
       this.ventaForm.patchValue({
         clienteId: null
       });
     }
     this.mostrarRegistroCliente = false;
+    if (!cliente) {
+       this.datosClienteGroup.disable();
+    }
   }
 
   cancelarRegistroCliente() {
     this.mostrarRegistroCliente = false;
     this.ventaForm.patchValue({ registrarCliente: false });
+    this.datosClienteGroup.disable();
   }
 
   async mostrarModalRegistroCliente() {
@@ -292,6 +307,7 @@ export class VentasComponent implements OnInit {
           handler: () => {
             this.mostrarRegistroCliente = false;
             this.ventaForm.patchValue({ registrarCliente: false });
+            this.datosClienteGroup.disable();
           }
         },
         {
@@ -299,6 +315,7 @@ export class VentasComponent implements OnInit {
           handler: () => {
             this.mostrarRegistroCliente = true;
             this.ventaForm.patchValue({ registrarCliente: true });
+            this.datosClienteGroup.enable();
           }
         }
       ]
@@ -402,6 +419,12 @@ export class VentasComponent implements OnInit {
         const creditoValido = await this.validarCreditoDisponible();
         if (!creditoValido) return;
       }
+    }
+
+    // Asegurar que el grupo de cliente esté deshabilitado si no se está registrando
+    // Esto previene errores de validación en campos ocultos
+    if (!this.ventaForm.value.registrarCliente && this.datosClienteGroup.enabled) {
+      this.datosClienteGroup.disable();
     }
 
     if (this.ventaForm.invalid) {
@@ -526,6 +549,7 @@ export class VentasComponent implements OnInit {
             registrarCliente: false
           });
           this.datosClienteGroup.reset();
+          this.datosClienteGroup.disable();
 
           let mensaje = `Venta registrada correctamente.\n`;
           mensaje += `Total: $${venta.total.toLocaleString()}\n`;
